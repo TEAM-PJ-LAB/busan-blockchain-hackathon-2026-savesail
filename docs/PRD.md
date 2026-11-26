@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | 0.6 (2026-11-27) |
+| 문서 버전 | 0.6.1 (2026-11-27) |
 | 대상 | 부산 블록체인 해커톤 2026 온라인 예선 제출물 (마감 12/9) |
 | 개발 책임 | 박부건 (CTO) |
 | 상태 | 온체인 명령 15/15 구현·SBF 빌드 완료(`feat/p0-program`), 규칙 모듈 테스트 10/10 통과(v0.4 규칙 기준). C8·C10~C18은 코드에 아직 적용 전이며, 참조 구현과 부록 A는 v0.6 규칙으로 갱신됨. 측정 실험 E1~E5 완료 |
@@ -128,6 +128,7 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 
 | 날짜 | 변경 | 결정 |
 |---|---|---|
+| 2026-11-27 | v0.6.1: 판정 설정(`envelope.json`)을 `envelope_hash`로 체인에 고정해 캠페인 중 임계값·계측기 키 변경을 막음, 독립 기상 자료는 검증기관이 직접 받도록 명시 | 박부건 지시로 검토·반영 |
 | 2026-11-27 | v0.6 검토 3차: 격자 A에 효과 12% 추가(범위 상단을 정밀 판정에 포함), M6을 검증기관 거부와 안전 예외까지 확대, M8을 속력에서 입력 4종 조작으로, M9를 블록 종류별 유량계 조작 전반(합계 보존 옮기기 포함)으로 확대(기준 강화), C11을 공변량 균형 검정으로, C13을 서명 계측기·연료/축동력 균형 검정까지 확대, C17을 기상 기준으로 나누고 C18(공개 순서) 추가, 부록 A.5 6건으로 확대 | 박부건 지시로 검토·반영 |
 | 2026-11-27 | v0.6 검토 2차: F3을 지급자 위반이 없는 시나리오로 한정(위반 정산은 C14로 일부러 지급자에게 불리하게 만든 규칙이라, 원래 문구로는 설계상 통과할 수 없음. 결과를 보고 낮춘 것이 아님), 프로그램 품질 기준 번호를 Q→K로 바꿔 12장 열린 질문 번호와 겹치지 않게 함(내용 변경 없음), 1.3절 용어 정의 추가 | 박부건 지시로 검토·반영 |
 | 2026-11-27 | v0.6: 시험 격자 A~D와 다중 비교 판정 규칙 추가, 학습 데이터 조건을 시작 전제로 이동, 하한 안전성은 97.5% 목표의 검정으로 판정, M2·M5는 기준 잡음 이하 조건에 적용(고잡음은 공개), M6을 두 역할로 확대, M8 편향 정의 명확화 | 박부건 지시로 검토·반영 |
@@ -271,7 +272,7 @@ docs/PRD.md            이 문서
 
 | 계정 | 시드 | 주요 필드 |
 |---|---|---|
-| `Deal` | `["deal", admin, deal_id: u64 LE]` | `admin`, `deal_id`, `payment_mint`, `payer`, `investor_rep`, `verifiers[3]`, `manufacturer`, `opex_token`, `phi_bps: u16`, `ref_rate_bps: i32`, `comp_min_bps: u16`, `miss_max_bps: u16`, `install_cost`, `caps[2]`, `raised[2]`, `opex_per_period`, `reserve_target`, `n_periods: u16`, `senior_schedule[40]: u64`, `status: u8`(0 Fundraising, 1 Funded, 2 Active, 3 Closed), `vaults_ready`, `w_norm: u128`, `sv_fixed: u128`, `last_lb_bps: Option<i32>`, `entitlement: u64`(E), `paid_cum: u64`, `next_period: u16`, `opex_arrears`, `senior_arrears`, `reserve`, `acc[2]: u128`, `bump` |
+| `Deal` | `["deal", admin, deal_id: u64 LE]` | `admin`, `deal_id`, `payment_mint`, `payer`, `investor_rep`, `verifiers[3]`, `manufacturer`, `opex_token`, `envelope_hash: [u8;32]`, `phi_bps: u16`, `ref_rate_bps: i32`, `comp_min_bps: u16`, `miss_max_bps: u16`, `install_cost`, `caps[2]`, `raised[2]`, `opex_per_period`, `reserve_target`, `n_periods: u16`, `senior_schedule[40]: u64`, `status: u8`(0 Fundraising, 1 Funded, 2 Active, 3 Closed), `vaults_ready`, `w_norm: u128`, `sv_fixed: u128`, `last_lb_bps: Option<i32>`, `entitlement: u64`(E), `paid_cum: u64`, `next_period: u16`, `opex_arrears`, `senior_arrears`, `reserve`, `acc[2]: u128`, `bump` |
 | `Campaign` | `["campaign", deal, 0u8]` | `n_groups`, `groups_per_period`, `reveal_timeout_slots`, `bond_amount`, `slash_per_miss`, `anchors_set: u8`(비트), `last_hash[3]: [u8;32]`, `last_group[3]: i32`(앵커는 −1), `bond_left[3]: u64`, `current_group: u16`, `group_opened_slot: u64`, `pending: u8`(비트), `pending_val[3]: [u8;32]`, `status[512]: u8`, `data_acc[2]: [u8;32]`, `next_data_group[2]: u16`, `period_snap[4][2]: [u8;32]`, `snap_ready[4]: u8`(기간별 비트 0 운항·비트 1 제어기), `bonds_released`, `deal`, `bump` |
 | `PeriodState` | `["period", deal, p: u16 LE]` | `deal`, `period`, `votes[3]: [u8;32]`, `voted: u8`(비트), `payload`(확정 시 저장), `payload_hash`, `finalized`, `outcome: u8`(6.5절 분기: 0 정상, 1 지급자 위반, 2 투자자 대표 상한 초과, 3 범위 밖·검증기관 상한 초과), `due: u64`, `settled`, `distributed`, `dist[5]: u64`(운영비·선순위·준비금 인출·준비금 적립·후순위), `bump` |
 | `Kyc` | `["kyc", deal, investor]` | `deal`, `investor`, `tier: u8`(0 Retail, 1 Pro), `annual_limit: u64`, `used: u64`, `window_start: i64`, `bump` |
@@ -295,6 +296,7 @@ docs/PRD.md            이 문서
 | `lb_bps`, `est_bps`, `ub_bps` | `i32` | 누적 데이터 기준 절감률 하한·점추정·상한 |
 | `compliance_bps` | `u16` | OFF 블록 준수율 |
 | `flags` | `u8` | 비트 0 공변량 불균형(C11), 비트 1 유량계 검사 실패(서명·연료/축동력 균형·BDN 대조, C13), 비트 2 누적 그룹 부족(C12·C15), 비트 3 지급자 데이터 품질 미달(C16). 비트 4~7은 0이어야 함 |
+| `envelope_hash` | `[u8;32]` | 이 판정에 쓴 `envelope.json`의 sha256. `Deal.envelope_hash`와 같아야 함 |
 | `report_hash` | `[u8;32]` | 검증 보고서 JSON 전체의 sha256 |
 
 검증기관 미공개 그룹과 기상 기준을 넘은 안전 예외 그룹의 ON 연료는 `kg_on`에 포함한다(정상 하한으로 정산, 추정에서는 제외).
@@ -303,7 +305,7 @@ docs/PRD.md            이 문서
 
 | # | 명령 | 서명자 | 검사 | 효과 |
 |---|---|---|---|---|
-| 1 | `initialize_deal(params)` | admin | `caps[0] > 0`, `caps[1] > 0`, `install_cost == caps[0] + caps[1]`, `groups_per_period > 0`, `0 < n_groups ≤ 512`, `n_groups % groups_per_period == 0`, 캠페인 기간 수 ≤ 4, `캠페인 기간 수 ≤ senior_schedule 길이 ≤ 40`, `phi_bps ≤ 10000`, `0 ≤ ref_rate_bps < 5000`, `comp_min_bps ≤ 10000`, `miss_max_bps ≤ 10000`, `reveal_timeout_slots > 0`, 검증기관 3곳 서로 다름. 어기면 `InvalidParams` | `Deal`·`Campaign` 생성(금고는 1b), `n_periods = senior_schedule 길이`. 계정 `payment_mint`. 매개변수 `DealParams`: `deal_id, payer, investor_rep, verifiers[3], manufacturer, opex_token, phi_bps, ref_rate_bps, comp_min_bps(기본 9500), miss_max_bps(기본 50), install_cost, caps[2], opex_per_period, reserve_target, senior_schedule(최대 40), n_groups, groups_per_period, reveal_timeout_slots, bond_amount, slash_per_miss` |
+| 1 | `initialize_deal(params)` | admin | `caps[0] > 0`, `caps[1] > 0`, `install_cost == caps[0] + caps[1]`, `groups_per_period > 0`, `0 < n_groups ≤ 512`, `n_groups % groups_per_period == 0`, 캠페인 기간 수 ≤ 4, `캠페인 기간 수 ≤ senior_schedule 길이 ≤ 40`, `phi_bps ≤ 10000`, `0 ≤ ref_rate_bps < 5000`, `comp_min_bps ≤ 10000`, `miss_max_bps ≤ 10000`, `reveal_timeout_slots > 0`, 검증기관 3곳 서로 다름. 어기면 `InvalidParams` | `Deal`·`Campaign` 생성(금고는 1b), `n_periods = senior_schedule 길이`. 계정 `payment_mint`. 매개변수 `DealParams`: `deal_id, payer, investor_rep, verifiers[3], manufacturer, opex_token, envelope_hash, phi_bps, ref_rate_bps, comp_min_bps(기본 9500), miss_max_bps(기본 50), install_cost, caps[2], opex_per_period, reserve_target, senior_schedule(최대 40), n_groups, groups_per_period, reveal_timeout_slots, bond_amount, slash_per_miss` |
 | 1b | `init_vaults()` | admin | 모집 단계, 금고 미생성 | 금고 6개 생성 |
 | 2 | `set_kyc(investor, tier, annual_limit)` | admin | | `Kyc` 생성·갱신 |
 | 3 | `invest(tranche, amount)` | 투자자 | `Fundraising`, 금고 생성 완료, `amount > 0`, `tranche ≤ 1`, `Kyc` 존재, 선순위는 `Retail`/`Pro`, 후순위는 `Pro`만, 한도 창(365일) 안 `used + amount ≤ annual_limit`, 모집 상한 | 모집 금고로 이체, `Position.units += amount` |
@@ -312,7 +314,7 @@ docs/PRD.md            이 문서
 | 6 | `reveal(role, group, value)` | 역할 당사자 | `group == current_group`, 미공개, 역할 0·1은 그 그룹에서 역할 2가 공개한 뒤(`WrongRevealOrder`, C18), `k = group − last_group[role]`, `1 ≤ k ≤ 8`, `H^k(value) == last_hash[role]` | `last_hash/last_group` 갱신. 세 번째 공개면 6.4절로 결정하고 다음 그룹 열기(`pending` 초기화, `group_opened_slot` 갱신) |
 | 7 | `resolve_missing(group)` | 누구나 | `group == current_group`, 결정 전, `현재 슬롯 ≥ group_opened_slot + reveal_timeout_slots` | `off_index = NO_OFF`, 미공개 비트 기록(역할 2가 공개 전이면 역할 2만, 아니면 공개하지 않은 역할 모두), 기록된 역할마다 `min(slash_per_miss, bond_left)`를 준비금 금고로, 다음 그룹 열기(`pending` 초기화) |
 | 8 | `commit_group_data(kind, group, root)` | kind 0 지급자 / 1 제조사 | `group` 결정 완료, `group == next_data_group[kind]` | `data_acc[kind] = H(data_acc ‖ group u32 LE ‖ root)`. 기간 마지막 그룹이면 `period_snap[p][kind]` 저장 |
-| 9 | `approve_attestation(payload)` | `verifiers[i]` | `period == next_period`(직전 기간 배분 완료), `period < 캠페인 기간 수`, 확정 전. 같은 검증기관이 같은 내용을 두 번 내면 거부(다른 내용이면 자기 표 교체) | `votes[i] = sha256(borsh(payload))`. 같은 해시가 2표 모이면 확정: 스냅숏 일치, `lb ≤ est ≤ ub < 5000`, `lb > −10000`, `compliance_bps ≤ 10000`, `flags`의 비트 4~7이 0, `override_groups ≤ 기간 그룹 수 − 기간 미공개 그룹 수`(미공개 그룹은 일정이 없어 안전 예외가 될 수 없음), 지급자 미공개와 안전 예외 그룹이 모두 0이면 `kg_miss_payer == 0`, 투자자 대표 미공개 그룹이 0이면 `kg_miss_inv == 0` → 6.5절로 `due` 계산. 어기면 스냅숏은 `SnapshotMismatch`, 비율은 `InvalidRateBounds`, `compliance_bps`·`flags`·`override_groups`는 `InvalidParams`, 미공개 연료는 `MissingKgInconsistent` |
+| 9 | `approve_attestation(payload)` | `verifiers[i]` | `period == next_period`(직전 기간 배분 완료), `period < 캠페인 기간 수`, 확정 전. 같은 검증기관이 같은 내용을 두 번 내면 거부(다른 내용이면 자기 표 교체) | `votes[i] = sha256(borsh(payload))`. 같은 해시가 2표 모이면 확정: 스냅숏 일치, `envelope_hash` 일치, `lb ≤ est ≤ ub < 5000`, `lb > −10000`, `compliance_bps ≤ 10000`, `flags`의 비트 4~7이 0, `override_groups ≤ 기간 그룹 수 − 기간 미공개 그룹 수`(미공개 그룹은 일정이 없어 안전 예외가 될 수 없음), 지급자 미공개와 안전 예외 그룹이 모두 0이면 `kg_miss_payer == 0`, 투자자 대표 미공개 그룹이 0이면 `kg_miss_inv == 0` → 6.5절로 `due` 계산. 어기면 스냅숏·`envelope_hash`는 `SnapshotMismatch`, 비율은 `InvalidRateBounds`, `compliance_bps`·`flags`·`override_groups`는 `InvalidParams`, 미공개 연료는 `MissingKgInconsistent` |
 | 10 | `settle(period)` | 지급자 | 확정, 미정산 | 지급자 → 수납 금고로 `due` 이체, `paid_cum += due` |
 | 11 | `distribute(period)` | 누구나 | 정산 완료, 미배분 | 6.5절 워터폴, `next_period += 1` |
 | 12 | `claim(tranche)` | 포지션 보유자 | 받을 몫 > 0 | `units × (acc − acc_snapshot) / ACC`만큼 트랜치 금고에서 이체 |
@@ -412,17 +414,17 @@ due = max(0, E − paid_cum)
 
 1. 기준 모델: 속력³·흘수·맞바람 성분·파고로 무세일 연료를 예측하는 회귀. 엔진 출력·회전수는 넣지 않는다. 설치 전 데이터로만 학습한다.
 2. 제외: 미공개 그룹, OFF 블록 위반이 있는 그룹(6시간 중 1시간이라도 켜짐), 선장 안전 예외 그룹, 지급자 위반 기간, 투자자 대표 상한 초과 기간.
-2-1. 안전 예외 판정(C17): 제어기 로그에 선장 수동 접기 기록이 있는 ON 블록이 하나라도 있으면 안전 예외 그룹이다. 그 블록들에서 ① 선박 풍속계의 시간 평균 진풍속 최댓값 ≥ `storm_wind_ms`(데모 17.2 m/s, 보퍼트 8 하한)이고 ② 독립 기상 자료(공개 재분석 자료를 그 시각·AIS 위치에서 읽은 값, 합성 데이터에서는 별도 잡음을 넣은 `weather_ref.csv`)의 최댓값 ≥ `storm_wind_ref_ms`(데모 13.9 m/s, 보퍼트 7 하한)이면 기상 기준 충족, 아니면 미달. 풍속계만 조작해 강풍을 꾸밀 수 없게 한다. OFF 블록에서 세일을 켠 것은 안전 예외가 아니라 OFF 위반이다.
+2-1. 안전 예외 판정(C17): 제어기 로그에 선장 수동 접기 기록이 있는 ON 블록이 하나라도 있으면 안전 예외 그룹이다. 그 블록들에서 ① 선박 풍속계의 시간 평균 진풍속 최댓값 ≥ `storm_wind_ms`(데모 17.2 m/s, 보퍼트 8 하한)이고 ② 독립 기상 자료(검증기관이 지급자를 거치지 않고 직접 받은 제3자 AIS 위치에서, 그 시각의 공개 재분석 자료를 읽은 값, 합성 데이터에서는 별도 잡음을 넣은 `weather_ref.csv`)의 최댓값 ≥ `storm_wind_ref_ms`(데모 13.9 m/s, 보퍼트 7 하한)이면 기상 기준 충족, 아니면 미달. 풍속계만 조작해 강풍을 꾸밀 수 없게 한다. OFF 블록에서 세일을 켠 것은 안전 예외가 아니라 OFF 위반이다.
 3. 추정: `r̂ = 1 − (ΣON실제/ΣON예측) ÷ (ΣOFF실제/ΣOFF예측)`, 그룹 단위 합계로.
 4. 신뢰구간: 그룹 단위 부트스트랩 2,000회(기본). 그룹 합계를 미리 만든 뒤 다항 가중치 행렬 곱으로 계산한다. `lb` = 2.5 백분위, `ub` = 97.5 백분위. 최종 방식은 1.2절 범위 전체에서 M1~M5를 통과하는 방식으로 정한다(R8). 지금의 그룹 부트스트랩은 M5(투자자 몫 ≥ 90%)를 넘지 못한다(E5: 효과 5~8%에서 81.8~84.3%).
 5. 준수율: `compliance_bps = 10000 × 준수 OFF 블록 / 전체 OFF 블록`.
 5-1. 연료 집계: `kg_on` = 그 기간 정상 그룹(검증기관 미공개 그룹, OFF 위반으로 추정에서 뺀 그룹, 기상 기준을 넘은 안전 예외 그룹 포함)의 ON 구간 유량계 합, `kg_miss_payer` = 지급자 미공개 그룹과 기상 기준 미달 안전 예외 그룹의 ON 구간 합, `kg_miss_inv` = 투자자 대표 미공개 그룹의 ON 구간 합. OFF 구간 연료는 어디에도 넣지 않는다. 가격은 계약 지정 지수(데모: 750 USD/t 고정).
 6. 출력: `AttestationPayload`(Borsh) + 보고서 JSON(`report_hash`의 원문). 검증기관 키 3개 중 2개 이상으로 명령 9를 보낸다. 보고서 필수 항목: 형식 버전, 기간, 두 데이터 누적 해시, 기준 모델 계수, 그룹별 ON/OFF 합계, 제외 그룹과 사유, 안전 예외 그룹별 수동 접기 블록·최대 풍속·판정, 신뢰구간 방식·반복 수·난수 시드, `lb/est/ub`, 준수율, 입력별 공변량 균형 `D`·`SE`, 계측기 서명 검증 결과, 연료/축동력 균형 `D`·`SE`, 항차별 유량계 대조 결과, 봉인 점검·검교정 기록, `flags`와 사유. 난수 시드는 `sha256(data_root_ops ‖ period u16 LE)` 앞 8바이트로 정해, 누구나 같은 입력으로 같은 결과를 재현할 수 있게 한다.
-7. **운영 범위:** 1.2절 요구 범위를 `offchain/verifier/envelope.json`에 그대로 고정한다(누적 그룹 ≥ 60, 결측 ≤ 15%, 학습 ≥ 3,600시간, 필수 입력 6종(속력·흘수·바람·파고·축동력·연료, 어느 하나라도 빠진 시간은 결측), 안전 예외 기상 기준 `storm_wind_ms`·`storm_wind_ref_ms`). 학습 3,600시간 미만이면 검증기는 캠페인 시작 전에 거부한다.
+7. **운영 범위:** 1.2절 요구 범위를 `offchain/verifier/envelope.json`에 그대로 고정하고, 그 sha256을 계약 생성 때 `envelope_hash`로 체인에 기록한다. 캠페인 중에는 임계값·기상 기준·계측기 공개 키를 바꿀 수 없다(바꾼 파일로 만든 payload는 확정되지 않음). 담는 값: 계측기·제어기 공개 키, 엔진 시험 곡선의 sha256, 공변량·연료/축동력 균형 임계값, 그리고 (누적 그룹 ≥ 60, 결측 ≤ 15%, 학습 ≥ 3,600시간, 필수 입력 6종(속력·흘수·바람·파고·축동력·연료, 어느 하나라도 빠진 시간은 결측), 안전 예외 기상 기준 `storm_wind_ms`·`storm_wind_ref_ms`). 학습 3,600시간 미만이면 검증기는 캠페인 시작 전에 거부한다.
 
    누적 그룹이 60 미만이면 `flags` 비트 2(C15), 그 기간 결측 > 15%이거나 필수 입력이 빠졌으면 비트 3(C16)을 켜고 보고서에 사유를 적는다. payload는 어느 경우든 정상적으로 만든다. payload를 아예 만들지 않으면 다음 기간으로 넘어갈 수 없으므로 그렇게 하지 않는다.
 8. **공변량 균형 검정(C11):** 기준 모델 입력 x(속력·흘수·맞바람 성분·파고)마다, 그룹별 `d_g = (OFF 구간 평균 x − ON 구간 평균 x) / 척도`(척도는 전체 평균 x, 맞바람 성분은 평균이 0 근처일 수 있으므로 전체 평균 풍속)를 구하고, 평균 `D`와 그룹 부트스트랩 표준오차 `SE`로 `|D| ≥ 0.5%`이고 `|D|/SE ≥ 3`이면 `flags` 비트 0(잠정값, 입력마다 R9에서 M8을 만족하도록 정함). 네 검정 중 하나라도 걸리면 켠다.
-9. **유량계 검사(C13):** ① 그룹마다 계측기 서명을 등록된 계측기 공개 키로 검증, 실패하면 그 기간 비트 1 ② 시간마다 `q_h = fuel_kg ÷ (shaft_kw × 엔진 시험 곡선의 연료 소비율(부하))`를 구해 8항과 같은 방식(척도는 전체 평균 q)으로 ON·OFF 균형을 검정, 걸리면 비트 1 ③ 항차마다 `|Σ유량계 − (BDN − ΔROB)| / Σ유량계 > 0.5%`이면 비트 1.
+9. **유량계 검사(C13):** ① 그룹마다 계측기 서명을 `envelope.json`의 계측기 공개 키로 검증, 실패하면 그 기간 비트 1 ② 시간마다 `q_h = fuel_kg ÷ (shaft_kw × 엔진 시험 곡선의 연료 소비율(부하))`를 구해 8항과 같은 방식(척도는 전체 평균 q)으로 ON·OFF 균형을 검정, 걸리면 비트 1 ③ 항차마다 `|Σ유량계 − (BDN − ΔROB)| / Σ유량계 > 0.5%`이면 비트 1.
 10. **인수 기준:** ① 같은 입력이면 `research/measure.py`의 추정치·신뢰구간과 1e-12 이내로 같음 ② 같은 입력·시드면 payload 바이트와 `report_hash`가 같음 ③ 데이터 누적 해시가 체인 스냅숏과 다르면 payload를 만들지 않음 ④ 그룹 부족 → 비트 2, 결측 과다·필수 입력 누락 → 비트 3, 학습 부족 → 시작 거부 ⑤ 속력·보고 입력값 조작과 유량계 조작(덜 읽기, 합계 보존 옮기기) 입력에서 각 비트가 켜짐 ⑤-1 계측기 서명이 없거나 틀리면 비트 1 ⑥ 기상 기준 충족 안전 예외는 `kg_on`, 미달 예외는 `override_groups`·`kg_miss_payer`로 들어감 ⑦ OFF 블록에서 켠 것은 안전 예외가 아니라 준수율에 반영됨 ⑧ 같은 입력이면 보고서의 난수 시드와 결과가 같음 (테스트 14건).
 
 ### 7.3 데이터 커밋 형식
@@ -509,6 +511,7 @@ due = max(0, E − paid_cum)
 | 데이터 부족 기간으로 정산 | 범위 밖 비트 2 → 하한 미사용 | 검증기, 6.5절 | P0 |
 | 지급자의 데이터 품질 고의 저하 | 결측 > 15%·필수 입력 누락은 비트 3 → 지급자 위반 정산(C16) | 검증기, 6.5절 | P0 |
 | 제조사·지급자 담합(제어기 로그 위조) | 막지 못함(신뢰 가정). 제어기 로그의 세일 상태와 운항 데이터의 세일 구동 전력을 교차 대조해 불일치를 보고서에 기록 | 7.2절 | 공시 |
+| 판정 임계값·계측기 키 사후 변경 | `envelope.json` sha256을 계약 생성 때 체인에 고정, payload의 `envelope_hash`가 다르면 확정 거부 | 명령 1·9, 7.2절 | P0 |
 | 연료 가격 입력 조작 | 검증기관 2-of-3이 공개 지수 값을 입력(신뢰 가정), 보고서에 지수 출처·날짜 기록 | 7.2절 | 공시 |
 | 검증기관 2곳 담합 | 막지 못함(2-of-3 신뢰 가정). 보고서 해시·원본 Merkle 증명으로 사후 적발, 신뢰 가정으로 공시 | 7.2·7.3절 | 공시 |
 | 지급자의 데이터 미제출·미납 | 기간이 확정되지 않고 멈춤. 계약상 불이행으로 처리 | 계약 | P2 |
