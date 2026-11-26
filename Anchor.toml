@@ -1,0 +1,19 @@
+[toolchain]
+package_manager = "npm"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+savesail = "9yjBhvjDC31vYuhc84ajpB9aMtfoYHvoU8GtAoicQaV5"
+
+[programs.devnet]
+savesail = "9yjBhvjDC31vYuhc84ajpB9aMtfoYHvoU8GtAoicQaV5"
+
+[provider]
+cluster = "devnet"
+wallet = "keys/admin.json"
+
+[scripts]
+test = "cargo test"

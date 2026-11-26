@@ -2,7 +2,7 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | 0.6.1 (2026-11-27) |
+| 문서 버전 | 0.6.2 (2026-11-27) |
 | 대상 | 부산 블록체인 해커톤 2026 온라인 예선 제출물 (마감 12/9) |
 | 개발 책임 | 박부건 (CTO) |
 | 상태 | 온체인 명령 15/15 구현·SBF 빌드 완료(`feat/p0-program`), 규칙 모듈 테스트 10/10 통과(v0.4 규칙 기준). C8·C10~C18은 코드에 아직 적용 전이며, 참조 구현과 부록 A는 v0.6 규칙으로 갱신됨. 측정 실험 E1~E5 완료 |
@@ -121,13 +121,14 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 | K2 | 6.7절 오류 코드 전부가 테스트에서 1번 이상 실제로 발생 |
 | K3 | 명령마다 연산량 ≤ 100,000 CU |
 | K4 | 불변식: 규칙 모듈 무작위 100,000회 + 온체인 무작위 전체 흐름 300회(투자 금액·공개 거부 패턴·하한 경로·위반·범위 밖 기간을 무작위로)에서 위반 0 |
-| K5 | 빌드 경고 0, `cargo clippy -- -D warnings` 통과, `cargo fmt --check` 차이 0. lint 허용(`allow`)은 Anchor 매크로가 만드는 코드에만 쓰고 줄마다 사유 주석 |
-| K6 | 명령마다 권한 없는 서명자 시도가 거부되는 테스트 1건 이상(15건) |
+| K5 | rustc 빌드 경고 0, `cargo clippy --all-targets -- -D warnings` 통과, `cargo fmt --check` 차이 0. `cargo-build-sbf`가 내는 crate-type 안내(cdylib·rlib 동시 지정 시 LTO 미적용 안내)는 Anchor 프로그램을 테스트에서 라이브러리로 쓰는 구조상 생기며 코드 경고가 아니므로 제외하고, 그 사실을 공시한다. lint 허용(`allow`)은 Anchor 매크로가 만드는 코드에만 쓰고 줄마다 사유 주석 |
+| K6 | 명령마다 권한 없는 서명자 시도가 거부되는 테스트 1건 이상(15건). 누구나 부를 수 있는 명령(`resolve_missing`·`distribute`·`release_bonds`)은 임의 서명자가 돈의 목적지를 바꾸려는 시도가 거부되는지로 본다 |
 
 ### 1.6 기준 변경 기록
 
 | 날짜 | 변경 | 결정 |
 |---|---|---|
+| 2026-11-27 | v0.6.2(구현 반영): 검증기관 선공개 때문에 다른 두 역할이 건너뛰기 한도에 걸려 영영 공개하지 못하는 구멍 수정(차단 그룹은 한도에서 제외), 연속 거부 문구의 한 그룹 차이 정정(8그룹), 명령 9 검사를 투표 때·확정 때로 나눔, K5·K6 판정 대상 명확화 | 구현 중 발견 |
 | 2026-11-27 | v0.6.1: 판정 설정(`envelope.json`)을 `envelope_hash`로 체인에 고정해 캠페인 중 임계값·계측기 키 변경을 막음, 독립 기상 자료는 검증기관이 직접 받도록 명시 | 박부건 지시로 검토·반영 |
 | 2026-11-27 | v0.6 검토 3차: 격자 A에 효과 12% 추가(범위 상단을 정밀 판정에 포함), M6을 검증기관 거부와 안전 예외까지 확대, M8을 속력에서 입력 4종 조작으로, M9를 블록 종류별 유량계 조작 전반(합계 보존 옮기기 포함)으로 확대(기준 강화), C11을 공변량 균형 검정으로, C13을 서명 계측기·연료/축동력 균형 검정까지 확대, C17을 기상 기준으로 나누고 C18(공개 순서) 추가, 부록 A.5 6건으로 확대 | 박부건 지시로 검토·반영 |
 | 2026-11-27 | v0.6 검토 2차: F3을 지급자 위반이 없는 시나리오로 한정(위반 정산은 C14로 일부러 지급자에게 불리하게 만든 규칙이라, 원래 문구로는 설계상 통과할 수 없음. 결과를 보고 낮춘 것이 아님), 프로그램 품질 기준 번호를 Q→K로 바꿔 12장 열린 질문 번호와 겹치지 않게 함(내용 변경 없음), 1.3절 용어 정의 추가 | 박부건 지시로 검토·반영 |
@@ -311,10 +312,10 @@ docs/PRD.md            이 문서
 | 3 | `invest(tranche, amount)` | 투자자 | `Fundraising`, 금고 생성 완료, `amount > 0`, `tranche ≤ 1`, `Kyc` 존재, 선순위는 `Retail`/`Pro`, 후순위는 `Pro`만, 한도 창(365일) 안 `used + amount ≤ annual_limit`, 모집 상한 | 모집 금고로 이체, `Position.units += amount` |
 | 4 | `close_fundraising()` | admin | 양 트랜치 완판 | 설치비를 제조사에 이체, `Funded` |
 | 5 | `register_anchor(role, anchor)` | 역할 당사자 | 서명자 = 그 역할의 키, `Funded`, 미등록 | 보증금 이체, `last_hash[role]=anchor`. 3개 모두 등록되면 `Active`, 0번 그룹 열림 |
-| 6 | `reveal(role, group, value)` | 역할 당사자 | `group == current_group`, 미공개, 역할 0·1은 그 그룹에서 역할 2가 공개한 뒤(`WrongRevealOrder`, C18), `k = group − last_group[role]`, `1 ≤ k ≤ 8`, `H^k(value) == last_hash[role]` | `last_hash/last_group` 갱신. 세 번째 공개면 6.4절로 결정하고 다음 그룹 열기(`pending` 초기화, `group_opened_slot` 갱신) |
+| 6 | `reveal(role, group, value)` | 역할 당사자 | `group == current_group`, 미공개, 역할 0·1은 그 그룹에서 역할 2가 공개한 뒤(`WrongRevealOrder`, C18), `k = group − last_group[role]`, `1 ≤ k − (검증기관만 미공개인 그룹 수, 역할 0·1만) ≤ 8`, `H^k(value) == last_hash[role]` | `last_hash/last_group` 갱신. 세 번째 공개면 6.4절로 결정하고 다음 그룹 열기(`pending` 초기화, `group_opened_slot` 갱신) |
 | 7 | `resolve_missing(group)` | 누구나 | `group == current_group`, 결정 전, `현재 슬롯 ≥ group_opened_slot + reveal_timeout_slots` | `off_index = NO_OFF`, 미공개 비트 기록(역할 2가 공개 전이면 역할 2만, 아니면 공개하지 않은 역할 모두), 기록된 역할마다 `min(slash_per_miss, bond_left)`를 준비금 금고로, 다음 그룹 열기(`pending` 초기화) |
 | 8 | `commit_group_data(kind, group, root)` | kind 0 지급자 / 1 제조사 | `group` 결정 완료, `group == next_data_group[kind]` | `data_acc[kind] = H(data_acc ‖ group u32 LE ‖ root)`. 기간 마지막 그룹이면 `period_snap[p][kind]` 저장 |
-| 9 | `approve_attestation(payload)` | `verifiers[i]` | `period == next_period`(직전 기간 배분 완료), `period < 캠페인 기간 수`, 확정 전. 같은 검증기관이 같은 내용을 두 번 내면 거부(다른 내용이면 자기 표 교체) | `votes[i] = sha256(borsh(payload))`. 같은 해시가 2표 모이면 확정: 스냅숏 일치, `envelope_hash` 일치, `lb ≤ est ≤ ub < 5000`, `lb > −10000`, `compliance_bps ≤ 10000`, `flags`의 비트 4~7이 0, `override_groups ≤ 기간 그룹 수 − 기간 미공개 그룹 수`(미공개 그룹은 일정이 없어 안전 예외가 될 수 없음), 지급자 미공개와 안전 예외 그룹이 모두 0이면 `kg_miss_payer == 0`, 투자자 대표 미공개 그룹이 0이면 `kg_miss_inv == 0` → 6.5절로 `due` 계산. 어기면 스냅숏·`envelope_hash`는 `SnapshotMismatch`, 비율은 `InvalidRateBounds`, `compliance_bps`·`flags`·`override_groups`는 `InvalidParams`, 미공개 연료는 `MissingKgInconsistent` |
+| 9 | `approve_attestation(payload)` | `verifiers[i]` | `period == next_period`(직전 기간 배분 완료), `period < 캠페인 기간 수`, 확정 전. 같은 검증기관이 같은 내용을 두 번 내면 거부(다른 내용이면 자기 표 교체) | 투표마다 payload 자체를 검사한다: `envelope_hash` 일치, `lb ≤ est ≤ ub < 5000`, `lb > −10000`, `compliance_bps ≤ 10000`, `flags`의 비트 4~7이 0. 통과하면 `votes[i] = sha256(borsh(payload))`. 같은 해시가 2표 모이면 체인 상태를 검사하고 확정: 스냅숏 일치, `override_groups ≤ 기간 그룹 수 − 기간 미공개 그룹 수`(미공개 그룹은 일정이 없어 안전 예외가 될 수 없음), 지급자 미공개와 안전 예외 그룹이 모두 0이면 `kg_miss_payer == 0`, 투자자 대표 미공개 그룹이 0이면 `kg_miss_inv == 0` → 6.5절로 `due` 계산. 어기면 스냅숏·`envelope_hash`는 `SnapshotMismatch`, 비율은 `InvalidRateBounds`, `compliance_bps`·`flags`·`override_groups`는 `InvalidParams`, 미공개 연료는 `MissingKgInconsistent` |
 | 10 | `settle(period)` | 지급자 | 확정, 미정산 | 지급자 → 수납 금고로 `due` 이체, `paid_cum += due` |
 | 11 | `distribute(period)` | 누구나 | 정산 완료, 미배분 | 6.5절 워터폴, `next_period += 1` |
 | 12 | `claim(tranche)` | 포지션 보유자 | 받을 몫 > 0 | `units × (acc − acc_snapshot) / ACC`만큼 트랜치 금고에서 이체 |
@@ -344,7 +345,8 @@ off_index = u64_le(digest[0..8]) mod 5
 
 - 공개 순서: 검증기관이 먼저, 그다음 지급자·투자자 대표는 순서 없음(C18). 그래서 결과를 보고 거부를 고를 수 있는 것은 지급자·투자자 대표 중 마지막 공개자뿐이다.
 - 남은 위험: 마지막 공개자는 공개 거부를 **선택적으로** 써서 남은 표본을 골라낼 수 있다. 상한은 M6(편향 ≤ 0.10%p)을 지키도록 정하고, 보증금 차감액은 거부로 얻는 이득보다 커야 한다(R4).
-- 연속 거부: 한 역할이 9그룹 이상 연속으로 공개하지 않으면 건너뛰기 한도(8)를 넘어 그 캠페인에서 다시 공개할 수 없다. 이후 그 역할의 모든 그룹은 미공개로 처리되고, 보증금이 0이 되면 더 차감하지 않는다. 결과적으로 지급자는 매 기간 위반 정산(`max(상한, 기준 절감률)` 고정, 미공개 연료는 상한), 투자자 대표는 상한 초과로 매 기간 정상 연료 0 정산, 검증기관은 매 기간 상한 초과로 하한이 갱신되지 않는다(C18). 지급자·투자자 대표는 거부한 쪽이 계속 불리하고, 검증기관이 멈추면 지급이 다음 유효 하한까지 미뤄진다. 역할 키 교체는 P2.
+- 건너뛰기 한도는 자기가 공개하지 않은 그룹만 센다. 검증기관 미공개 때문에 지급자·투자자 대표가 공개할 수 없었던 그룹은 한도에 넣지 않는다(C18). 그렇지 않으면 검증기관이 8그룹만 연속으로 거부해도 다른 두 역할이 영영 공개할 수 없게 된다.
+- 연속 거부: 한 역할이 8그룹 이상 연속으로 공개하지 않으면 다음 공개의 k가 9가 되어 건너뛰기 한도(8)를 넘고, 그 캠페인에서 다시 공개할 수 없다. 이후 그 역할의 모든 그룹은 미공개로 처리되고, 보증금이 0이 되면 더 차감하지 않는다. 결과적으로 지급자는 매 기간 위반 정산(`max(상한, 기준 절감률)` 고정, 미공개 연료는 상한), 투자자 대표는 상한 초과로 매 기간 정상 연료 0 정산, 검증기관은 매 기간 상한 초과로 하한이 갱신되지 않는다(C18). 지급자·투자자 대표는 거부한 쪽이 계속 불리하고, 검증기관이 멈추면 지급이 다음 유효 하한까지 미뤄진다. 역할 키 교체는 P2.
 
 ### 6.5 정산·워터폴 산식
 
