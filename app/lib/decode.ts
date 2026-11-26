@@ -48,3 +48,10 @@ export function decodeCampaignStatus(b: Uint8Array, n: number) {
 export function decodeTokenAmount(b: Uint8Array) {
   return new DataView(b.buffer, b.byteOffset + 64, 8).getBigUint64(0, true);
 }
+
+// Position: deal 32, owner 32, tranche u8, units u64, acc_snapshot u128, claimed u64.
+export function decodePosition(b: Uint8Array) {
+  const r = new R(b);
+  r.skip(64); const tranche = r.u8(); const units = r.u64(); r.u128(); const claimed = r.u64();
+  return { tranche, units, claimed };
+}

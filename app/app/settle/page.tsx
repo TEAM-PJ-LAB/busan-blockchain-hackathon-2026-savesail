@@ -40,10 +40,13 @@ export default function Settle() {
       <div className="legend" aria-hidden="true">{PARTS.map((x, k) => <span key={x} style={{ ["--c" as string]: COLORS[k] }}>{x}</span>)}</div>
       <h2>청구</h2>
       <div className="scroll"><table>
-        <thead><tr><th>투자자</th><th>트랜치</th><th>거래</th></tr></thead>
-        <tbody>{[["개인 A", "선순위", "claim_investorA_0"], ["개인 B", "선순위", "claim_investorB_0"], ["용선주 C", "선순위", "claim_investorC_0"], ["용선주 C", "후순위", "claim_investorC_1"]].map(([w, t, s]) => (
-          <tr key={s}><td>{w}</td><td>{t}</td><td><TxLink run={run} sig={findTx(run, s)?.sig} /></td></tr>))}</tbody>
+        <thead><tr><th>투자자</th><th>트랜치</th><th className="n">보유 단위(dUSD)</th><th className="n">청구액(dUSD)</th><th>거래</th></tr></thead>
+        <tbody>{(run.positions ?? []).map((p) => (
+          <tr key={p.address}><td>{({ investorA: "개인 A", investorB: "개인 B", investorC: "용선주 C" } as Record<string, string>)[p.investor]}</td>
+            <td>{p.tranche ? "후순위" : "선순위"}</td><td className="n">{usd(p.units, 2)}</td><td className="n">{usd(p.claimed, 2)}</td>
+            <td><TxLink run={run} sig={findTx(run, `claim_${p.investor}_${p.tranche}`)?.sig} /></td></tr>))}</tbody>
       </table></div>
+      <p className="muted">청구액이 0인 행은 아직 받을 배분이 없어 청구 거래를 보내지 않았다(1년차에는 후순위 몫이 준비금 적립 뒤에 남지 않음).</p>
       <p className="muted">금고 잔액: 선순위 {usd(run.balances.senior_vault, 2)} · 후순위 {usd(run.balances.junior_vault, 2)} · 준비금 {usd(run.balances.reserve_vault, 2)} dUSD (청구 끝수 포함)</p>
     </>
   );

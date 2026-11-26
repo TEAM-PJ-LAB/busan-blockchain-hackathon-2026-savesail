@@ -1,18 +1,19 @@
 // PRD 7.5 acceptance 1: every number the pages show is compared with the chain accounts it came from.
-import { decodeCampaignStatus, decodeDeal, decodePeriod, decodeTokenAmount } from "./decode";
+import { decodeCampaignStatus, decodeDeal, decodePeriod, decodePosition, decodeTokenAmount } from "./decode";
 import type { Run } from "./run";
 
 /** The part of run.json the comparison needs (keeps the transaction list out of the client bundle). */
-export type ChainView = Pick<Run, "cluster" | "accounts" | "deal" | "schedule" | "periods" | "balances" | "token_accounts">;
+export type ChainView = Pick<Run, "cluster" | "accounts" | "deal" | "schedule" | "periods" | "balances" | "token_accounts" | "positions">;
 export const chainView = (r: Run): ChainView => ({ cluster: r.cluster, accounts: r.accounts, deal: r.deal, schedule: r.schedule,
-  periods: r.periods, balances: r.balances, token_accounts: r.token_accounts });
+  periods: r.periods, balances: r.balances, token_accounts: r.token_accounts, positions: r.positions });
 
 export type Fetch = (addresses: string[]) => Promise<(Uint8Array | null)[]>;
 export type Result = { total: number; bad: string[] };
 
 export async function compareChain(run: ChainView, fetch: Fetch): Promise<Result> {
   const tokens = Object.entries(run.token_accounts ?? {});
-  const addrs = [run.accounts.deal, run.accounts.campaign, ...run.accounts.periods, ...tokens.map(([, a]) => a)];
+  const pos = run.positions ?? [];
+  const addrs = [run.accounts.deal, run.accounts.campaign, ...run.accounts.periods, ...tokens.map(([, a]) => a), ...pos.map((p) => p.address)];
   const raw = await fetch(addrs);
   const want: Record<string, string> = {};
   const got: Record<string, string> = {};
@@ -66,6 +67,15 @@ export async function compareChain(run: ChainView, fetch: Fetch): Promise<Result
     const b = raw[base + i];
     if (!b) { want[`token.${name}`] = "account"; return; }
     put(`token.${name}`, run.balances[name], decodeTokenAmount(b));
+  });
+  const pbase = base + tokens.length;
+  pos.forEach((p, i) => {
+    const b = raw[pbase + i];
+    const k = `pos.${p.investor}.${p.tranche}`;
+    if (!b) { want[k] = "account"; return; }
+    const q = decodePosition(b);
+    put(`${k}.units`, p.units, q.units);
+    put(`${k}.claimed`, p.claimed, q.claimed);
   });
   const keys = Object.keys(want);
   return { total: keys.length, bad: keys.filter((k) => want[k] !== got[k]) };

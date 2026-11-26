@@ -19,6 +19,7 @@ export type Run = {
     senior_per_period: string; n_groups: number; groups_per_period: number; bond_amount: string; slash_per_miss: string; retail_limit: string };
   balances: Record<string, string>;
   token_accounts: Record<string, string>;
+  positions: { investor: string; tranche: number; address: string; units: string; claimed: string }[];
   scenario: { withhold: Record<string, number>; off_violations: number[]; groups_per_period: number };
 };
 

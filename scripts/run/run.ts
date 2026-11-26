@@ -338,6 +338,12 @@ async function main() {
     ["collection_vault", vault(1)], ["bond_vault", vault(5)], ["raise_vault", vault(0)],
     ...(["investorA", "investorB", "investorC", "payer", "opex", "manufacturer"] as Role[]).map((r): [string, PublicKey] => [r, ata(pk(r))])];
   record.token_accounts = Object.fromEntries(tokenAccounts.map(([k, a]) => [k, a.toBase58()]));
+  // positions: units bought and amount claimed so far (PRD 7.5 settle screen, per-investor claims)
+  record.positions = [];
+  for (const [r, t] of [["investorA", 0], ["investorB", 0], ["investorC", 0], ["investorC", 1]] as [Role, number][]) {
+    const ps = await decode("Position", posPda(t, pk(r)));
+    if (ps) record.positions.push({ investor: r, tranche: t, address: posPda(t, pk(r)).toBase58(), units: ps.units.toString(), claimed: ps.claimed.toString() });
+  }
   record.balances = Object.fromEntries(await Promise.all(tokenAccounts.map(async ([k, a]) => [k, await tokenBal(a)])));
   cam = await decode("Campaign", campaign);
   record.schedule = Array.from(cam.status.slice(0, nGroups) as number[]).map((s) => ({ off: s & 7, missing: (s >> 3) & 7 }));

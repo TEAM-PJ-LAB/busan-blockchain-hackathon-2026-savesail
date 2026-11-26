@@ -1,7 +1,7 @@
 {
  "cluster": "local",
  "program": "9yjBhvjDC31vYuhc84ajpB9aMtfoYHvoU8GtAoicQaV5",
- "started": "2026-11-26T21:54:25.679Z",
+ "started": "2026-11-26T22:16:49.584Z",
  "steps": [
   {
    "step": "invest_A_junior",
@@ -154,7 +154,7 @@
    "excluded": 61
   }
  ],
- "finished": "2026-11-26T21:54:36.517Z",
+ "finished": "2026-11-26T22:17:00.103Z",
  "scenario": {
   "withhold": {
    "197": 1
@@ -250,6 +250,36 @@
   "opex": "AHjAVDcHv9Nyw8GkGabZfnb3VMn9euHFHZC9CqEquzbJ",
   "manufacturer": "ANTg6TM2uuWVvNPPFZrbwkgHS4tB5hXiWCpL5iK52AX"
  },
+ "positions": [
+  {
+   "investor": "investorA",
+   "tranche": 0,
+   "address": "3n4uFBBiccRG7UQmUozf4ikqhHD7g1iPxQ9JE7xZ44A2",
+   "units": "69930000000",
+   "claimed": "7955670874"
+  },
+  {
+   "investor": "investorB",
+   "tranche": 0,
+   "address": "H2s9CMH4ifJXWkgA5JY8yryA69UT7ryDR11wj4m4Mhdd",
+   "units": "69930000000",
+   "claimed": "7955670874"
+  },
+  {
+   "investor": "investorC",
+   "tranche": 0,
+   "address": "5UpqYjyWpkmU5zeUkBTM93uUMHcWZrRmRpP4btbrtvqD",
+   "units": "646372000000",
+   "claimed": "73535290927"
+  },
+  {
+   "investor": "investorC",
+   "tranche": 1,
+   "address": "ARhRrP1XCqV2e27TTYLhqQ2LcvpbTR6t8yxBogEdVriC",
+   "units": "3213768000000",
+   "claimed": "0"
+  }
+ ],
  "balances": {
   "senior_vault": "3",
   "junior_vault": "0",
