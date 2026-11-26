@@ -1,0 +1,48 @@
+name: ci
+on:
+  push:
+    branches-ignore: [research-results]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  program:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@1.97.0
+        with:
+          components: clippy, rustfmt
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin
+            ~/.cargo/registry
+            ~/.cache/solana
+            target
+          key: ${{ runner.os }}-sbf-4.6.0-${{ hashFiles('Cargo.lock') }}
+      - name: Install cargo-build-sbf 4.6.0
+        run: command -v cargo-build-sbf || cargo install cargo-build-sbf --version 4.6.0 --locked
+      - name: fmt
+        run: cargo fmt --check
+      - name: SBF build
+        run: cargo build-sbf
+      - name: clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: rule module tests (T2 host, T3)
+        run: cargo test --lib
+      - name: program tests (T1, T2 on-chain, T3 on-chain, T4, T6)
+        run: rm -f target/tmp/k2_hits.txt && cargo test --test program
+      - name: K2/K3/K6 check
+        run: python3 scripts/check_k2.py
+  reference:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 -I offchain/reference/savesail_ref.py
+  secrets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 -I scripts/check_secrets.py

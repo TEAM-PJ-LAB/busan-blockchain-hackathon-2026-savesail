@@ -1,0 +1,8 @@
+target/
+node_modules/
+keys/
+*.keypair.json
+.anchor/
+__pycache__/
+.DS_Store
+research/results/raw/

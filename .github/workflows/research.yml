@@ -1,0 +1,68 @@
+name: research
+on:
+  workflow_dispatch:
+    inputs:
+      grids:
+        description: grids to run (space separated)
+        default: "A B C D R8"
+      shards:
+        description: parallel jobs
+        default: "20"
+permissions:
+  contents: write
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      shards: ${{ steps.m.outputs.shards }}
+    steps:
+      - id: m
+        run: python3 -c "import json;print('shards='+json.dumps(list(range(int('${{ inputs.shards }}')))))" >> "$GITHUB_OUTPUT"
+  run:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: pip install numpy==2.5.3 scipy==1.18.1
+      - name: run grids
+        working-directory: research
+        run: |
+          nproc
+          for g in ${{ inputs.grids }}; do python3 run_grid.py "$g" ${{ matrix.shard }} ${{ inputs.shards }} | tail -1; done
+      - uses: actions/upload-artifact@v5
+        with:
+          name: raw-${{ matrix.shard }}
+          path: research/results/raw/
+  collect:
+    needs: run
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: pip install numpy==2.5.3 scipy==1.18.1
+      - uses: actions/download-artifact@v6
+        with:
+          path: research/results/raw
+          pattern: raw-*
+          merge-multiple: true
+      - name: judge
+        working-directory: research
+        run: python3 judge.py || true
+      - name: commit results
+        run: |
+          git config user.name "Bugeon Park"
+          git config user.email "bugeon.pk@gmail.com"
+          git checkout -B research-results
+          git add -f research/results/raw research/results/judgement.json research/results/judgement.md
+          git commit -m "research results: ${{ inputs.grids }} (run ${{ github.run_id }})"
+          git push -f origin research-results
