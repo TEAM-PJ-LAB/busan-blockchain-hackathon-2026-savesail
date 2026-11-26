@@ -2,9 +2,10 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | 0.1 (2026-11-27) |
+| 문서 버전 | 0.2 (2026-11-27) |
 | 대상 | 부산 블록체인 해커톤 2026 온라인 예선 제출물 (마감 12/9) |
 | 개발 책임 | 박부건 (CTO) |
+| 상태 | 온체인 명령 15/15 구현·SBF 빌드 완료(`feat/p0-program`), 규칙 모듈 테스트 10/10 통과. 명령 실행 테스트·오프체인·웹·배포 진행 전 |
 | 근거 문서 | [README.md](../README.md) — 사업 구조·검증 원리·실험 결과 |
 | 참조 구현 | [offchain/reference/savesail_ref.py](../offchain/reference/savesail_ref.py) — 이 문서 6장 규칙의 기준 답. 프로그램 출력은 이 파일과 비트 단위로 같아야 한다 |
 
@@ -21,6 +22,10 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 | C3 | 세일 제어기 기록 서명(주체 미정) | 제어기 로그는 **제조사 키**로 운항 데이터와 따로 커밋 | 가장 위험한 조작(OFF 블록에 세일 켜기)의 증거를 조작 당사자인 지급자 장비에만 맡기지 않는다 |
 | C4 | 10년 φ=0.75 | φ는 R1 재계산 후 확정. **데모 가정 φ=0.90** | 하한 정산을 반영하면 같은 수익에 φ≈0.75/0.83≈0.90이 필요하다는 역산 결과 |
 | C5 | 프로그램 4종 | 예선은 **Anchor 프로그램 1개**(`savesail`)에 모듈로 나눈다 | 프로그램 간 호출(CPI)과 배포 4회를 없애 13일 안에 끝낸다. 모듈 경계는 유지해 이후 분리할 수 있다 |
+| C6 | (구현 중 추가) 계약 생성 1회에 금고 6개까지 생성 | 금고 생성을 `init_vaults`로 분리 → **명령 15개** | 초기화 트랜잭션이 솔라나 크기 한도(1,232바이트)와 스택 한도에 닿는다 |
+| C7 | (구현 중 추가) 첫 제출 내용에 나머지 검증기관이 동의 | 검증기관마다 내용 해시에 **투표**, 같은 해시 2표면 확정 | 한 곳이 틀린 내용을 먼저 올리면 나머지 둘이 확정할 수 없는 교착을 없앤다 |
+| C8 | (구현 중 추가) 한 번 낸 표는 고정 | 확정 전에는 검증기관이 **자기 표를 다시 낼 수 있다**. 같은 내용을 두 번 내는 것만 거부 | 두 곳이 서로 다르게 잘못 투표하면 그 기간을 영영 확정할 수 없는 교착을 없앤다 |
+| C9 | (실험 중 추가) 그룹 부트스트랩 신뢰구간 | **위약 보정 구간** 후보 추가: 설치 전 데이터에 같은 무작위 일정을 가상으로 적용해 반사실 추정 오차 분포를 잰다. 8장 R8을 통과하면 채택, 그 전까지 기본값은 그룹 부트스트랩 | 세일 효과가 바람에 따라 변하면 부트스트랩이 효과 변동까지 오차로 세어 지나치게 보수적이다(5% 효과에서 하한 아래 비율 99.95%, 지급 비율 81.8%). 위약 보정은 예비 실험에서 하한 아래 비율 98.3%, 지급 비율 89.4% |
 
 ---
 
@@ -31,8 +36,9 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 | G1 | devnet에서 전체 흐름 동작 | 새로 배포한 상태에서 실행기 1개가 투자 → 일정 고정 → 120그룹 공개 → 데이터 커밋 → 4개 기간 검증·정산·배분 → 청구까지 **실패 0회로 2회 연속** 완주 |
 | G2 | 지갑 없는 데모 | 데모 모드 첫 화면 로드 5초 이내, 전 흐름을 **3분 이내**로 보여 줌 |
 | G3 | 규칙 일치 | 부록 A의 테스트 벡터를 Rust 프로그램이 **100%** 재현 |
-| G4 | 검증 통계 | 10장 T4 기준 통과 (편향 ≤0.2%p, 효과 0일 때 오지급률 2.5%±0.7%p, 2,000회 반복) |
+| G4 | 검증 통계 | 10장 T5 기준 통과 (편향 ≤0.2%p, 효과 0일 때 오지급률 2.5%±0.7%p, 2,000회 반복) |
 | G5 | 발표 수치 | R1 재계산 결과로 README 1장·3.4절·5.2절 수치 갱신 |
+| G6 | 발표·제출물 | 13장 제출물 7종 완성 |
 
 ---
 
@@ -40,10 +46,11 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 
 | 우선순위 | 포함 | 비고 |
 |---|---|---|
-| **P0 (제출 필수)** | 6장 명령 14개, 오프체인 4종(합성 데이터·검증기·실행기·웹), 데모 모드, 테스트 | 지분은 토큰 대신 포지션 계정(Position PDA)으로 기록. 검증·정산은 캠페인 기간(최대 4)만 다룬다. 데모 설정은 `n_periods=40`(선순위 일정 길이)이지만 1~4분기만 진행하고, `close_deal`은 `n_periods`를 캠페인 기간 수와 같게 둔 테스트 설정으로 검증한다 |
+| **P0 (제출 필수)** | 6장 명령 15개, 오프체인 4종(합성 데이터·검증기·실행기·웹), 데모 모드, 테스트 | 지분은 토큰 대신 포지션 계정(Position PDA)으로 기록. 검증·정산은 캠페인 기간(최대 4)만 다룬다. 데모 설정은 `n_periods=40`(선순위 일정 길이)이지만 1~4분기만 진행하고, `close_deal`은 `n_periods`를 캠페인 기간 수와 같게 둔 테스트 설정으로 검증한다 |
+| **P0 (발표·제출물)** | 13장 제출물 7종 | 녹음·리허설은 박부건·정우진 |
 | **P1 (12/7 하루, 안 되면 제외)** | ① 선·후순위를 Token-2022 토큰으로 발행하고 Token ACL로 보유 자격 통제 ② 이전 시 배분 정산을 Transfer Hook에서 처리 ③ Ed25519 서명 검증으로 검증 승인 대리 제출 | Token ACL은 devnet·mainnet 모두 배포됨(부록 B) |
 | **P2 (발표 자료로만)** | Transfer Hook 연간 한도 통제, Squads 다중서명·타임락, ORAO VRF 추가 입력, 다중 캠페인(2년차 이후 3개월 캠페인), 지급자 부도 처리, 권한형 원장 | 구조만 설명 |
-| 제외 | 실자금, 실제 KYC, 메인넷 배포, 원본 운항 데이터 | 원본 데이터는 라이선스 문제로 저장소에 넣지 않는다 |
+| 제외 | 실자금, 실제 KYC, 메인넷 배포, 원본 운항 데이터, 현장 검증(선사·제조사·기관 인터뷰), 법률·금융 전문가 검토 | 원본 데이터는 라이선스 문제로 저장소에 넣지 않는다. 현장 검증 대신 공개 근거(DNV 권고안, BIMCO 2026 부속서, FEET 사례 등)로 보강한다 |
 
 ---
 
@@ -60,7 +67,14 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 | 후순위 투자자 | 용선주 C | `Pro` 등급 |
 | 관람자 | 심사위원 | 데모 모드로 읽기만 |
 
-devnet 키는 `scripts/keys/`에 만들고 `.gitignore`로 제외한다. 공개 키 목록만 `scripts/config/demo.json`에 둔다.
+devnet 키(프로그램 키, 역할별 키)는 저장소에 넣지 않는다. GitHub Actions 비밀값(secrets)으로만 보관하고, 공개 키 목록만 `scripts/config/demo.json`에 둔다.
+
+팀 역할:
+
+| 사람 | 맡는 일 |
+|---|---|
+| 박부건 | 개발 전반, 내레이션·리허설 |
+| 정우진 | 발표, 내레이션·리허설, 디스코드 제출 요건 확인 |
 
 ---
 
@@ -114,7 +128,15 @@ research/              README 5장 실험 코드 (R1~R7)
 docs/PRD.md            이 문서
 ```
 
-고정 버전 (2026-11-27 crates.io 확인): `anchor-lang 1.2.2`, `litesvm 0.18.2`, `spl-token-2022 12.0.0`. 착수 첫날 `Cargo.lock`과 `Anchor.toml`로 고정한다.
+고정 버전 (2026-11-27 crates.io 확인): `anchor-lang 1.2.2`, `anchor-cli 1.2.2`, `cargo-build-sbf 4.6.0`. 테스트는 Anchor 1.2 공식 템플릿과 같은 `litesvm 0.15.0`(Rust 1.89 호환 의존성 묶음)을 쓴다. `Cargo.lock`과 `Anchor.toml`로 고정한다.
+
+배포는 모두 GitHub에서 한다.
+
+| 대상 | 방법 |
+|---|---|
+| CI | GitHub Actions: SBF 빌드, Rust 테스트, 참조 구현 실행을 푸시마다 수행 |
+| devnet 프로그램·전체 흐름 | GitHub Actions 수동 실행 워크플로: 배포 → 실행기 → `run.json` 산출 |
+| 웹 | GitHub Pages (정적 빌드) |
 
 ---
 
@@ -145,7 +167,7 @@ docs/PRD.md            이 문서
 |---|---|---|
 | `Deal` | `["deal", admin, deal_id: u64 LE]` | 매개변수(6.3 `initialize_deal`), `status: Fundraising/Funded/Active/Closed`, `senior_raised`, `junior_raised`, `w_norm: u128`, `sv_fixed: u128`, `last_lb_bps: Option<i32>`, `entitlement: u64`(E), `paid_cum: u64`, `next_period: u16`, `opex_arrears`, `senior_arrears`, `acc[2]: u128`, `bump` |
 | `Campaign` | `["campaign", deal, 0u8]` | `n_groups`, `groups_per_period`, `reveal_timeout_slots`, `bond_amount`, `slash_per_miss`, `anchors_set: u8`(비트), `last_hash[3]: [u8;32]`, `last_group[3]: i32`(앵커는 −1), `bond_left[3]: u64`, `current_group: u16`, `group_opened_slot: u64`, `pending: u8`(비트), `pending_val[3]: [u8;32]`, `status[512]: u8`, `data_acc[2]: [u8;32]`, `next_data_group[2]: u16`, `period_snap[4][2]: [u8;32]`, `snap_ready: u8` |
-| `PeriodState` | `["period", deal, p: u16 LE]` | `payload: AttestationPayload`, `payload_hash: [u8;32]`, `approvals: u8`(비트), `finalized`, `violation`, `due: u64`, `settled`, `distributed`, 배분 결과 |
+| `PeriodState` | `["period", deal, p: u16 LE]` | `votes[3]: [u8;32]`, `voted: u8`(비트), `payload`(확정 시 저장), `payload_hash`, `finalized`, `violation`, `due: u64`, `settled`, `distributed`, 배분 결과 |
 | `Kyc` | `["kyc", deal, investor]` | `tier: Retail/Pro`, `annual_limit: u64`, `used: u64`, `window_start: i64` |
 | `Position` | `["pos", deal, tranche: u8, owner]` | `units: u64`, `acc_snapshot: u128`, `claimed: u64` |
 | 금고 (토큰 계정, 권한 = `Deal` PDA) | `["vault", deal, kind: u8]` | kind 0 모집, 1 정산 수납, 2 선순위, 3 후순위, 4 준비금, 5 보증금 |
@@ -169,11 +191,12 @@ docs/PRD.md            이 문서
 
 검증기관 미공개 그룹의 연료는 `kg_on`에 포함한다(정상 하한으로 정산, 추정에서는 제외).
 
-### 6.3 명령 (P0, 14개)
+### 6.3 명령 (P0, 15개)
 
 | # | 명령 | 서명자 | 검사 | 효과 |
 |---|---|---|---|---|
-| 1 | `initialize_deal(params)` | admin | `install_cost == senior_cap + junior_cap`, `n_groups == groups_per_period × 캠페인 기간 수 ≤ 512`, 비율 범위, `n_periods ≤ 40` | `Deal`·`Campaign`·금고 6개 생성. 매개변수: `deal_id, payment_mint, phi_bps, ref_rate_bps, comp_min_bps(9500), miss_max_bps(500), install_cost, senior_cap, junior_cap, opex_per_period, opex_recipient, reserve_target, senior_schedule[40], n_periods, payer, investor_rep, verifiers[3], manufacturer` + 캠페인 매개변수 |
+| 1 | `initialize_deal(params)` | admin | `install_cost == senior_cap + junior_cap`, `n_groups == groups_per_period × 캠페인 기간 수 ≤ 512`, 비율 범위, `n_periods ≤ 40`, 검증기관 3곳 서로 다름 | `Deal`·`Campaign` 생성(금고는 1b). 매개변수: `deal_id, payment_mint, phi_bps, ref_rate_bps, comp_min_bps(9500), miss_max_bps(500), install_cost, senior_cap, junior_cap, opex_per_period, opex_recipient, reserve_target, senior_schedule[40], n_periods, payer, investor_rep, verifiers[3], manufacturer` + 캠페인 매개변수 |
+| 1b | `init_vaults()` | admin | 모집 단계, 금고 미생성 | 금고 6개 생성 |
 | 2 | `set_kyc(investor, tier, annual_limit)` | admin | | `Kyc` 생성·갱신 |
 | 3 | `invest(tranche, amount)` | 투자자 | `Fundraising`, `Kyc` 존재, 선순위는 `Retail`/`Pro`, 후순위는 `Pro`만, 한도 창(365일) 안 `used + amount ≤ annual_limit`, 모집 상한 | 모집 금고로 이체, `Position.units += amount` |
 | 4 | `close_fundraising()` | admin | 양 트랜치 완판 | 설치비를 제조사에 이체, `Funded` |
@@ -181,7 +204,7 @@ docs/PRD.md            이 문서
 | 6 | `reveal(role, group, value)` | 역할 당사자 | `group == current_group`, 미공개, `k = group − last_group[role]`, `1 ≤ k ≤ 8`, `H^k(value) == last_hash[role]` | `last_hash/last_group` 갱신. 세 번째 공개면 6.4절로 결정하고 다음 그룹 열기(`pending` 초기화, `group_opened_slot` 갱신) |
 | 7 | `resolve_missing(group)` | 누구나 | `group == current_group`, 결정 전, `현재 슬롯 ≥ group_opened_slot + reveal_timeout_slots` | `off_index = NO_OFF`, 미공개 비트 기록, 미공개 역할마다 `min(slash_per_miss, bond_left)`를 준비금 금고로, 다음 그룹 열기(`pending` 초기화) |
 | 8 | `commit_group_data(kind, group, root)` | kind 0 지급자 / 1 제조사 | `group` 결정 완료, `group == next_data_group[kind]` | `data_acc[kind] = H(data_acc ‖ group u32 LE ‖ root)`. 기간 마지막 그룹이면 `period_snap[p][kind]` 저장 |
-| 9 | `approve_attestation(period, payload)` | `verifiers[i]` | `period == next_period`, 첫 승인이면 `PeriodState` 생성·저장, 아니면 `sha256(borsh(payload)) == payload_hash`, 같은 검증기관 중복 불가 | 승인 비트 기록. 2개째에서 확정: 스냅숏 일치, `lb ≤ est ≤ ub < 5000`, `lb > −10000`, 해당 미공개 그룹이 없으면 `kg_miss_* == 0`, 직전 기간 정산 완료 → 6.5절로 `due` 계산 |
+| 9 | `approve_attestation(payload)` | `verifiers[i]` | `period == next_period`, 확정 전. 같은 검증기관이 같은 내용을 두 번 내면 거부(다른 내용이면 자기 표 교체) | `votes[i] = sha256(borsh(payload))`. 같은 해시가 2표 모이면 확정: 스냅숏 일치, `lb ≤ est ≤ ub < 5000`, `lb > −10000`, 해당 미공개 그룹이 없으면 `kg_miss_* == 0`, 직전 기간 정산 완료 → 6.5절로 `due` 계산 |
 | 10 | `settle(period)` | 지급자 | 확정, 미정산 | 지급자 → 수납 금고로 `due` 이체, `paid_cum += due` |
 | 11 | `distribute(period)` | 누구나 | 정산 완료, 미배분 | 6.5절 워터폴, `next_period += 1` |
 | 12 | `claim(tranche)` | 포지션 보유자 | 받을 몫 > 0 | `units × (acc − acc_snapshot) / ACC`만큼 트랜치 금고에서 이체 |
@@ -249,7 +272,7 @@ due = max(0, E − paid_cum)
 
 ### 6.7 오류 코드
 
-`Unauthorized`, `InvalidState`, `InvalidParams`, `AlreadyRegistered`, `WrongGroup`, `AlreadyRevealed`, `HashChainMismatch`, `SkipTooLarge`, `TimeoutNotReached`, `AlreadyResolved`, `GroupNotResolved`, `WrongDataOrder`, `PeriodNotReady`, `SnapshotMismatch`, `PayloadMismatch`, `AlreadyApproved`, `InvalidRateBounds`, `MissingKgInconsistent`, `PreviousPeriodOpen`, `NotFinalized`, `AlreadySettled`, `NotSettled`, `AlreadyDistributed`, `KycRequired`, `TierNotAllowed`, `LimitExceeded`, `CapExceeded`, `NotFullySubscribed`, `NothingToClaim`, `MathOverflow`, `DealNotEnded`.
+`Unauthorized`, `InvalidState`, `InvalidParams`, `AlreadyRegistered`, `WrongGroup`, `AlreadyRevealed`, `HashChainMismatch`, `SkipTooLarge`, `TimeoutNotReached`, `AlreadyResolved`, `GroupNotResolved`, `WrongDataOrder`, `PeriodNotReady`, `SnapshotMismatch`, `AlreadyApproved`, `InvalidRateBounds`, `MissingKgInconsistent`, `PreviousPeriodOpen`, `NotFinalized`, `AlreadySettled`, `NotSettled`, `AlreadyDistributed`, `KycRequired`, `TierNotAllowed`, `LimitExceeded`, `CapExceeded`, `NotFullySubscribed`, `NothingToClaim`, `MathOverflow`, `DealNotEnded`.
 
 ---
 
@@ -268,7 +291,7 @@ due = max(0, E − paid_cum)
 1. 기준 모델: 속력³·흘수·맞바람 성분·파고로 무세일 연료를 예측하는 회귀. 엔진 출력·회전수는 넣지 않는다. 설치 전 데이터로만 학습한다.
 2. 제외: 미공개 그룹, OFF 블록 위반이 있는 그룹(6시간 중 1시간이라도 켜짐), 선장 안전 예외 그룹, 위반 판정 기간.
 3. 추정: `r̂ = 1 − (ΣON실제/ΣON예측) ÷ (ΣOFF실제/ΣOFF예측)`, 그룹 단위 합계로.
-4. 신뢰구간: 그룹 단위 부트스트랩 2,000회. 그룹 합계를 미리 만든 뒤 다항 가중치 행렬 곱으로 계산한다. `lb` = 2.5 백분위, `ub` = 97.5 백분위.
+4. 신뢰구간: 그룹 단위 부트스트랩 2,000회(기본). 그룹 합계를 미리 만든 뒤 다항 가중치 행렬 곱으로 계산한다. `lb` = 2.5 백분위, `ub` = 97.5 백분위. 위약 보정 구간(C9)은 R8 통과 시 기본값으로 바꾼다.
 5. 준수율: `compliance_bps = 10000 × 준수 OFF 블록 / 전체 OFF 블록`.
 6. 출력: `AttestationPayload`(Borsh) + 보고서 JSON(`report_hash`의 원문). 검증기관 키 3개 중 2개 이상으로 명령 9를 보낸다.
 
@@ -282,7 +305,8 @@ due = max(0, E − paid_cum)
 
 - 설정 `scripts/config/demo.json` → 배포 → 4장 순서 실행. 중간에 끊겨도 체인 상태를 읽고 이어서 실행한다.
 - 트랜잭션 서명·계정 주소를 `app/public/run.json`에 기록한다(데모 모드 입력).
-- 약 620건(공개 360, 데이터 커밋 240, 나머지)을 역할별로 병렬 전송한다. 공용 devnet RPC 제한에 대비해 전용 devnet RPC 키와 테스트 SOL을 첫날 확보한다.
+- 약 620건(공개 360, 데이터 커밋 240, 나머지)을 역할별로 병렬 전송한다.
+- GitHub Actions에서 실행한다. 테스트 SOL 발급 한도에 걸리면 발급 사이트에서 직접 받아 역할 키에 보낸다.
 
 ### 7.5 웹 (`app`)
 
@@ -294,7 +318,7 @@ due = max(0, E − paid_cum)
 | 검증 | 분기별 `lb/est/ub` 차트, 승인 2/3, 보고서 해시 |
 | 정산·배분 | 분기별 `due`, 누적 E, 워터폴 막대, 투자자별 청구액 |
 
-데모 모드는 `run.json`과 devnet 계정 조회만으로 동작한다. 지갑 연결은 선택이다.
+데모 모드는 `run.json`과 devnet 계정 조회만으로 동작한다. 지갑 연결은 선택이다. GitHub Pages로 정적 배포한다.
 
 ---
 
@@ -309,6 +333,9 @@ due = max(0, E − paid_cum)
 | R5 | 초과 지급 발생 확률과 종료 시 준비금 환급 비율 | `reserve_target` 권장값 | 12/6 |
 | R6 | 5.2절 결과 B가 φ=0.9인 이유 정리(결과 A는 7년 φ=0.95) | README 문장 | 12/3 |
 | R7 | 실험 코드 공개, 명령 한 줄로 재현 (원본 데이터 제외) | `research/README.md` | 12/8 |
+| R8 | 신뢰구간 방식 비교(그룹 부트스트랩·이동 블록 부트스트랩·위약 보정)를 23개 스트레스 환경에서 2,000회씩 | 채택 방식과 근거 | 11/28 |
+
+실험 묶음: E1 설계 비교(블록 길이 × OFF 비율), E2 단일 요인 변화(선종 4, 기후 4, 효과 크기, 시간 상관, 잡음, 오염, 선체 청소, 모델 품질, 캠페인 길이, 결측), E3 무작위 조합 300개, E4 조작 공격(OFF 위반, 선택적 공개 거부, OFF 구간 속력·유량계 조작), E5 수용 기준 정밀 판정(4,000회), E6 경제성, E7 신뢰구간 방식 비교(R8). 기준에 못 미친 조건은 지우지 않고 원인을 고쳐 다시 돌린다.
 
 ---
 
@@ -332,14 +359,17 @@ due = max(0, E − paid_cum)
 
 ## 10. 테스트와 완료 판정
 
-| ID | 종류 | 기준 |
-|---|---|---|
-| T1 | 명령 단위 (LiteSVM) | 명령 14개 × (정상 1건 + 오류 1건 이상) = **28건 이상** 통과 |
-| T2 | 테스트 벡터 | 부록 A 전 항목을 Rust와 Python이 동일하게 출력 |
-| T3 | 불변식 (무작위 입력 1만 회) | ① 받은 돈 = 운영비 지급 + 선순위 금고 + 후순위 금고 + 준비금 + 수납 잔액 + 환급 ② 청구 합계 ≤ 금고 잔액 ③ 선순위 이월이 있으면 그 기간 후순위 배분 0 ④ `paid_cum`은 줄지 않음 |
-| T4 | 검증 통계 (2,000회) | s ∈ {0,3,5,8}%에서 편향 절댓값 ≤ 0.2%p, s=0에서 `lb>0` 비율 2.5%±0.7%p, s>0에서 `lb ≤ s` 비율 ≥ 96.8% |
-| T5 | E2E devnet | G1 기준 |
-| T6 | 데모 | G2 기준, 다른 PC 1대에서 확인 |
+| ID | 종류 | 건수 | 기준 |
+|---|---|---|---|
+| T1 | 명령별 (LiteSVM) | 63 | 명령마다 정상 1건 이상 + 막아야 할 입력이 실제로 막히는지 |
+| T2 | 테스트 벡터 | 27 | 부록 A 전 항목을 Rust와 Python이 동일하게 출력. 부록 A.4는 온체인 토큰 이체로도 재현 |
+| T3 | 불변식 (무작위 입력 1만 회) | 7 | ① 받은 돈 = 나간 돈 + 금고 잔액 ② 청구 합계 ≤ 트랜치 금고 ③ 선순위 이월이 있는 기간 후순위 0 ④ 누적 납부액 단조 증가 ⑤ 정산액 = max(0, E − 누적 납부) ⑥ 극단 입력은 `MathOverflow`로 거부 ⑦ 끝수 < 배분 1회당 (단위수/10¹² + 1) |
+| T4 | 보안 | 8 | 다른 계약 금고 끼워 넣기, 서명자 바꿔치기, 재초기화, 다른 프로그램 소유 계정, 민트 바꿔치기, 이중 청구, 앵커 변경, 확정 결과 덮어쓰기를 모두 거부 |
+| T5 | 검증 통계 (2,000회 이상) | 8 | s ∈ {0,3,5,8}%에서 편향 절댓값 ≤ 0.2%p, s=0에서 `lb>0` 비율 2.5%±0.7%p, s>0에서 `lb ≤ s` 비율 ≥ 96.8%, 조작 공격 탐지 |
+| T6 | 성능 | 15 | 명령마다 연산량 20만 CU 미만 |
+| T7 | devnet 전체 흐름 | 3 | G1 기준, 체인 기록과 오프체인 재계산 1 기본 단위까지 일치, 탐색기 링크 전부 열림 |
+| T8 | 데모 | 3 | G2 기준, 화면 숫자 = 체인 값, 다른 PC 1대에서 확인 |
+| | **합계** | **134** | |
 
 실패한 테스트는 지우지 않고 원인을 고쳐 통과시킨다.
 
@@ -347,18 +377,18 @@ due = max(0, E − paid_cum)
 
 ## 11. 일정 (11/27 ~ 12/9, 13일)
 
-| 날짜 | 박부건 (개발) | 정우진 |
+| 날짜 | 개발 | 발표 (박부건·정우진) |
 |---|---|---|
-| 11/27 | PRD 확정, 저장소 골격, 버전 고정, devnet 키·SOL·RPC 확보 | 디스코드 제출 요건 확인(12장 Q1~Q5) |
-| 11/28~29 | `Deal`·`Campaign`, 명령 5~7, T2 일정 벡터 | 선사 인터뷰 섭외 |
-| 11/30 | 명령 8·9 | |
-| 12/1 | 명령 10~14, T3 | |
-| 12/2 | 명령 1~4, **T1 100%** | 피치 구성안 |
-| 12/3 | 합성 데이터·검증기, R1·R6 → 발표 수치 확정 | 수치 받아 피치덱 |
-| 12/4 | devnet 배포, **T5** | |
-| 12/5~6 | 웹·데모 모드(T6), R2~R5 야간 실행 | 영상 대본 |
-| 12/7 | P1 시도. 하루 안에 안 되면 제외 | |
-| 12/8 | 영상 녹화, README 갱신, R7 | 내레이션·피치덱 최종 |
+| 11/27 | PRD v0.2, 명령 15개 구현·SBF 빌드, 규칙 테스트 10건, 측정 실험 E1·E5 | 디스코드 제출 요건 확인(12장 Q1~Q5) |
+| 11/28 | 명령 실행 테스트(T1·T2·T4·T6), 측정 실험 E2~E4·E3·E7 | |
+| 11/29 | 경제성 R1·R5·R6 → README 수치 갱신 | |
+| 11/30~12/1 | 오프체인 3종(합성 데이터·검증기·실행기), GitHub Actions CI | 피치 구성안 |
+| 12/2 | devnet 배포·T7 (GitHub Actions) | |
+| 12/3 | 발표 수치 확정, 텀시트·DB증권 실증 관계 정리 | 수치 받아 피치덱 |
+| 12/4~5 | 웹·데모 모드(T8), GitHub Pages | 영상 대본 확인 |
+| 12/6 | 피치덱·영상 대본 2종·예상 질문 30개 | 리허설 1 |
+| 12/7 | P1 시도. 하루 안에 안 되면 제외 | 내레이션 녹음 |
+| 12/8 | 영상 편집, R7, 최종 점검 | 리허설 2, 피치덱 최종 |
 | 12/9 | 제출 (버퍼) | 제출 |
 
 ---
@@ -367,13 +397,28 @@ due = max(0, E − paid_cum)
 
 | ID | 질문 | 담당 | 영향 |
 |---|---|---|---|
-| Q1 | 제출물 형식(저장소, 영상 길이, 피치덱, 배포 네트워크) | 정우진 | 대회 페이지에 없고 디스코드에서 안내. devnet 전제가 틀리면 7.4·T5 수정 |
+| Q1 | 제출물 형식(저장소, 영상 길이, 피치덱, 배포 네트워크) | 정우진 | 대회 페이지에 없고 디스코드에서 안내. devnet 전제가 틀리면 7.4·T7 수정 |
 | Q2 | 제출 마감 시각(12/9 몇 시, 기준 시간대) | 정우진 | 11장 버퍼 |
 | Q3 | 영상·발표 언어 | 정우진 | 웹 문구 |
 | Q4 | 저장소 공개 필수 여부 | 정우진 | 현재 공개 |
 | Q5 | 심사 기준과 배점 | 정우진 | 데모 비중 조정 |
 | Q6 | Token ACL이 우리 민트 구성(Token-2022 + Transfer Hook)과 devnet에서 함께 동작하는지 | 박부건 | P1 |
 | Q7 | 데모 연간 한도 값(원화 1억 원 상당을 dUSD로 바꾸는 환율 설정) | 박부건 | `demo.json` |
+| Q8 | GitHub Actions에서 devnet 테스트 SOL 자동 발급이 되는지 | 박부건 | 안 되면 발급 사이트에서 수동 발급 |
+
+---
+
+## 13. 발표·제출물 (P0)
+
+| # | 제출물 | 완성 기준 | 녹음·리허설 |
+|---|---|---|---|
+| S1 | README 갱신 | R1·R2·R3 결과로 1장·3.4·5장 수치 교체, 수치 모순 0건 | |
+| S2 | 금융 구조 텀시트 | 기초자산 가치·수익구조, 투자자 권리, 자금 회수 방식, 규제 4요소를 1장에. 전문가 검토 없음을 명시 | |
+| S3 | DB증권 실증과의 관계 | 선박 탄소저감 설비 리스채권 실증의 다음 단계(성능 연동형)로 보이게 1장 정리 | |
+| S4 | 피치덱 | 문제 → 구조 → 검증 방법 → 실험 결과 → 데모 → 부산 → 팀 | 박부건·정우진 |
+| S5 | 피치 영상 | 3분 이내 (대회 요건이 다르면 그에 맞춤) | 내레이션: 박부건·정우진 |
+| S6 | 기술 데모 영상 | 2~3분, 솔라나를 쓰는 이유와 설계 선택 설명 | 내레이션: 박부건·정우진 |
+| S7 | 예상 질문 답변집 | 30개, 리허설 2회 | 박부건·정우진 |
 
 ---
 
