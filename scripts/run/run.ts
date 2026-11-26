@@ -20,7 +20,7 @@ import { Connection, Keypair, PublicKey, SystemProgram, type TransactionInstruct
 
 import { spawn, execFileSync, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { createHash, createHmac } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
@@ -40,10 +40,21 @@ const sc = quick ? cfg.quick : cfg.scenario;
 const outDir = join(ROOT, mode === "local" ? "target/run-local" : "target/run-devnet");
 rmSync(join(outDir, "data"), { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
+if (!process.env.RESUME) {
+  rmSync(join(outDir, "txlog.jsonl"), { force: true });
+  rmSync(join(outDir, "periods.jsonl"), { force: true });
+}
+const savedPeriods: Record<number, any> = {};
+if (existsSync(join(outDir, "periods.jsonl"))) {
+  for (const l of readFileSync(join(outDir, "periods.jsonl"), "utf8").trim().split("\n").filter(Boolean)) {
+    const r = JSON.parse(l);
+    savedPeriods[r.period] = r;
+  }
+}
 
 // ------------------------------------------------------------------ setup
 const chain: Chain = mode === "local"
-  ? new LocalChain(PROGRAM_ID, join(ROOT, "target/deploy/savesail.so"))
+  ? new LocalChain(PROGRAM_ID, join(ROOT, "target/deploy/savesail.so"), process.env.RESUME ? join(outDir, "svm.bin") : undefined)
   : new DevnetChain(process.env.RPC_URL ?? "https://api.devnet.solana.com");
 const keys = roleKeys(mode === "local" ? "savesail-local-test-seed" : must("ROLE_SEED"));
 const pk = (r: Role) => keys[r].publicKey;
@@ -51,6 +62,7 @@ const dummy = new AnchorProvider(new Connection("http://127.0.0.1:1"), new Walle
 const program = new Program(idl, dummy);
 const coder = program.coder;
 const log: (SentTx & { step: string })[] = [];
+const txlogPath = () => join(outDir, "txlog.jsonl");
 const record: any = { cluster: mode, program: PROGRAM_ID.toBase58(), started: new Date().toISOString(), steps: [], periods: [] };
 
 function must(name: string): string {
@@ -74,10 +86,25 @@ const posPda = (t: number, o: PublicKey) => pda(Buffer.from("pos"), deal.toBuffe
 const periodPda = (p: number) => pda(Buffer.from("period"), deal.toBuffer(), u16le(p));
 const ata = (o: PublicKey) => getAssociatedTokenAddressSync(mint, o, true);
 
-async function send(step: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<SentTx> {
+const STOP_AFTER = Number(process.env.STOP_AFTER ?? 0); // test hook: simulate a crash after N transactions
+let queue: Promise<unknown> = Promise.resolve();
+function send(step: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<SentTx> {
+  if (chain.kind === "devnet") return sendNow(step, ixs, signers);
+  // local: one transaction at a time so a simulated crash never leaves an executed but unlogged transaction
+  const p = queue.then(() => sendNow(step, ixs, signers));
+  queue = p.catch(() => undefined);
+  return p;
+}
+async function sendNow(step: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<SentTx> {
   const t = await chain.send(step, ixs, signers);
   if (chain.kind === "local") t.signature = bs58.encode(Buffer.from(t.signature, "hex"));
   log.push({ ...t, step });
+  appendFileSync(txlogPath(), JSON.stringify({ ...t, step }) + "\n");
+  if (STOP_AFTER && log.length >= STOP_AFTER) {
+    if (chain instanceof LocalChain) chain.save(join(outDir, "svm.bin"));
+    console.log(`simulated crash after ${step}`);
+    process.exit(3);
+  }
   return t;
 }
 async function expectFail(step: string, ixs: TransactionInstruction[], signers: Keypair[], code: string) {
@@ -192,15 +219,16 @@ async function main() {
     raiseVault: vault(0), tokenProgram: TOKEN_PROGRAM_ID, systemProgram: SystemProgram.programId }).instruction();
   d = await decode("Deal", deal);
   if (d.status === 0) {
-    if (d.raised[0].isZero()) {
+    const has = async (r: Role, t: number) => !!(await decode("Position", posPda(t, pk(r))));
+    if (!(await has("investorA", 0))) {
       await expectFail("invest_A_junior", [await investIx("investorA", 1, "1000000")], [keys.investorA], "TierNotAllowed");
       await send("invest_A_senior", [await investIx("investorA", 0, sc.retail_limit)], [keys.investorA]);
-      await expectFail("invest_A_over_limit", [await investIx("investorA", 0, "1000000")], [keys.investorA], "LimitExceeded");
-      await send("invest_B_senior", [await investIx("investorB", 0, sc.retail_limit)], [keys.investorB]);
-      const rest = BigInt(sc.caps[0]) - 2n * BigInt(sc.retail_limit);
-      await send("invest_C_senior", [await investIx("investorC", 0, rest.toString())], [keys.investorC]);
-      await send("invest_C_junior", [await investIx("investorC", 1, sc.caps[1])], [keys.investorC]);
     }
+    await expectFail("invest_A_over_limit", [await investIx("investorA", 0, "1000000")], [keys.investorA], "LimitExceeded");
+    if (!(await has("investorB", 0))) await send("invest_B_senior", [await investIx("investorB", 0, sc.retail_limit)], [keys.investorB]);
+    const rest = BigInt(sc.caps[0]) - 2n * BigInt(sc.retail_limit);
+    if (!(await has("investorC", 0))) await send("invest_C_senior", [await investIx("investorC", 0, rest.toString())], [keys.investorC]);
+    if (!(await has("investorC", 1))) await send("invest_C_junior", [await investIx("investorC", 1, sc.caps[1])], [keys.investorC]);
     const ix = await program.methods.closeFundraising().accountsStrict({ admin: pk("admin"), deal, paymentMint: mint, raiseVault: vault(0),
       manufacturerToken: ata(pk("manufacturer")), tokenProgram: TOKEN_PROGRAM_ID }).instruction();
     await send("close_fundraising", [ix], [keys.admin]);
@@ -235,11 +263,13 @@ async function main() {
   cam = await decode("Campaign", campaign);
   for (let g = 0; g < nGroups; g++) {
     const p = Math.floor(g / gpp);
+    cam = await decode("Campaign", campaign);
     if (g >= cam.currentGroup) {
       const w = withhold[String(g)];
-      if (w !== 2) await send(`reveal_${g}_verifier`, [await revealIx(2, g)], [keys.verifier0]);
+      const pend = cam.currentGroup === g ? cam.pending : 0;
+      if (w !== 2 && !(pend & 4)) await send(`reveal_${g}_verifier`, [await revealIx(2, g)], [keys.verifier0]);
       const rest: Promise<SentTx>[] = [];
-      for (const r of [0, 1]) if (w !== r && w !== 2) rest.push(revealIx(r, g).then((ix) => send(`reveal_${g}_${r}`, [ix], [keys[roleSigner[r]]])));
+      for (const r of [0, 1]) if (w !== r && w !== 2 && !(pend & (1 << r))) rest.push(revealIx(r, g).then((ix) => send(`reveal_${g}_${r}`, [ix], [keys[roleSigner[r]]])));
       await Promise.all(rest);
       if (w !== undefined) {
         await chain.waitSlots(sc.reveal_timeout_slots + 1);
@@ -248,8 +278,9 @@ async function main() {
         await send(`resolve_missing_${g}`, [ix], [keys.admin]);
       }
     }
+    cam = await decode("Campaign", campaign);
     if (g >= cam.nextDataGroup[0] || g >= cam.nextDataGroup[1]) {
-      const st = (await decode("Campaign", campaign)).status[g];
+      const st = cam.status[g];
       const roots = await synthGroup(g, st & 7, viol.has(g));
       const c2 = await decode("Campaign", campaign);
       await Promise.all([
@@ -260,7 +291,7 @@ async function main() {
       const st = cam.status[g];
       await synthGroup(g, st & 7, viol.has(g)); // regenerate local data on resume
     }
-    if ((g + 1) % gpp === 0 && !(await distributed(p))) await settlePeriod(p, gpp, env);
+    if ((g + 1) % gpp === 0) await settlePeriod(p, gpp, env, !!(await distributed(p)));
   }
 
   // 6. claims and bond release
@@ -294,49 +325,60 @@ async function main() {
       .map(async ([k, a]) => [k as string, await tokenBal(a as PublicKey)])));
   cam = await decode("Campaign", campaign);
   record.schedule = Array.from(cam.status.slice(0, nGroups) as number[]).map((s) => ({ off: s & 7, missing: (s >> 3) & 7 }));
-  record.txs = log.map((t) => ({ step: t.step, sig: t.signature, slot: t.slot, cu: t.cu }));
-  record.tx_count = log.length;
+  const all = readFileSync(txlogPath(), "utf8").trim().split("\n").map((l) => JSON.parse(l));
+  record.txs = all.map((t) => ({ step: t.step, sig: t.signature, slot: t.slot, cu: t.cu }));
+  record.tx_count = all.length;
   const outPath = join(ROOT, mode === "local" ? "target/run-local/run.json" : "app/public/run.json");
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(record, null, 1));
   console.log(`done: ${log.length} transactions in ${record.seconds}s -> ${outPath}`);
 }
 
-async function settlePeriod(p: number, gpp: number, env: { path: string; hash: string }) {
+async function settlePeriod(p: number, gpp: number, env: { path: string; hash: string }, done: boolean) {
   const cam = await decode("Campaign", campaign);
   const prev: number[] = [];
   for (let q = 0; q < p; q++) prev.push((await decode("PeriodState", periodPda(q))).outcome);
   const chainJson = { period: p, groups_per_period: gpp, status: Array.from(cam.status as number[]),
     snap_ops: Buffer.from(cam.periodSnap[p][0]).toString("hex"), snap_ctrl: Buffer.from(cam.periodSnap[p][1]).toString("hex"),
     prev_outcomes: prev, price_micro_per_t: 750_000_000 };
-  const pl = verify(chainJson, env.path, p);
+  const pl = verify(chainJson, env.path, p); // re-run on resume too: the payload is deterministic (PRD 7.2-10 2)
   const payload = { period: p, dataRootOps: hex32(pl.data_root_ops), dataRootCtrl: hex32(pl.data_root_ctrl), kgOn: new BN(pl.kg_on),
     kgMissPayer: new BN(pl.kg_miss_payer), kgMissInv: new BN(pl.kg_miss_inv), overrideGroups: pl.override_groups,
     priceMicroPerT: new BN(pl.price_micro_per_t), lbBps: pl.lb_bps, estBps: pl.est_bps, ubBps: pl.ub_bps, complianceBps: pl.compliance_bps,
     flags: pl.flags, envelopeHash: hex32(pl.envelope_hash), reportHash: hex32(pl.report_hash) };
   let ps = await decode("PeriodState", periodPda(p));
-  for (const v of ["verifier0", "verifier1"] as Role[]) {
+  const ph = createHash("sha256").update((program.coder.types as any).encode("attestationPayload", payload)).digest();
+  for (const [i, v] of (["verifier0", "verifier1"] as Role[]).entries()) {
     if (ps?.finalized) break;
+    if (ps && ps.voted & (1 << i) && Buffer.from(ps.votes[i]).equals(ph)) continue; // vote already recorded
     const ix = await program.methods.approveAttestation(payload).accountsStrict({ verifier: pk(v), deal, campaign, periodState: periodPda(p),
       systemProgram: SystemProgram.programId }).instruction();
     await send(`approve_${p}_${v}`, [ix], [keys[v]]);
     ps = await decode("PeriodState", periodPda(p));
   }
-  if (!ps.settled) {
+  if (!done && !ps.settled) {
     const ix = await program.methods.settle(p).accountsStrict({ payer: pk("payer"), deal, periodState: periodPda(p), paymentMint: mint,
       payerToken: ata(pk("payer")), collectionVault: vault(1), tokenProgram: TOKEN_PROGRAM_ID }).instruction();
     await send(`settle_${p}`, [ix], [keys.payer]);
   }
-  const ix = await program.methods.distribute(p).accountsStrict({ caller: pk("admin"), deal, periodState: periodPda(p), paymentMint: mint,
-    collectionVault: vault(1), seniorVault: vault(2), juniorVault: vault(3), reserveVault: vault(4), opexToken: ata(pk("opex")),
-    tokenProgram: TOKEN_PROGRAM_ID }).instruction();
-  await send(`distribute_${p}`, [ix], [keys.admin]);
+  if (!(await decode("PeriodState", periodPda(p))).distributed) {
+    const ix = await program.methods.distribute(p).accountsStrict({ caller: pk("admin"), deal, periodState: periodPda(p), paymentMint: mint,
+      collectionVault: vault(1), seniorVault: vault(2), juniorVault: vault(3), reserveVault: vault(4), opexToken: ata(pk("opex")),
+      tokenProgram: TOKEN_PROGRAM_ID }).instruction();
+    await send(`distribute_${p}`, [ix], [keys.admin]);
+  }
+  if (savedPeriods[p]) {
+    record.periods.push(savedPeriods[p]);
+    return;
+  }
   ps = await decode("PeriodState", periodPda(p));
-  const dl = await decode("Deal", deal);
+  const dl = await decode("Deal", deal); // still this period's entitlement: the next period is not finalized yet
   const report = JSON.parse(readFileSync(join(outDir, `attest/report_${p}.json`), "utf8"));
-  record.periods.push({ period: p, payload: pl, outcome: ps.outcome, due: ps.due.toString(), entitlement: dl.entitlement.toString(),
+  const rec = { period: p, payload: pl, outcome: ps.outcome, due: ps.due.toString(), entitlement: dl.entitlement.toString(),
     dist: ps.dist.map((x: BN) => x.toString()), lb: report.lb, est: report.est, ub: report.ub, flags: report.flags,
-    excluded: Object.keys(report.groups.excluded).length });
+    excluded: Object.keys(report.groups.excluded).length };
+  appendFileSync(join(outDir, "periods.jsonl"), JSON.stringify(rec) + "\n");
+  record.periods.push(rec);
   console.log(`period ${p}: outcome ${ps.outcome} due ${ps.due.toString()} lb/est/ub ${pl.lb_bps}/${pl.est_bps}/${pl.ub_bps} flags ${pl.flags}`);
 }
 

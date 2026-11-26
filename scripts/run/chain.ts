@@ -37,13 +37,21 @@ export class TxError extends Error {
 export class LocalChain implements Chain {
   readonly kind = "local";
   private svm: any;
-  constructor(programId: PublicKey, soPath: string) {
+  constructor(programId: PublicKey, soPath: string, resumeFrom?: string) {
     const require = createRequire(import.meta.url);
     const { LiteSvm } = require("litesvm/dist/internal");
-    this.svm = new LiteSvm();
-    this.svm.setDefaultPrograms();
-    this.svm.setTransactionHistory(0n);
-    this.svm.addProgramFromFile(programId.toBytes(), soPath);
+    const { existsSync } = require("node:fs");
+    if (resumeFrom && existsSync(resumeFrom)) {
+      this.svm = LiteSvm.loadFromFile(resumeFrom);
+    } else {
+      this.svm = new LiteSvm();
+      this.svm.setDefaultPrograms();
+      this.svm.setTransactionHistory(0n);
+      this.svm.addProgramFromFile(programId.toBytes(), soPath);
+    }
+  }
+  save(path: string) {
+    this.svm.saveToFile(path);
   }
   async send(label: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<SentTx> {
     this.svm.expireBlockhash();

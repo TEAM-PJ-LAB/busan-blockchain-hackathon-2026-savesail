@@ -132,6 +132,12 @@ class Verifier:
             per = g // gpp
             h, rows = read_csv(os.path.join(self.dir, f"ops_{g}.csv"))
             ch, crows = read_csv(os.path.join(self.dir, f"ctrl_{g}.csv"))
+            if any(name not in h for name in REQUIRED):
+                rows = []  # a required input column is missing: every hour of the group counts as missing (C16)
+            else:
+                ix = [h.index(name) for name in REQUIRED]
+                rows = [r for r in rows if all(r[i].strip() for i in ix)]
+                h = h
             meter = json.load(open(os.path.join(self.dir, f"meter_{g}.json")))
             digest = hashlib.sha256("\n".join(r[-1] for r in rows).encode()).digest()
             try:
@@ -139,6 +145,8 @@ class Verifier:
                 sig_ok = digest.hex() == meter["meter_digest"]
             except InvalidSignature:
                 sig_ok = False
+            if not rows:
+                h = ["hour", "group", "block", "w", *REQUIRED]
             hour, blk, w, vlog, draft, uo, tho, hso, shaft, fuel = cols(
                 h, rows, ["hour", "block", "w", "speed_kn", "draft_m", "wind_ms", "wind_rel_deg", "hs_m", "shaft_kw", "fuel_kg"])
             hour, blk = hour.astype(int), blk.astype(int)
