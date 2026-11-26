@@ -33,6 +33,8 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
       - run: node scripts/web_check.mjs out "/${{ github.event.repository.name }}" web_check.json
         working-directory: app
+      - run: npx playwright install --with-deps webkit && node scripts/webkit_check.mjs out "/${{ github.event.repository.name }}"
+        working-directory: app
       - uses: actions/upload-pages-artifact@v3
         with:
           path: app/out

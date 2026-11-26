@@ -1,30 +1,14 @@
 // PRD G2 / 7.5: Lighthouse (desktop) on all 5 pages, console errors, 390px width without horizontal scroll.
 // usage: node scripts/web_check.mjs OUT_DIR BASE_PATH [REPORT.json]
-import { createServer } from "node:http";
-import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { extname, join, normalize } from "node:path";
+import { writeFileSync } from "node:fs";
 import * as chromeLauncher from "chrome-launcher";
 import lighthouse from "lighthouse";
 import desktop from "lighthouse/core/config/desktop-config.js";
 import puppeteer from "puppeteer-core";
+import { PAGES, serve } from "./static_server.mjs";
 
 const [out = "out", base = "", reportPath] = process.argv.slice(2);
-const PAGES = ["", "invest/", "schedule/", "verify/", "settle/"];
-const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json",
-  ".svg": "image/svg+xml", ".ico": "image/x-icon", ".txt": "text/plain", ".woff2": "font/woff2" };
-
-const server = createServer((req, res) => {
-  let p = decodeURIComponent((req.url ?? "/").split("?")[0]);
-  if (!p.startsWith(base + "/")) { res.writeHead(404).end(); return; }
-  p = normalize(p.slice(base.length)).replace(/^(\.\.[/\\])+/, "");
-  let f = join(out, p);
-  if (existsSync(f) && statSync(f).isDirectory()) f = join(f, "index.html");
-  if (!existsSync(f)) { res.writeHead(404).end(); return; }
-  res.writeHead(200, { "content-type": TYPES[extname(f)] ?? "application/octet-stream", "cache-control": "public, max-age=31536000" });
-  res.end(readFileSync(f));
-}).listen(0);
-const port = server.address().port;
-const url = (pg) => `http://127.0.0.1:${port}${base}/${pg}`;
+const { server, url } = serve(out, base);
 
 const chrome = await chromeLauncher.launch({ chromeFlags: ["--headless=new", "--no-sandbox", "--disable-gpu"] });
 const results = [];

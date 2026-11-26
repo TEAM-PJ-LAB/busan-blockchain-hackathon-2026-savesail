@@ -81,7 +81,7 @@ jobs:
       - name: crash and resume
         run: bash scripts/run/test_resume.sh
   web:
-    # PRD G2 / 7.5: static build, Lighthouse desktop on 5 pages, console errors, 390px layout.
+    # PRD G2 / 7.5: static build, Lighthouse desktop on 5 pages, console errors, 390px layout, WebKit.
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -97,6 +97,9 @@ jobs:
         working-directory: app
       - run: node scripts/web_check.mjs out "" web_check.json
         working-directory: app
+      - name: WebKit (Safari engine), desktop and 390px (PRD 7.5 4)
+        working-directory: app
+        run: npx playwright install --with-deps webkit && node scripts/webkit_check.mjs out ""
       - uses: actions/upload-artifact@v4
         if: always()
         with:
