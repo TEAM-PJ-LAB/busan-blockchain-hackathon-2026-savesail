@@ -121,3 +121,5 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: python3 -I scripts/check_numbers.py
+      - name: video scripts fit their time limits (PRD S5 3:00, S6 2:30)
+        run: python3 -I scripts/check_script_time.py
