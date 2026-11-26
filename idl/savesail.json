@@ -387,27 +387,33 @@
         },
         {
           "name": "raise_vault",
-          "writable": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "collection_vault",
-          "writable": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "senior_vault",
-          "writable": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "junior_vault",
-          "writable": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "reserve_vault",
-          "writable": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "bond_vault",
-          "writable": true
+          "writable": true,
+          "signer": true
         },
         {
           "name": "token_program"
@@ -1952,6 +1958,18 @@
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "vaults",
+            "docs": [
+              "Token accounts created by `init_vaults` (index = `V_*`); later commands accept only these addresses."
+            ],
+            "type": {
+              "array": [
+                "pubkey",
+                6
+              ]
+            }
           }
         ]
       }

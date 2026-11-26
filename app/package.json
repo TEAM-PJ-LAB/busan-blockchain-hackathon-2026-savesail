@@ -1,0 +1,21 @@
+{
+  "name": "savesail-app",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "check": "node scripts/web_check.mjs out \"$NEXT_PUBLIC_BASE_PATH\" web_check.json"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.3",
+    "@types/react": "19.2.7",
+    "chrome-launcher": "^1.2.3",
+    "lighthouse": "^12.8.2",
+    "typescript": "5.9.3"
+  }
+}

@@ -75,12 +75,16 @@ const u64le = (n: bigint | number) => { const b = Buffer.alloc(8); b.writeBigUIn
 const u16le = (n: number) => { const b = Buffer.alloc(2); b.writeUInt16LE(n); return b; };
 const hex32 = (h: string) => Array.from(Buffer.from(h, "hex"));
 
-const mintKp = Keypair.fromSeed(createHmac("sha256", mode === "local" ? "local" : must("ROLE_SEED")).update("savesail-dusd-mint").digest());
+const mintKp = Keypair.fromSeed(createHmac("sha256", mode === "local" ? "local" : must("ROLE_SEED")).update(`savesail-dusd-mint-${process.env.DEAL_ID ?? sc.deal_id}`).digest());
 const mint = mintKp.publicKey;
-const dealId = BigInt(sc.deal_id);
+const dealId = BigInt(process.env.DEAL_ID ?? sc.deal_id); // devnet: a fresh deal for every run
 const deal = pda(Buffer.from("deal"), pk("admin").toBuffer(), u64le(dealId));
 const campaign = pda(Buffer.from("campaign"), deal.toBuffer(), Buffer.from([0]));
-const vault = (k: number) => pda(Buffer.from("vault"), deal.toBuffer(), Buffer.from([k]));
+// Vaults are keypair accounts created once by init_vaults (their addresses are stored in Deal.vaults).
+// Deterministic per deal so a resumed run names the same accounts.
+const vaultKps = [0, 1, 2, 3, 4, 5].map((k) => Keypair.fromSeed(createHmac("sha256", mode === "local" ? "local" : must("ROLE_SEED"))
+  .update(`savesail-vault-${dealId}-${k}`).digest()));
+const vault = (k: number) => vaultKps[k].publicKey;
 const kycPda = (inv: PublicKey) => pda(Buffer.from("kyc"), deal.toBuffer(), inv.toBuffer());
 const posPda = (t: number, o: PublicKey) => pda(Buffer.from("pos"), deal.toBuffer(), Buffer.from([t]), o.toBuffer());
 const periodPda = (p: number) => pda(Buffer.from("period"), deal.toBuffer(), u16le(p));
@@ -168,7 +172,8 @@ async function main() {
   const env = envelope();
 
   // 1. lamports and the test dollar
-  for (const r of Object.keys(keys) as Role[]) await chain.fund(keys.admin, pk(r), r === "admin" ? 4_000_000_000 : 200_000_000);
+  for (const r of Object.keys(keys) as Role[]) if (r !== "admin") await chain.fund(keys.admin, pk(r), 50_000_000);
+  if (chain.kind === "local") await chain.fund(keys.admin, pk("admin"), 4_000_000_000);
   if (!(await chain.account(mint))) {
     const rent = 1_461_600;
     await send("create_mint", [
@@ -204,8 +209,10 @@ async function main() {
   if (!d.vaultsReady) {
     const ix = await program.methods.initVaults().accountsStrict({ admin: pk("admin"), deal, paymentMint: mint, raiseVault: vault(0), collectionVault: vault(1),
       seniorVault: vault(2), juniorVault: vault(3), reserveVault: vault(4), bondVault: vault(5), tokenProgram: TOKEN_PROGRAM_ID, systemProgram: SystemProgram.programId }).instruction();
-    await send("init_vaults", [ix], [keys.admin]);
+    await send("init_vaults", [ix], [keys.admin, ...vaultKps]);
+    d = await decode("Deal", deal);
   }
+  if (d.vaults.some((v: PublicKey, k: number) => !v.equals(vault(k)))) throw new Error("Deal.vaults differ from the derived vault keys");
   const kyc = async (r: Role, tier: number, limit: string) => {
     if (await decode("Kyc", kycPda(pk(r)))) return;
     const ix = await program.methods.setKyc(pk(r), tier, new BN(limit)).accountsStrict({ admin: pk("admin"), deal, kyc: kycPda(pk(r)), systemProgram: SystemProgram.programId }).instruction();
@@ -312,17 +319,24 @@ async function main() {
   d = await decode("Deal", deal);
   const tokenBal = async (a: PublicKey) => { const b = await chain.account(a); return b ? b.readBigUInt64LE(64).toString() : "0"; };
   record.finished = new Date().toISOString();
+  record.scenario = { withhold: sc.withhold ?? {}, off_violations: sc.off_violations ?? [], groups_per_period: gpp };
   record.seconds = Math.round((Date.now() - t0) / 1000);
   record.accounts = { deal: deal.toBase58(), campaign: campaign.toBase58(), mint: mint.toBase58(),
     vaults: Object.fromEntries([0, 1, 2, 3, 4, 5].map((k) => [k, vault(k).toBase58()])),
+    periods: Array.from({ length: periods }, (_, q) => periodPda(q).toBase58()),
     roles: Object.fromEntries((Object.keys(keys) as Role[]).map((r) => [r, pk(r).toBase58()])) };
   record.deal = { phi_bps: d.phiBps, ref_rate_bps: d.refRateBps, entitlement: d.entitlement.toString(), paid_cum: d.paidCum.toString(),
     last_lb_bps: d.lastLbBps, acc: d.acc.map((x: BN) => x.toString()), reserve: d.reserve.toString(), opex_arrears: d.opexArrears.toString(),
-    senior_arrears: d.seniorArrears.toString() };
-  record.balances = Object.fromEntries(await Promise.all(
-    [["senior_vault", vault(2)], ["junior_vault", vault(3)], ["reserve_vault", vault(4)], ["collection_vault", vault(1)], ["bond_vault", vault(5)],
-      ...(["investorA", "investorB", "investorC", "payer", "opex", "manufacturer"] as Role[]).map((r) => [r, ata(pk(r))])]
-      .map(async ([k, a]) => [k as string, await tokenBal(a as PublicKey)])));
+    senior_arrears: d.seniorArrears.toString(), install_cost: d.installCost.toString(), caps: d.caps.map((x: BN) => x.toString()),
+    raised: d.raised.map((x: BN) => x.toString()), comp_min_bps: d.compMinBps, miss_max_bps: d.missMaxBps, opex_per_period: d.opexPerPeriod.toString(),
+    reserve_target: d.reserveTarget.toString(), n_periods: d.nPeriods, senior_per_period: d.seniorSchedule[0].toString(),
+    n_groups: cam.nGroups, groups_per_period: cam.groupsPerPeriod, bond_amount: cam.bondAmount.toString(), slash_per_miss: cam.slashPerMiss.toString(),
+    retail_limit: String(sc.retail_limit) };
+  const tokenAccounts: [string, PublicKey][] = [["senior_vault", vault(2)], ["junior_vault", vault(3)], ["reserve_vault", vault(4)],
+    ["collection_vault", vault(1)], ["bond_vault", vault(5)], ["raise_vault", vault(0)],
+    ...(["investorA", "investorB", "investorC", "payer", "opex", "manufacturer"] as Role[]).map((r): [string, PublicKey] => [r, ata(pk(r))])];
+  record.token_accounts = Object.fromEntries(tokenAccounts.map(([k, a]) => [k, a.toBase58()]));
+  record.balances = Object.fromEntries(await Promise.all(tokenAccounts.map(async ([k, a]) => [k, await tokenBal(a)])));
   cam = await decode("Campaign", campaign);
   record.schedule = Array.from(cam.status.slice(0, nGroups) as number[]).map((s) => ({ off: s & 7, missing: (s >> 3) & 7 }));
   const all = readFileSync(txlogPath(), "utf8").trim().split("\n").map((l) => JSON.parse(l));
@@ -331,6 +345,7 @@ async function main() {
   const outPath = join(ROOT, mode === "local" ? "target/run-local/run.json" : "app/public/run.json");
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(record, null, 1));
+  if (chain instanceof LocalChain) chain.save(join(outDir, "svm.bin")); // final state for check_web_chain.ts
   console.log(`done: ${log.length} transactions in ${record.seconds}s -> ${outPath}`);
 }
 

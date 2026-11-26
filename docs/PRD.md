@@ -37,6 +37,7 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 | C18 | (검토 결과) 공개 순서 없음 | 각 그룹에서 **검증기관(역할 2)이 먼저 공개**한다. 검증기관 공개 전에는 지급자·투자자 대표의 공개를 거부한다(`WrongRevealOrder`). 검증기관 미공개 그룹이 기간 그룹의 `miss_max_bps`를 넘으면 그 기간은 누적 그룹 부족과 같게 처리한다(하한 갱신 안 함, 연료는 다음 유효 하한으로 재평가) | 마지막 공개자는 나머지 두 값을 보고 OFF 위치를 계산한 뒤 거부를 고를 수 있다. 지급자·투자자 대표에게는 상한과 불리 정산이 있지만 검증기관에게는 없었다. 검증기관이 먼저 공개하면 결과를 모르는 상태에서만 거부할 수 있고, 상한을 넘긴 거부는 어느 쪽에도 이득을 주지 않는다 |
 | C19 | 6시간 블록, 5블록 그룹 | **3시간 블록**, 5블록(15시간) 그룹, OFF 1블록. 블록이 시작된 뒤 첫 15분(전환 과도 구간)은 추정·정산 연료에서 모두 뺀다 | R8: 같은 잡음에서 3시간 블록의 오차가 6시간보다 작다(v1 E1: 0.296→0.211%p, v2 R8 결과는 `research/results/`). 회전익·흡입식 세일은 수 분 안에 켜고 끌 수 있어 운영 부담이 작다. 전환 과도 구간을 넣으면 OFF 첫 시간의 잔여 효과가 절감률을 깎는다(효과 5%에서 약 0.14%p, 1.3절 M1 기준 초과)라서 뺀다 |
 | C20 | 선박 센서 값으로 기준 모델 | 기준 모델의 속력은 **검증기관이 직접 받은 제3자 AIS 위치로 계산한 대지속력에 해류 재분석을 보정한 값**, 바람·파고는 **공개 재분석 자료**를 쓴다. 선박의 속도계·풍향풍속계·파고 값은 교차 대조(C11)와 안전 예외 판정(C17)에만 쓴다. 흘수는 선박 보고값(항차 안에서 거의 일정해 균형 검정으로 0.1% 조작도 잡힘) | 지급자가 보고하는 입력을 블록 종류에 따라 바꾸면 추정이 크게 흔들린다(v2 시험: 보고 속력 0.1% → 편향 −0.29%p, 풍향 2° → +0.17%p). 독립 값이면 보고값 조작이 추정에 전혀 닿지 않는다. 정밀도 손실은 작다(투자자 몫 93.4→92.5%) |
+| C21 | (구현 중 추가) 금고 6개는 `["vault", deal, kind]` PDA | 금고는 `init_vaults`에서 **새 키쌍 계정**(각자 생성에 서명)으로 만들고 권한은 `Deal` PDA, 주소는 `Deal.vaults[6]`에 저장한다. 이후 명령은 저장된 주소만 받는다(`address` 제약) | PDA 정규 bump 탐색은 시도마다 1,500 CU이고 횟수가 주소에 따라 무작위다. 6개를 한 명령에서 찾으면 꼬리가 길어 무작위 계약 330건 중 13건에서 `init_vaults`가 100,000 CU(K3)를 넘었다(최대 104,040). 키쌍 계정이면 탐색이 없어 모든 명령의 연산량이 계약 주소와 무관하게 고정된다. 금고 토큰 계정의 권한은 여전히 `Deal` PDA뿐이라 키쌍 비밀키로는 아무것도 못 한다 |
 
 ---
 
@@ -130,6 +131,7 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 
 | 날짜 | 변경 | 결정 |
 |---|---|---|
+| 2026-11-27 | v0.7.1(구현 반영, 기준은 그대로): 금고를 키쌍 계정으로 바꿔 `init_vaults` 연산량의 무작위 꼬리를 없앰(C21). 프로그램 빌드는 `opt-level = "s"`(크기 434 KB, 배포 임대료와 연산량의 절충) | 박부건 지시로 구현·검증 |
 | 2026-11-27 | v0.7(R8 방법 확정, 기준은 그대로): 3시간 블록·전환 과도 15분 제외(C19), 기준 모델 입력을 독립 속력·재분석 기상으로(C20), 스플라인 기준 모델, 교차 적합 위약 보정 구간(C9 확정), 검정 대상에 보고값−독립값 교차 대조 추가, BDN 대조 허용 오차를 max(0.5%, 4σ)로, 조작 기준의 판정 범위(효과 > 0인 모든 격자 조건 × 조작 묶음 137가지)와 조작 실험 편향의 정의 명시. M8②는 흘수를 1%p 간격 전 수준, 모델에 쓰지 않는 보고값은 대표 수준으로 판정(C20으로 그 값은 추정에 닿지 않음). 최소 누적 데이터는 그룹 수 대신 1,800 항해시간으로 표기 | 박부건 지시로 검토·반영 |
 | 2026-11-27 | v0.6.2(구현 반영): 검증기관 선공개 때문에 다른 두 역할이 건너뛰기 한도에 걸려 영영 공개하지 못하는 구멍 수정(차단 그룹은 한도에서 제외), 연속 거부 문구의 한 그룹 차이 정정(8그룹), 명령 9 검사를 투표 때·확정 때로 나눔, K5·K6 판정 대상 명확화 | 구현 중 발견 |
 | 2026-11-27 | v0.6.1: 판정 설정(`envelope.json`)을 `envelope_hash`로 체인에 고정해 캠페인 중 임계값·계측기 키 변경을 막음, 독립 기상 자료는 검증기관이 직접 받도록 명시 | 박부건 지시로 검토·반영 |
@@ -276,12 +278,12 @@ docs/PRD.md            이 문서
 
 | 계정 | 시드 | 주요 필드 |
 |---|---|---|
-| `Deal` | `["deal", admin, deal_id: u64 LE]` | `admin`, `deal_id`, `payment_mint`, `payer`, `investor_rep`, `verifiers[3]`, `manufacturer`, `opex_token`, `envelope_hash: [u8;32]`, `phi_bps: u16`, `ref_rate_bps: i32`, `comp_min_bps: u16`, `miss_max_bps: u16`, `install_cost`, `caps[2]`, `raised[2]`, `opex_per_period`, `reserve_target`, `n_periods: u16`, `senior_schedule[40]: u64`, `status: u8`(0 Fundraising, 1 Funded, 2 Active, 3 Closed), `vaults_ready`, `w_norm: u128`, `sv_fixed: u128`, `last_lb_bps: Option<i32>`, `entitlement: u64`(E), `paid_cum: u64`, `next_period: u16`, `opex_arrears`, `senior_arrears`, `reserve`, `acc[2]: u128`, `bump` |
+| `Deal` | `["deal", admin, deal_id: u64 LE]` | `admin`, `deal_id`, `payment_mint`, `payer`, `investor_rep`, `verifiers[3]`, `manufacturer`, `opex_token`, `envelope_hash: [u8;32]`, `phi_bps: u16`, `ref_rate_bps: i32`, `comp_min_bps: u16`, `miss_max_bps: u16`, `install_cost`, `caps[2]`, `raised[2]`, `opex_per_period`, `reserve_target`, `n_periods: u16`, `senior_schedule[40]: u64`, `status: u8`(0 Fundraising, 1 Funded, 2 Active, 3 Closed), `vaults_ready`, `w_norm: u128`, `sv_fixed: u128`, `last_lb_bps: Option<i32>`, `entitlement: u64`(E), `paid_cum: u64`, `next_period: u16`, `opex_arrears`, `senior_arrears`, `reserve`, `acc[2]: u128`, `bump`, `vaults[6]: Pubkey`(C21) |
 | `Campaign` | `["campaign", deal, 0u8]` | `n_groups`, `groups_per_period`, `reveal_timeout_slots`, `bond_amount`, `slash_per_miss`, `anchors_set: u8`(비트), `last_hash[3]: [u8;32]`, `last_group[3]: i32`(앵커는 −1), `bond_left[3]: u64`, `current_group: u16`, `group_opened_slot: u64`, `pending: u8`(비트), `pending_val[3]: [u8;32]`, `status[512]: u8`, `data_acc[2]: [u8;32]`, `next_data_group[2]: u16`, `period_snap[4][2]: [u8;32]`, `snap_ready[4]: u8`(기간별 비트 0 운항·비트 1 제어기), `bonds_released`, `deal`, `bump` |
 | `PeriodState` | `["period", deal, p: u16 LE]` | `deal`, `period`, `votes[3]: [u8;32]`, `voted: u8`(비트), `payload`(확정 시 저장), `payload_hash`, `finalized`, `outcome: u8`(6.5절 분기: 0 정상, 1 지급자 위반, 2 투자자 대표 상한 초과, 3 범위 밖·검증기관 상한 초과), `due: u64`, `settled`, `distributed`, `dist[5]: u64`(운영비·선순위·준비금 인출·준비금 적립·후순위), `bump` |
 | `Kyc` | `["kyc", deal, investor]` | `deal`, `investor`, `tier: u8`(0 Retail, 1 Pro), `annual_limit: u64`, `used: u64`, `window_start: i64`, `bump` |
 | `Position` | `["pos", deal, tranche: u8, owner]` | `deal`, `owner`, `tranche: u8`(0 선순위, 1 후순위), `units: u64`, `acc_snapshot: u128`, `claimed: u64`, `bump` |
-| 금고 (토큰 계정, 권한 = `Deal` PDA) | `["vault", deal, kind: u8]` | kind 0 모집, 1 정산 수납, 2 선순위, 3 후순위, 4 준비금, 5 보증금 |
+| 금고 (토큰 계정, 권한 = `Deal` PDA) | 키쌍 계정, 주소는 `Deal.vaults[kind]`(C21) | kind 0 모집, 1 정산 수납, 2 선순위, 3 후순위, 4 준비금, 5 보증금 |
 
 `Campaign.status[g]` 한 바이트: 비트 0–2 `off_index`(0–4 또는 `NO_OFF`), 비트 3–5 미공개 역할(0 지급자, 1 투자자 대표, 2 검증기관), 비트 7 결정 완료.
 
@@ -310,7 +312,7 @@ docs/PRD.md            이 문서
 | # | 명령 | 서명자 | 검사 | 효과 |
 |---|---|---|---|---|
 | 1 | `initialize_deal(params)` | admin | `caps[0] > 0`, `caps[1] > 0`, `install_cost == caps[0] + caps[1]`, `groups_per_period > 0`, `0 < n_groups ≤ 512`, `n_groups % groups_per_period == 0`, 캠페인 기간 수 ≤ 4, `캠페인 기간 수 ≤ senior_schedule 길이 ≤ 40`, `phi_bps ≤ 10000`, `0 ≤ ref_rate_bps < 5000`, `comp_min_bps ≤ 10000`, `miss_max_bps ≤ 10000`, `reveal_timeout_slots > 0`, 검증기관 3곳 서로 다름. 어기면 `InvalidParams` | `Deal`·`Campaign` 생성(금고는 1b), `n_periods = senior_schedule 길이`. 계정 `payment_mint`. 매개변수 `DealParams`: `deal_id, payer, investor_rep, verifiers[3], manufacturer, opex_token, envelope_hash, phi_bps, ref_rate_bps, comp_min_bps(기본 9500), miss_max_bps(기본 50), install_cost, caps[2], opex_per_period, reserve_target, senior_schedule(최대 40), n_groups, groups_per_period, reveal_timeout_slots, bond_amount, slash_per_miss` |
-| 1b | `init_vaults()` | admin | 모집 단계, 금고 미생성 | 금고 6개 생성 |
+| 1b | `init_vaults()` | admin + 금고 키쌍 6개 서명 | 모집 단계, 금고 미생성 | 금고 6개 생성, 주소를 `Deal.vaults`에 저장 |
 | 2 | `set_kyc(investor, tier, annual_limit)` | admin | | `Kyc` 생성·갱신 |
 | 3 | `invest(tranche, amount)` | 투자자 | `Fundraising`, 금고 생성 완료, `amount > 0`, `tranche ≤ 1`, `Kyc` 존재, 선순위는 `Retail`/`Pro`, 후순위는 `Pro`만, 한도 창(365일) 안 `used + amount ≤ annual_limit`, 모집 상한 | 모집 금고로 이체, `Position.units += amount` |
 | 4 | `close_fundraising()` | admin | 양 트랜치 완판 | 설치비를 제조사에 이체, `Funded` |

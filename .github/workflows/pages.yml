@@ -1,0 +1,47 @@
+name: pages
+# PRD 7.5: static web on GitHub Pages. Uses the latest devnet record (branch devnet-runs) when there is one,
+# otherwise the committed local-chain record (app/fixtures/run-local.json); the page says which.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_run:
+    workflows: [devnet]
+    types: [completed]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency: pages
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: devnet record if any
+        run: git show origin/devnet-runs:app/public/run.json > app/public/run.json 2>/dev/null || rm -f app/public/run.json
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: npm ci
+        working-directory: app
+      - run: npx next build
+        working-directory: app
+        env:
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+      - run: node scripts/web_check.mjs out "/${{ github.event.repository.name }}" web_check.json
+        working-directory: app
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/out
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4

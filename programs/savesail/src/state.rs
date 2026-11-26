@@ -7,7 +7,6 @@ pub const YEAR_SECS: i64 = 365 * 24 * 3600;
 
 pub const SEED_DEAL: &[u8] = b"deal";
 pub const SEED_CAMPAIGN: &[u8] = b"campaign";
-pub const SEED_VAULT: &[u8] = b"vault";
 pub const SEED_KYC: &[u8] = b"kyc";
 pub const SEED_POS: &[u8] = b"pos";
 pub const SEED_PERIOD: &[u8] = b"period";
@@ -95,9 +94,15 @@ pub struct Deal {
     pub reserve: u64,
     pub acc: [u128; 2],
     pub bump: u8,
+    /// Token accounts created by `init_vaults` (index = `V_*`); later commands accept only these addresses.
+    pub vaults: [Pubkey; 6],
 }
 
 impl Deal {
+    /// Vault address by kind; an out-of-range kind yields the default key, which no vault has.
+    pub fn vault(&self, kind: u8) -> Pubkey {
+        self.vaults.get(kind as usize).copied().unwrap_or_default()
+    }
     pub fn role_key(&self, role: u8) -> Option<Pubkey> {
         match role {
             ROLE_PAYER => Some(self.payer),
