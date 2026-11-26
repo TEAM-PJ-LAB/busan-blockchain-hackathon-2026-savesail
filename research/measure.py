@@ -30,9 +30,9 @@ BASE = dict(
     ship="gas", clim="n_atlantic", s=0.06, hetero=True, rho_e=0.9, sd_e=0.03, sd_m=0.02,
     sd_q=0.005, sd_eta=0.005, sfoc_err=0.05, bdn_sd=0.001,
     foul=0.03, drydock=False, model="spline", camp_h=3600, train_h=3600, L=3, G=5, trans=0.25, miss=0.0,
-    ci="pcf", pcf_k=5, B=1000, mbb=4, ba=True, speed_src="ind", wx_src="ind", draft_sd=0.005,
+    ci="pcf", pcf_k=5, B=1000, mbb=4, ba=True, speed_src="ind", wx_src="ind", draft_sd=0.005, fuel_src="shaft",
     # detection thresholds (R9): floor on |D| and z = |D|/SE per test
-    det=True, cov_floor=0.005, cov_z=4.0, speed_floor=0.0, speed_z=4.0, q_floor=0.002, q_z=4.0,
+    det=True, cov_floor=0.005, cov_z=4.0, speed_floor=0.0, speed_z=4.0, q_floor=0.002, q_z=3.0,
     mass_tol=0.005, mass_z=4.0, storm_ms=17.2, storm_ref_ms=13.9,
     # independent sources (verifier-fetched): AIS speed (current-corrected) and weather/wave reanalysis.
     # errors are autocorrelated (hourly rho) like real reanalysis errors
@@ -53,6 +53,43 @@ def ar1(rng, n, rho, sd, burn=600):
 def sfoc(load):
     """Relative specific fuel oil consumption vs engine load (shop-test shape, minimum near 75% MCR)."""
     return 1.0 + 0.35 * (load - 0.75) ** 2
+
+
+ENGINE_LOADS = np.round(np.arange(0.30, 1.0001, 0.05), 2)
+
+
+def engine_table():
+    """Shop-test table as published to the verifier (offchain/synth engine_curve.csv): load, SFOC to 6 decimals."""
+    return ENGINE_LOADS, np.array([float(f"{sfoc(x):.6f}") for x in ENGINE_LOADS])
+
+
+def shop_curve(loads, values):
+    """Quadratic through the shop-test table; the verifier uses the same fit, so both sides agree exactly."""
+    return np.polyfit(loads, values, 2)
+
+
+SHOP = shop_curve(*engine_table())
+
+
+def calibrate_sfoc(fuel, shaft, mcr, idx, shop=SHOP):
+    """Fuel/shaft ratio = shop curve(load) x exp(a + b*load), load = shaft power / MCR; (a, b) fitted on
+    pre-installation hours (PRD C13). The curve's shape comes from the engine test, so nothing has to be
+    extrapolated when the sail or a hull cleaning moves the load below the training range."""
+    ld = shaft / mcr
+    Z = np.column_stack([np.ones(len(ld)), ld])
+    return np.linalg.lstsq(Z[idx], (np.log(fuel / shaft) - np.log(np.polyval(shop, ld)))[idx], rcond=None)[0]
+
+
+def shaft_fuel(shaft, mcr, ab, shop=SHOP):
+    """Shaft power converted to fuel on the meter's scale with the calibrated curve (estimator fuel, C22)."""
+    ld = shaft / mcr
+    return shaft * np.polyval(shop, ld) * np.exp(ab[0] + ab[1] * ld)
+
+
+def fuel_of(c, st, ell, hrs):
+    """True fuel at engine load `ell` (shaft power / MCR): power x SFOC(load) with the engine's deviation
+    from its shop test (sfoc_err per unit load) and hourly efficiency noise."""
+    return ell * st["mcr"] * sfoc(ell) * (1 + c["sfoc_err"] * (ell - 0.75)) * st["eta"][hrs]
 
 
 # ---------------------------------------------------------------- baseline model (PRD §7.2-1)
@@ -106,26 +143,40 @@ def boot_weights(rng, ng, B, kind, m):
     return W
 
 
-def placebo_eps(rng, A, P, wt, L, G, B, folds):
+def _eps_window(rng, a, p, G, B):
+    """Ratio-of-ratios error of B random schedules (one OFF block per group) on a window of groups."""
+    off = rng.integers(0, G, (B, len(a)))
+    rows = np.arange(len(a))[None, :]
+    Ao, Po = a[rows, off].sum(1), p[rows, off].sum(1)
+    return (Ao / Po) / ((a.sum() - Ao) / (p.sum() - Po)) - 1
+
+
+def placebo_eps(rng, A, P, wt, L, G, B, n_target, windows=5):
     """Counterfactual calibration error under the same random design on pre-installation data.
-    Returns [(eps, groups_in_fold)] per fold; scaled later by sqrt(groups_in_fold / campaign_groups)."""
+
+    The error distribution is taken directly at the campaign's length: up to `windows` evenly spaced runs of
+    `n_target` consecutive training groups (out-of-fold predictions), so the dependence between groups is the
+    same as in the campaign and no 1/sqrt(n) extrapolation is needed. A campaign longer than the training
+    data uses the whole training span and extrapolates with the variance-time exponent measured on it
+    (alpha = log2(var of half span / var of full span), clipped to [0.5, 1]; 1 means independent groups).
+    Returns [(eps, groups, alpha)]; interval_from_eps scales each by (groups / campaign groups) ** (alpha / 2)."""
     ngt = (len(A) // L) // G
     n = ngt * G * L
     cell = np.arange(n) // L  # (group, block) cell index
     Ag = np.bincount(cell, A[:n] * wt[:n], ngt * G).reshape(ngt, G)
     Pg = np.bincount(cell, P[:n] * wt[:n], ngt * G).reshape(ngt, G)
-    out = []
-    for part in np.array_split(np.arange(ngt), folds):
-        a, p = Ag[part], Pg[part]
-        off = rng.integers(0, G, (B, len(part)))
-        rows = np.arange(len(part))[None, :]
-        Ao, Po = a[rows, off].sum(1), p[rows, off].sum(1)
-        out.append(((Ao / Po) / ((a.sum() - Ao) / (p.sum() - Po)) - 1, len(part)))
-    return out
+    if n_target <= ngt:
+        starts = np.unique(np.linspace(0, ngt - n_target, min(windows, ngt - n_target + 1)).round().astype(int))
+        return [(_eps_window(rng, Ag[s0:s0 + n_target], Pg[s0:s0 + n_target], G, B), n_target, 1.0) for s0 in starts]
+    full = _eps_window(rng, Ag, Pg, G, B)
+    h = ngt // 2
+    half = np.var(np.concatenate([_eps_window(rng, Ag[:h], Pg[:h], G, B), _eps_window(rng, Ag[h:2 * h], Pg[h:2 * h], G, B)]))
+    alpha = float(np.clip(np.log2(half / max(np.var(full), 1e-30)), 0.5, 1.0))
+    return [(full, ngt, alpha)]
 
 
-def interval_from_eps(S, eps_folds):
-    eps = np.concatenate([e * np.sqrt(m / len(S)) for e, m in eps_folds])
+def interval_from_eps(S, eps_windows):
+    eps = np.concatenate([e * (m / len(S)) ** (al / 2) for e, m, al in eps_windows])
     Aon, Pon, Aoff, Poff = S.sum(0)
     k = Aoff / Poff
     lo, hi = np.percentile(eps, [2.5, 97.5])
@@ -171,7 +222,9 @@ def prepare(c, seed):
     else:
         foul = 1 + c["foul"] * ty
     w = 1 + np.maximum(0.0012 * Uh * np.abs(Uh), -0.04) + 0.02 * Hs ** 2
-    nos = fref * (V / vm) ** 3 * D ** (2 / 3) * w * foul * np.exp(ar1(rng, T, c["rho_e"], c["sd_e"]))
+    # required propulsion power without sail, as engine load (shaft power / MCR); fuel follows from SFOC(load)
+    ell = load0 * (V / vm) ** 3 * D ** (2 / 3) * w * foul * np.exp(ar1(rng, T, c["rho_e"], c["sd_e"]))
+    mcr = fref / (load0 * sfoc(load0))  # MCR in fuel-equivalent units: fuel = fref at the mean load
 
     ng = (c["camp_h"] // L) // G
     n = ng * G * L
@@ -187,6 +240,7 @@ def prepare(c, seed):
     # noise draws shared by every scenario
     m_fuel = np.exp(rng.normal(0, c["sd_m"], T))
     eta = np.exp(rng.normal(0, c["sd_eta"], T))
+    nos = fuel_of(c, dict(mcr=mcr, eta=eta), ell, slice(None))  # no-sail fuel
     m_q = np.exp(rng.normal(0, c["sd_q"], T))
     Vo, Uo = V + rng.normal(0, 0.1, T), np.clip(U + rng.normal(0, 0.5, T), 0, None)
     tho = th + rng.normal(0, 5, T)
@@ -201,11 +255,17 @@ def prepare(c, seed):
     thref = th + ar1(rng, T, c["ind_th_rho"], c["ind_th_sd"])
     Href = np.clip(Hs + ar1(rng, T, c["ind_h_rho"], c["ind_h_sd"]), 0.05, None)
 
-    # training period (no sail): baseline model, SFOC calibration, cross-fitted placebo
+    # training period (no sail): SFOC calibration, baseline model, cross-fitted placebo
     tr = np.arange(t0)[obs[:t0]]
     meas_tr = nos[:t0] * m_fuel[:t0]
+    # SFOC curve shape calibrated on training data (metered fuel / torque-meter shaft power vs load)
+    shaft_tr = ell[:t0] * mcr * m_q[:t0]  # torque-meter reading
+    bq = calibrate_sfoc(meas_tr, shaft_tr, mcr, tr)
+    # fuel used by the estimator (C22): shaft power x calibrated SFOC on the meter's scale, or the meter itself
+    fuel_tr = shaft_fuel(shaft_tr, mcr, bq) if c["fuel_src"] == "shaft" else meas_tr
     Uho = Uo * np.cos(np.radians(tho))
-    y = np.log(nos * m_fuel)  # only the training part is used
+    y = np.full(T, np.nan)
+    y[:t0] = np.log(fuel_tr)  # only the training part is used
     Vm = Vind if c["speed_src"] == "ind" else Vo  # speed fed to the baseline model
     if c["wx_src"] == "ind":  # weather inputs from the independent reanalysis instead of ship sensors
         Uho, Hso_m = Uref * np.cos(np.radians(thref)), Href
@@ -225,18 +285,11 @@ def prepare(c, seed):
             knk, bk = fit(c["model"], Vm, Dobs, Uho, Hso_m, y, fi)
             pcf[ev] = predict(c["model"], knk, bk, Vm[ev], Dobs[ev], Uho[ev], Hso_m[ev])
         twt = np.where(np.arange(t0) % L == 0, 1.0 - c["trans"], 1.0) * obs[:t0]
-        eps = placebo_eps(rng, meas_tr, pcf, twt, L, G, c["B"], K)
-    # SFOC curve shape calibrated on training data (fuel/shaft vs torque-meter load)
-    load_tr = load0 * nos[:t0] / fref
-    shaft_tr = nos[:t0] / (sfoc(load_tr) * (1 + c["sfoc_err"] * (load_tr - 0.75)) * eta[:t0]) * m_q[:t0]
-    ref_shaft = np.median(shaft_tr)
-    ld = load0 * shaft_tr / ref_shaft
-    Z = np.column_stack([np.ones(t0), ld, ld ** 2])
-    bq = np.linalg.lstsq(Z[tr], np.log(meas_tr / shaft_tr)[tr], rcond=None)[0]
+        eps = placebo_eps(rng, fuel_tr, pcf, twt, L, G, c["B"], ng)
     return dict(c=c, seed=seed, rng_seed=seed + 7_777_777, T=T, t0=t0, ng=ng, n=n, camp=camp, grp=grp, blk=blk,
-                is_off=is_off, tw=tw, raw=raw, s_h=s_h, V=V, D=D, U=U, nos=nos, vid=vid, fref=fref, load0=load0,
+                is_off=is_off, tw=tw, raw=raw, s_h=s_h, V=V, D=D, U=U, nos=nos, ell=ell, mcr=mcr, vid=vid, fref=fref, load0=load0,
                 m_fuel=m_fuel, eta=eta, m_q=m_q, Vo=Vo, Uo=Uo, tho=tho, Hso=Hso, Dobs=Dobs, obs=obs, m_ba=m_ba, bdn=bdn,
-                Vind=Vind, Uref=Uref, thref=thref, Href=Href, kn=kn, beta=beta, pred_tr=pred_tr, meas_tr=meas_tr, eps=eps, bq=bq, ref_shaft=ref_shaft)
+                Vind=Vind, Uref=Uref, thref=thref, Href=Href, kn=kn, beta=beta, pred_tr=pred_tr, meas_tr=meas_tr, fuel_tr=fuel_tr, shaft_tr=shaft_tr, eps=eps, bq=bq)
 
 
 # ---------------------------------------------------------------- stage 2: one scenario
@@ -273,15 +326,15 @@ def evaluate(st, sc=None):
     sail_on = (~off_eff & ~folded) | (off_eff & viol_grp[grp])
 
     V = st["V"][camp].copy()
-    nos = st["nos"][camp].copy()
-    if sc["att_speed"]:  # real speed change in OFF blocks (fuel ~ V^3)
-        nos[off_eff] *= (1 + sc["att_speed"]) ** 3
+    ell_n = st["ell"][camp].copy()
+    if sc["att_speed"]:  # real speed change in OFF blocks (power ~ V^3)
+        ell_n[off_eff] *= (1 + sc["att_speed"]) ** 3
         V[off_eff] *= 1 + sc["att_speed"]
-    act = nos * (1 - s_h * sail_on)
-    load = st["load0"] * act / st["fref"]
-    shaft = act / (sfoc(load) * (1 + c["sfoc_err"] * (load - 0.75)) * st["eta"][camp])
+    nos = fuel_of(c, st, ell_n, camp)
+    ell_a = ell_n * (1 - s_h * sail_on)  # the sail lowers the propulsion power the engine has to deliver
+    act = fuel_of(c, st, ell_a, camp)
     meas = act * st["m_fuel"][camp]
-    shaft_m = shaft * st["m_q"][camp]
+    shaft_m = ell_a * st["mcr"] * st["m_q"][camp]
     vid = st["vid"][camp]
     nv = vid.max() + 1
     if sc["att_meter"]:
@@ -327,8 +380,10 @@ def evaluate(st, sc=None):
     if sc["exclude_viol"]:
         inc &= ~viol_grp[grp]
     w_on, w_off = (inc & ~off_eff) * tw, (inc & off_eff) * tw
-    S = np.column_stack([np.bincount(grp, meas * w_on, ng), np.bincount(grp, P * w_on, ng),
-                         np.bincount(grp, meas * w_off, ng), np.bincount(grp, P * w_off, ng)])
+    fs = shaft_fuel(shaft_m, st["mcr"], st["bq"])  # shaft-implied fuel on the meter's scale
+    F = fs if c["fuel_src"] == "shaft" else meas
+    S = np.column_stack([np.bincount(grp, F * w_on, ng), np.bincount(grp, P * w_on, ng),
+                         np.bincount(grp, F * w_off, ng), np.bincount(grp, P * w_off, ng)])
     ok_g = (S[:, 1] > 0) & (S[:, 3] > 0)
     S = S[ok_g]
     r_hat = float(ratio(S.sum(0)))
@@ -339,15 +394,16 @@ def evaluate(st, sc=None):
 
     # truth: fuel-weighted saving over commanded-ON hours the settlement multiplies
     # (transient-weighted; safety-override groups excluded, their fuel settles at the normal bound)
-    on_all = (~off_eff & ~storm_grp[grp]) * tw
-    truth = float((nos * s_h * sail_on * on_all).sum() / (nos * on_all).sum())
+    on_all = (~off_eff & ~storm_grp[grp]) * tw * st["obs"][camp]  # hours with data: kg_on only counts these
+    truth = float(((nos - act) * on_all).sum() / (nos * on_all).sum())
     out = dict(r=r_hat, lb=float(lb), ub=float(ub), truth=truth, ng=int(ok_g.sum()))
 
     if c["ba"]:  # before-after comparator: same ship with sail always ON after installation
         pre = np.arange(int(t0 * 0.75), t0)
-        act_ba = nos * (1 - s_h) * st["m_ba"]
+        full_ba = fuel_of(c, st, ell_n * (1 - s_h), camp)
+        act_ba = full_ba * st["m_ba"]
         out["r_ba"] = float(1 - (act_ba.sum() / P.sum()) / (st["meas_tr"][pre].sum() / st["pred_tr"][pre].sum()))
-        out["truth_ba"] = float((nos * s_h).sum() / nos.sum())
+        out["truth_ba"] = float((nos - full_ba).sum() / nos.sum())
 
     if c["det"]:  # verifier manipulation checks on included groups (C11, C13)
         # groups that contain a voyage change (port call) are left out of the balance tests
@@ -373,9 +429,7 @@ def evaluate(st, sc=None):
             angle_x=test(tho - st["thref"][camp], 90.0, 0.0, z),
             wave_x=test(Hso - st["Href"][camp], Hso.mean(), 0.0, z),
         )
-        ld = st["load0"] * shaft_m / st["ref_shaft"]
-        bq = st["bq"]
-        q = meas / shaft_m / np.exp(bq[0] + bq[1] * ld + bq[2] * ld ** 2)
+        q = meas / fs
         flags["fuel_shaft"] = test(q, 1.0, c["q_floor"], c["q_z"])
         # voyage bunker mass balance: tolerance max(0.5%, z x statistical sd)
         hours = np.bincount(vid, minlength=nv)

@@ -26,6 +26,7 @@ def build(d, n_groups=240, viol=(), seed=SEED, cfg=CFG):
     os.makedirs(d, exist_ok=True)
     write(f"{d}/training.csv", wd.training_lines())
     write(f"{d}/independent.csv", wd.independent_lines())
+    write(f"{d}/engine_curve.csv", wd.engine_curve_lines())
     rng = np.random.default_rng(seed)
     status = []
     for g in range(n_groups):
@@ -38,6 +39,8 @@ def build(d, n_groups=240, viol=(), seed=SEED, cfg=CFG):
     write(f"{d}/voyages.csv", wd.voyage_lines())
     env = json.load(open(os.path.join(ROOT, "offchain/verifier/envelope.template.json")))
     env["meter_public_key"] = wd.key.public_key().public_bytes_raw().hex()
+    env["mcr_kw"] = wd.mcr_kw()
+    env["engine_curve_sha256"] = hashlib.sha256(open(f"{d}/engine_curve.csv", "rb").read()).hexdigest()
     return wd, status, env
 
 
@@ -123,7 +126,11 @@ def test_estimate_matches_measure_functions(base):
     I = np.array([ind[h] for h in hrs])
     Vv, Uh, Hs = I[:, 0], I[:, 1] * np.cos(np.radians(I[:, 2])), I[:, 3]
     D = T[:, col["draft_m"]] / 18.0
-    kn, beta = m.fit(c["model"], Vv, D, Uh, Hs, np.log(T[:, col["fuel_kg"]]), np.arange(len(hrs)))
+    loads, vals = np.array([[float(x) for x in row] for row in list(csv.reader(open(f"{d}/engine_curve.csv")))[1:]]).T
+    shop, mcr = m.shop_curve(loads, vals), env["mcr_kw"]
+    ab = m.calibrate_sfoc(T[:, col["fuel_kg"]], T[:, col["shaft_kw"]], mcr, np.arange(len(hrs)), shop)
+    Ftr = m.shaft_fuel(T[:, col["shaft_kw"]], mcr, ab, shop)
+    kn, beta = m.fit(c["model"], Vv, D, Uh, Hs, np.log(Ftr), np.arange(len(hrs)))
     S = []
     for g in range(4 * GPP):
         rows = list(csv.reader(open(f"{d}/ops_{g}.csv")))[1:]
@@ -133,7 +140,7 @@ def test_estimate_matches_measure_functions(base):
         J = np.array([ind[x] for x in h])
         P = m.predict(c["model"], kn, beta, J[:, 0], A[:, 5] / 18.0, J[:, 1] * np.cos(np.radians(J[:, 2])), J[:, 3])
         off = np.array([ctrl[x] == "OFF" for x in h])
-        w, f = A[:, 3], A[:, 10]
+        w, f = A[:, 3], m.shaft_fuel(A[:, 9], mcr, ab, shop)  # estimator fuel from the torque meter (C22)
         S.append([(f * w * ~off).sum(), (P * w * ~off).sum(), (f * w * off).sum(), (P * w * off).sum()])
     est = float(m.ratio(np.array(S).sum(0)))
     assert abs(est - r["est"]) < 1e-12

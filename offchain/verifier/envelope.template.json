@@ -14,10 +14,11 @@
   "speed_floor": 0.0,
   "speed_z": 4.0,
   "q_floor": 0.002,
-  "q_z": 4.0,
+  "q_z": 3.0,
   "mass_tol": 0.005,
   "mass_z": 4.0,
-  "bdn_sd": 0.001
+  "bdn_sd": 0.001,
+  "fuel_src": "shaft"
  },
  "train_h": 3600,
  "min_training_h": 3600,
@@ -34,8 +35,8 @@
  ],
  "storm_wind_ms": 17.2,
  "storm_wind_ref_ms": 13.9,
- "load_at_mean_speed": 0.7,
  "meter_public_key": null,
  "controller_public_key": null,
- "engine_curve_sha256": null
+ "engine_curve_sha256": null,
+ "mcr_kw": null
 }

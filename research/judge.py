@@ -59,6 +59,8 @@ def judge(agg):
     rows, fails = [], []
     pool = defaultdict(lambda: [0, 0])  # name -> [hits, n]
     for (g, ci), a in sorted(agg.items()):
+        if g == "R8":  # method comparison, reported separately (r8_table); criteria apply to grids A-D
+            continue
         c, n = a["cfg"], a["n"]
         h = c.get("camp_h", 3600)
         s = c["s"]
@@ -142,6 +144,28 @@ def judge(agg):
     return rows, pooled, fails
 
 
+def r8_table(agg):
+    """R8: per method, pooled zero-effect false-pay rate, coverage, payout, worst bias and 95th-percentile error."""
+    by = defaultdict(lambda: dict(fp=[0, 0], cov=[0, 0], pay=[], bias=0.0, p95=0.0))
+    for (g, ci), a in sorted(agg.items()):
+        if g != "R8":
+            continue
+        k = a["cfg"]["method"]
+        b, n = by[k], a["n"]
+        if a["cfg"]["s"] == 0:
+            b["fp"][0] += a["lb_pos"]
+            b["fp"][1] += n
+        else:
+            b["cov"][0] += a["cover"]
+            b["cov"][1] += n
+            b["pay"].append(100 * sum(a["pay"]) / max(len(a["pay"]), 1))
+        b["bias"] = max(b["bias"], abs(sum(a["err"]) / n))
+        b["p95"] = max(b["p95"], p95(a["err"]))
+    return {k: dict(false_pay=v["fp"][0] / max(v["fp"][1], 1), coverage=v["cov"][0] / max(v["cov"][1], 1),
+                    payout_mean=sum(v["pay"]) / max(len(v["pay"]), 1), worst_bias=v["bias"], worst_p95=v["p95"])
+            for k, v in by.items()}
+
+
 def main():
     paths = sys.argv[1:] or glob.glob(f"{RESULTS}/raw/*.jsonl")
     agg = load(paths)
@@ -151,7 +175,8 @@ def main():
         for k, ok in r["checks"].items():
             by[r["grid"]][k][0] += ok
             by[r["grid"]][k][1] += 1
-    json.dump(dict(rows=rows, pooled=pooled, fails=fails), open(f"{RESULTS}/judgement.json", "w"), indent=1, default=str)
+    r8 = r8_table(agg)
+    json.dump(dict(rows=rows, pooled=pooled, fails=fails, r8=r8), open(f"{RESULTS}/judgement.json", "w"), indent=1, default=str)
     crit = ["M1", "M2", "M3", "M4", "M5", "M6-3", "M7", "M8-1", "M8-2", "M8-3", "M8-4", "M9-2", "M9-3", "M10"]
     lines = ["| 격자 | 조건 | " + " | ".join(crit) + " |", "|---|---|" + "---|" * len(crit)]
     for g in sorted(by):
@@ -164,6 +189,12 @@ def main():
         lines.append(f"| {k} | {100 * v['rate']:.3f}% (n={v['n']:,}) | {100 * v['target']:.1f}% | {100 * 2 * v['se']:.3f}%p | {'통과' if v['ok'] else '실패'} |")
     lines.append("")
     lines.append(f"실패 {len(fails)}건" + ("" if not fails else ": " + ", ".join(f"{g}{c}:{k}" for g, c, k in fails[:60])))
+    if r8:
+        lines += ["", "R8 방법 비교(정직 실행, 6개 조건 × 효과 0·5%)", "",
+                  "| 방법 | 효과 0 지급 | 하한 ≤ 참값 | 지급 비율 평균 | 최대 편향 | 최대 오차 95백분위 |", "|---|---|---|---|---|---|"]
+        for k, v in r8.items():
+            lines.append(f"| {k} | {100 * v['false_pay']:.2f}% | {100 * v['coverage']:.2f}% | {v['payout_mean']:.1f}% | "
+                         f"{v['worst_bias']:.3f}%p | {v['worst_p95']:.3f}%p |")
     open(f"{RESULTS}/judgement.md", "w").write("\n".join(lines) + "\n")
     print("\n".join(lines))
     return 1 if fails else 0

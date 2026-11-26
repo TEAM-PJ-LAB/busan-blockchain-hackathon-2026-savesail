@@ -145,6 +145,8 @@ async function synthGroup(g: number, off: number, viol: boolean) {
 function envelope() {
   const env = JSON.parse(readFileSync(join(ROOT, "offchain/verifier/envelope.template.json"), "utf8"));
   env.meter_public_key = JSON.parse(readFileSync(join(outDir, "data/meter_key.json"), "utf8")).public_key;
+  env.mcr_kw = JSON.parse(readFileSync(join(outDir, "data/engine.json"), "utf8")).mcr_kw;
+  env.engine_curve_sha256 = createHash("sha256").update(readFileSync(join(outDir, "data/engine_curve.csv"))).digest("hex");
   env.train_h = sc.synth.train_h;
   env.min_training_h = sc.synth.train_h;
   const p = join(outDir, "envelope.json");

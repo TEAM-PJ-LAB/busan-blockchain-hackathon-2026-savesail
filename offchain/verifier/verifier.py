@@ -80,8 +80,18 @@ class Verifier:
             raise SystemExit("training data below the campaign precondition (PRD C16)")
         V, Uh, Hs, _, _ = self.ind_cols(hour)
         D = draft / DRAFT_REF_M
-        y = np.log(fuel)
         idx = np.arange(len(hour))
+        # engine shop-test curve (hash fixed in the envelope) and MCR -> fuel/shaft calibration (PRD C13, C22)
+        path = os.path.join(self.dir, "engine_curve.csv")
+        if self.env.get("engine_curve_sha256") and hashlib.sha256(open(path, "rb").read()).hexdigest() != self.env["engine_curve_sha256"]:
+            raise SystemExit("engine curve differs from the envelope")
+        eh, erows = read_csv(path)
+        loads, vals = cols(eh, erows, ["load", "sfoc_rel"])
+        self.shop = m.shop_curve(loads, vals)
+        self.mcr = float(self.env["mcr_kw"])
+        self.ab = m.calibrate_sfoc(fuel, shaft, self.mcr, idx, self.shop)
+        F = self.est_fuel(fuel, shaft)
+        y = np.log(F)
         self.kn, self.beta = m.fit(c["model"], V, D, Uh, Hs, y, idx)
         # cross-fitted out-of-sample predictions on the full training timeline (missing hours weight 0)
         t0 = int(self.env["train_h"])
@@ -92,16 +102,14 @@ class Verifier:
             ev = fold[hour] == k
             kn, b = m.fit(c["model"], V, D, Uh, Hs, y, np.flatnonzero(~ev))
             P[hour[ev]] = m.predict(c["model"], kn, b, V[ev], D[ev], Uh[ev], Hs[ev])
-        A[hour] = fuel
+        A[hour] = F
         wt[hour] = np.where(hour % L == 0, 1.0 - c["trans"], 1.0)
         self.placebo = (A, P, wt)
-        # SFOC curve shape (quadratic in torque-meter load) re-fitted on training data
-        load0 = self.env["load_at_mean_speed"]
-        self.ref_shaft = float(np.median(shaft))
-        ld = load0 * shaft / self.ref_shaft
-        Z = np.column_stack([np.ones_like(ld), ld, ld ** 2])
-        self.bq = np.linalg.lstsq(Z, np.log(fuel / shaft), rcond=None)[0]
         self.model_coef = [float(x) for x in self.beta]
+
+    def est_fuel(self, fuel, shaft):
+        """Fuel the estimator uses (C22): torque-meter shaft power through the calibrated SFOC curve."""
+        return m.shaft_fuel(shaft, self.mcr, self.ab, self.shop) if self.c["fuel_src"] == "shaft" else fuel
 
     # ------------------------------------------------------------ one period
     def attest(self, chain):
@@ -221,7 +229,8 @@ class Verifier:
             V, Uh, Hs, Uref, thref = self.ind_cols(r["hour"])
             P = m.predict(c["model"], self.kn, self.beta, V, r["D"], Uh, Hs)
             on, off = ~r["off"], r["off"]
-            S.append([(r["fuel"] * r["w"] * on).sum(), (P * r["w"] * on).sum(), (r["fuel"] * r["w"] * off).sum(),
+            F = self.est_fuel(r["fuel"], r["shaft"])
+            S.append([(F * r["w"] * on).sum(), (P * r["w"] * on).sum(), (F * r["w"] * off).sum(),
                       (P * r["w"] * off).sum()])
             r.update(V=V, Uref=Uref, thref=thref, Href=Hs, uho=r["uo"] * np.cos(np.radians(r["tho"])))
             allv.append(r)
@@ -231,7 +240,7 @@ class Verifier:
         r_hat = float(m.ratio(S.sum(0))) if len(S) else 0.0
         rng = np.random.default_rng(rng_seed)
         A, Pt, wt = self.placebo
-        eps = m.placebo_eps(rng, A, Pt, wt, L, G, c["B"], c["pcf_k"])
+        eps = m.placebo_eps(rng, A, Pt, wt, L, G, c["B"], max(len(S), 1))
         lb, ub = m.interval_from_eps(S, eps) if len(S) else (0.0, 0.0)
 
         # manipulation checks on the cumulative included data (C11, C13)
@@ -264,11 +273,7 @@ class Verifier:
             hit |= test("wave_x", [r["hso"] - r["Href"] for r in same], np.concatenate([r["hso"] for r in same]).mean(), 0.0, z)
             if hit:
                 flags |= 1
-            load0 = env["load_at_mean_speed"]
-            qs = []
-            for r in same:
-                ld = load0 * r["shaft"] / self.ref_shaft
-                qs.append(r["fuel"] / r["shaft"] / np.exp(self.bq[0] + self.bq[1] * ld + self.bq[2] * ld ** 2))
+            qs = [r["fuel"] / m.shaft_fuel(r["shaft"], self.mcr, self.ab, self.shop) for r in same]
             if test("fuel_shaft", qs, 1.0, c["q_floor"], c["q_z"]):
                 flags |= 2
             # voyage mass balance (completed voyages with >= 200 campaign hours)

@@ -9,7 +9,7 @@ CLI (used by the executor):
   python3 synth.py serve CONFIG.json OUT_DIR
     stdin : one JSON per line  {"group": g, "off_index": k, "viol": false}   (k = 7 -> all blocks ON)
     stdout: one JSON per line  {"group": g, "root_ops": hex, "root_ctrl": hex, "rows": n}
-  Files in OUT_DIR: training.csv, independent.csv, engine_curve.csv, meter_key.json,
+  Files in OUT_DIR: training.csv, independent.csv, engine_curve.csv, engine.json (MCR), meter_key.json,
   ops_<g>.csv, ctrl_<g>.csv, meter_<g>.json, voyages.csv (completed voyages, rewritten each group).
 """
 import hashlib
@@ -69,8 +69,7 @@ class World:
     def training_lines(self):
         st, t0 = self.st, self.st["t0"]
         nos, mf = st["nos"][:t0], st["m_fuel"][:t0]
-        load = st["load0"] * nos / st["fref"]
-        shaft = nos / (m.sfoc(load) * (1 + self.cfg["sfoc_err"] * (load - 0.75)) * st["eta"][:t0]) * st["m_q"][:t0]
+        shaft = st["shaft_tr"]  # torque-meter reading (engine load x MCR)
         out = [OPS_HEADER]
         for h in range(t0):
             if not st["obs"][h]:
@@ -86,8 +85,12 @@ class World:
                                for h in range(T)]
 
     def engine_curve_lines(self):
-        loads = np.round(np.arange(0.30, 1.0001, 0.05), 2)
-        return ["load,sfoc_rel"] + [f"{x:.2f},{m.sfoc(x):.6f}" for x in loads]
+        loads, values = m.engine_table()
+        return ["load,sfoc_rel"] + [f"{x:.2f},{v:.6f}" for x, v in zip(loads, values)]
+
+    def mcr_kw(self):
+        """Engine MCR in kW on the same scale as the shaft_kw column (load = shaft_kw / MCR)."""
+        return self.st["mcr"] / SFOC_REF
 
     # ------------------------------------------------------------ one group after its schedule is fixed
     def group(self, g: int, off_index: int, viol: bool = False):
@@ -99,10 +102,9 @@ class World:
         sail = ~off | (off & viol)
         self.sail_on[idx] = sail
         hrs = t0 + idx
-        nos = st["nos"][hrs]
-        act = nos * (1 - st["s_h"][idx] * sail)
-        load = st["load0"] * act / st["fref"]
-        shaft = act / (m.sfoc(load) * (1 + c["sfoc_err"] * (load - 0.75)) * st["eta"][hrs]) * st["m_q"][hrs]
+        ell = st["ell"][hrs] * (1 - st["s_h"][idx] * sail)  # engine load with the sail as commanded/violated
+        act = m.fuel_of(c, st, ell, hrs)
+        shaft = ell * st["mcr"] * st["m_q"][hrs]
         meas = act * st["m_fuel"][hrs]
         w = st["tw"][idx]
         ops, ctrl = [], []
@@ -149,6 +151,7 @@ def serve(cfg_path, out_dir):
     write(os.path.join(out_dir, "training.csv"), wd.training_lines())
     write(os.path.join(out_dir, "independent.csv"), wd.independent_lines())
     write(os.path.join(out_dir, "engine_curve.csv"), wd.engine_curve_lines())
+    json.dump(dict(mcr_kw=wd.mcr_kw()), open(os.path.join(out_dir, "engine.json"), "w"))
     pub = wd.key.public_key().public_bytes_raw().hex()
     json.dump(dict(public_key=pub, alg="ed25519"), open(os.path.join(out_dir, "meter_key.json"), "w"))
     for line in sys.stdin:

@@ -1,5 +1,6 @@
 """Economics experiments R1, R5, R6 and criteria F1-F5 (PRD §1.4, §8). Writes results/econ.json and .md."""
 import json
+import math
 import os
 
 import econ
@@ -21,7 +22,8 @@ def main():
     # R1: phi per settlement mode and term (junior median IRR 12% on the flat 750 path), then every price path
     for st in SETTLES:
         for T in TERMS:
-            phi = round(econ.solve_phi(dict(T=T, settle=st)), 3)
+            # round up to 0.001 so the stated phi still reaches the 12% target (F1, R1 precision +-0.001)
+            phi = math.ceil(econ.solve_phi(dict(T=T, settle=st)) * 1000 - 1e-9) / 1000
             out["phi"][f"{st}_{T}"] = phi
             for pr in PRICES:
                 r = econ.simulate(dict(T=T, settle=st, price=pr), phi)
