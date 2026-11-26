@@ -5,3 +5,4 @@ keys/
 .anchor/
 __pycache__/
 .DS_Store
+research/results/raw/

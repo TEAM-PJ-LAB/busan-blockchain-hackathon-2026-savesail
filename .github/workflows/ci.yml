@@ -1,6 +1,7 @@
 name: ci
 on:
   push:
+    branches-ignore: [research-results]
   pull_request:
 permissions:
   contents: read
