@@ -1,0 +1,41 @@
+{
+ "format_version": 1,
+ "model": {
+  "ship": "bulk",
+  "L": 3,
+  "G": 5,
+  "trans": 0.25,
+  "model": "spline",
+  "ci": "pcf",
+  "pcf_k": 5,
+  "B": 1000,
+  "cov_floor": 0.005,
+  "cov_z": 4.0,
+  "speed_floor": 0.0,
+  "speed_z": 4.0,
+  "q_floor": 0.002,
+  "q_z": 4.0,
+  "mass_tol": 0.005,
+  "mass_z": 4.0,
+  "bdn_sd": 0.001
+ },
+ "train_h": 3600,
+ "min_training_h": 3600,
+ "min_campaign_h": 1800,
+ "max_missing": 0.15,
+ "required_inputs": [
+  "speed_kn",
+  "draft_m",
+  "wind_ms",
+  "wind_rel_deg",
+  "hs_m",
+  "shaft_kw",
+  "fuel_kg"
+ ],
+ "storm_wind_ms": 17.2,
+ "storm_wind_ref_ms": 13.9,
+ "load_at_mean_speed": 0.7,
+ "meter_public_key": null,
+ "controller_public_key": null,
+ "engine_curve_sha256": null
+}
