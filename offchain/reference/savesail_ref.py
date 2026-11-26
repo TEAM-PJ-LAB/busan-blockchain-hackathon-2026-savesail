@@ -75,20 +75,40 @@ class Deal:
         s.opex_arr = s.sen_arr = 0
         s.received_total = 0
 
-    def finalize(s, a: dict, payer_miss_groups: int, groups: int) -> int:
-        """a: attested payload. returns due for the period."""
+    def finalize(s, a: dict, payer_miss_groups: int, inv_miss_groups: int, groups: int,
+                 ver_miss_groups: int = 0) -> int:
+        """a: attested payload (flags optional). Returns due for the period (PRD 6.5).
+        payer violation  -> period ON fuel fixed at max(ub, ref)   (adverse to payer)
+        investor over-cap -> period ON fuel valued 0              (adverse to investors)
+        out of envelope or verifier over-cap -> fuel joins w_norm, bound not updated (C15, C18)
+        a["override"] = safety-override groups below the weather threshold: counted as payer-missing
+        groups, their ON fuel is in kg_miss_payer (C17). Overrides above the threshold are in kg_on.
+        precedence: payer violation > investor over-cap > out of envelope / verifier over-cap > normal"""
         assert -BPS < a["lb"] <= a["est"] <= a["ub"] < BPS // 2
+        flags = a.get("flags", 0)
+        assert flags & ~0b1111 == 0
         price = a["price"]
-        violation = a["comp"] < s.comp_min or payer_miss_groups * BPS > s.miss_max * groups
+        ov = a.get("override", 0)
+        assert 0 <= ov <= groups and payer_miss_groups + inv_miss_groups + ver_miss_groups + ov <= groups
+        assert payer_miss_groups + ov > 0 or a["kg_miss_payer"] == 0
+        assert inv_miss_groups > 0 or a["kg_miss_inv"] == 0
+        payer_viol = (a["comp"] < s.comp_min or (payer_miss_groups + ov) * BPS > s.miss_max * groups
+                      or flags & 0b1011 != 0)  # speed, meter, data quality
+        inv_viol = inv_miss_groups * BPS > s.miss_max * groups
+        ver_over = ver_miss_groups * BPS > s.miss_max * groups
         w = value_micro(a["kg_on"], price)
-        if violation:
-            s.sv_fixed += g_num(w, s.last_lb if s.last_lb is not None else s.ref)
+        if payer_viol:
+            s.sv_fixed += g_num(w, max(a["ub"], s.ref))
+        elif inv_viol:
+            pass
+        elif flags & 0b100 or ver_over:
+            s.w_norm += w
         else:
             s.w_norm += w
             s.last_lb = a["lb"]
         s.sv_fixed += g_num(value_micro(a["kg_miss_payer"], price), a["ub"])  # adverse to payer
         # kg_miss_inv contributes 0 (adverse to investors)
-        lb = s.last_lb if s.last_lb is not None else s.ref
+        lb = s.last_lb if s.last_lb is not None else 0
         s.E = (g_num(s.w_norm, lb) + s.sv_fixed) * s.phi // BPS
         return max(0, s.E - s.paid)
 
@@ -187,7 +207,7 @@ def main():
         (dict(kg_on=3_970_000, kg_miss_payer=0, kg_miss_inv=0, price=price, lb=640, est=700, ub=760, comp=10000), 0, 30),
     ]
     for p, (a, pm, gp) in enumerate(pay):
-        due = d.finalize(a, pm, gp)
+        due = d.finalize(a, pm, 0, gp)
         d.settle(due)
         r = d.distribute(p)
         print(f"P{p} due={due:>13,} E={d.E:>13,} | " + " ".join(f"{k}={v:,}" for k, v in r.items()))
@@ -204,7 +224,7 @@ def main():
              senior_units=senior, junior_units=junior)
     base = dict(kg_on=3_980_000, kg_miss_payer=0, kg_miss_inv=0, price=price, comp=10000)
     for p, (lb, est, ub) in enumerate([(800, 900, 1000), (300, 500, 700)]):
-        due = c.finalize(dict(base, lb=lb, est=est, ub=ub), 0, 30)
+        due = c.finalize(dict(base, lb=lb, est=est, ub=ub), 0, 0, 30)
         c.settle(due)
         r = c.distribute(p)
         print(f"C{p} due={due:>13,} E={c.E:>13,} paid={c.paid:,} | " + " ".join(f"{k}={v:,}" for k, v in r.items()))
@@ -214,6 +234,43 @@ def main():
     out = c.opex_out + c.vault[0] + c.vault[1] + c.reserve + c.collection + res["refund"]
     assert out == c.received_total, (out, c.received_total)
     print("close       ", res, "overpaid", f"{over:,}")
+
+    # A.5 out-of-envelope period then a valid one; investor over-cap period
+    mk = lambda: Deal(phi_bps=9000, ref_rate_bps=600, comp_min_bps=9500, miss_max_bps=50,
+                      opex=0, senior_sched=[0] * 3, reserve_target=0, senior_units=1, junior_units=1)
+    q = mk()
+    d0 = q.finalize(dict(base, lb=410, est=600, ub=790, flags=0b100), 0, 0, 30)
+    q.settle(d0)
+    d1 = q.finalize(dict(base, lb=600, est=700, ub=800), 0, 0, 30)
+    print(f"A5 envelope: due0={d0:,} due1={d1:,} E={q.E:,} last_lb={q.last_lb}")
+    assert d0 == 0 and q.E == (2 * value_micro(3_980_000, price)) * 600 // 9400 * 9000 // BPS
+    r = mk()
+    e0 = r.finalize(dict(base, lb=600, est=700, ub=800), 0, 0, 30)
+    r.settle(e0)
+    e1 = r.finalize(dict(base, lb=650, est=750, ub=850), 0, 1, 30)  # investor withholds 1/30 > 0.5%
+    print(f"A5 investor over-cap: due0={e0:,} due1={e1:,} E={r.E:,} last_lb={r.last_lb}")
+    assert e1 == 0 and r.last_lb == 600
+    t = mk()
+    f0 = t.finalize(dict(base, lb=600, est=700, ub=800, flags=0b1000), 0, 0, 30)  # payer data quality
+    print(f"A5 data quality: due0={f0:,} last_lb={t.last_lb}")
+    assert f0 == value_micro(3_980_000, price) * 800 // 9200 * 9000 // BPS and t.last_lb is None
+    u = mk()  # safety override within cap: 1 of 300 groups (C17)
+    h0 = u.finalize(dict(base, lb=600, est=700, ub=800, override=1, kg_miss_payer=13_000), 0, 0, 300)
+    print(f"A5 override in-cap: due0={h0:,} last_lb={u.last_lb}")
+    assert h0 == (value_micro(3_980_000, price) * 600 // 9400
+                  + value_micro(13_000, price) * 800 // 9200) * 9000 // BPS and u.last_lb == 600
+    v = mk()  # safety override over cap: 1 of 30 groups -> payer violation
+    k0 = v.finalize(dict(base, lb=600, est=700, ub=800, override=1, kg_miss_payer=13_000), 0, 0, 30)
+    print(f"A5 override over-cap: due0={k0:,} last_lb={v.last_lb}")
+    assert k0 == (value_micro(3_980_000, price) * 800 // 9200
+                  + value_micro(13_000, price) * 800 // 9200) * 9000 // BPS and v.last_lb is None
+    x = mk()  # verifier withholds 1/30 > 0.5% in period 2: bound not updated (C18)
+    m0 = x.finalize(dict(base, lb=600, est=700, ub=800), 0, 0, 30)
+    x.settle(m0)
+    m1 = x.finalize(dict(base, lb=650, est=750, ub=850), 0, 0, 30, ver_miss_groups=1)
+    print(f"A5 verifier over-cap: due0={m0:,} due1={m1:,} E={x.E:,} last_lb={x.last_lb}")
+    assert x.E == (2 * value_micro(3_980_000, price)) * 600 // 9400 * 9000 // BPS
+    assert m1 == x.E - m0 and x.last_lb == 600
 
 if __name__ == "__main__":
     main()
