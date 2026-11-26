@@ -24,7 +24,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(ROOT, "research", "results")
 MARK = re.compile(r"([−-]?[\d,]*\.?\d+)\s*(%|%p|배|건|개)?<!--n:([\w./-]+):([\w.\-]+)(?::([^>]*?))?-->")
 DEFAULT = ["README.md", *sorted(p for p in glob.glob("docs/*.md") if not p.endswith(("PRD.md", "deployments.md")))]
-REPORTED = re.compile(r"(밝혔|보도했|보도됐|발표했|집계|추정했|따르면|기록했)")
+REPORTED = re.compile(r"(밝혔|보도했|보도됐|발표했|집계로|집계했|추정했|따르면|기록했)")
 SOURCE = re.compile(r"\[\[?\d+\]?\]|\]\(https?://|https?://|research/results|<!--n:")
 _cache = {}
 
@@ -53,7 +53,10 @@ def fix(path):
 
     def sub(m):
         shown, unit, file, key, spec = m.groups()
-        want = fmt(value(file, key), spec)
+        try:
+            want = fmt(value(file, key), spec)
+        except (KeyError, IndexError, FileNotFoundError, ValueError, TypeError):
+            return m.group(0)  # reported by check()
         if want.startswith("-"):
             want = "−" + want[1:]  # typographic minus in the Korean documents
         return want + m.group(0)[len(shown):]

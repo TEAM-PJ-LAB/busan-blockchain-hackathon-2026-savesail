@@ -124,7 +124,7 @@ flowchart LR
 
 ### 3.4 φ(지급 비율)는 어떻게 정하나
 
-φ는 후순위 투자자가 목표 수익(모의실험에서는 중앙값 IRR 12%)을 얻을 수 있는 최소 비율로 정한다. 하한 정산과 누적 재정산까지 넣은 모의실험에서 기준 사례(설치비 400만 달러, 연 1,500톤 절감, 연료 750달러/톤)의 φ는 7년 계약 0.971<!--n:econ.json:phi.trueup_7:.3f-->, 10년 계약 0.785<!--n:econ.json:phi.trueup_10:.3f-->, 12년 계약 0.718<!--n:econ.json:phi.trueup_12:.3f-->였다(5.2절). 그래서 **10년 계약을 기본안**으로 두고, 데모 계약도 φ = 0.785를 쓴다.
+φ는 후순위 투자자가 목표 수익(모의실험에서는 중앙값 IRR 12%)을 얻을 수 있는 최소 비율로 정한다. 하한 정산과 누적 재정산까지 넣은 모의실험에서 기준 사례(설치비 400만 달러, 연 1,500톤 절감, 연료 750달러/톤)의 φ는 7년 계약 0.970<!--n:econ.json:phi.trueup_7:.3f-->, 10년 계약 0.785<!--n:econ.json:phi.trueup_10:.3f-->, 12년 계약 0.717<!--n:econ.json:phi.trueup_12:.3f-->였다(5.2절). 그래서 **10년 계약을 기본안**으로 두고, 데모 계약도 φ = 0.785를 쓴다.
 
 ---
 
@@ -207,84 +207,90 @@ sequenceDiagram
 
 ## 5. 사전 실험 결과
 
-모든 실험은 대회 기간(2026-11-25 이후)에 수행했다. 결과는 **모의실험**이며, 아래 가정과 한계를 함께 읽어야 한다.
+모든 실험은 대회 기간(2026-11-25 이후)에 수행한 **모의실험**이다. 코드·원자료·판정은 [`research/`](research/README.md)에 있고 `python3 research/run_all.py` 한 줄로 다시 돌릴 수 있다. 수치는 `research/results/`의 파일에서 읽어 적었고 CI가 대조한다(`scripts/check_numbers.py`).
 
-### 5.1 측정 실험: 무작위 블록 설계는 편향이 없는가
+### 5.1 측정 실험: 요구 운영 범위 전체에서 기준을 지키는가
 
-**데이터.** 공개 GitHub 저장소에 있는 가스운반선 1척의 시간 단위 운항 기록(2017.7~2019.5, 16,248행)을 썼다. 원본에 라이선스가 명시되어 있지 않아 이 저장소에는 포함하지 않는다. 해커톤 데모는 합성 데이터를 쓴다.
+**시뮬레이터.** 시간 단위로 선박 1척의 1년 학습 기간과 캠페인을 만든다. 속력·흘수·바람·파고·선체 오염(청소 포함)·설명되지 않는 연비 변동(자기상관)·유량계 잡음·결측을 넣고, 엔진 부하는 축동력/MCR, 연료는 부하별 연료 소비율 곡선으로 계산한다. 세일 효과는 일정하거나 바람에 따라 변하게 넣고, 참값(정산 대상 시간의 실제 절감률)을 정확히 안다. 검증기와 같은 코드로 추정·신뢰구간·조작 검사를 한다.
 
-**방법.** 실제 선박에는 세일이 없으므로, ON 블록 연료 소비에 가상의 절감률(0%, 3%, 5%, 8%)을 곱해 넣고, 설계가 그 값을 얼마나 정확히 되찾는지 확인했다. 앞 1년으로 기준 모델을 학습하고, 2018.7~2019.2 구간(3,222 항해시간)에서 평가했다. 무작위 일정은 설정마다 120~150개를 새로 뽑았다.
+**시험 격자.** A 기준 10개 조건(조건당 10,000회), B 한 요인씩 바꾼 48개, C 범위 전체 라틴 하이퍼큐브 300개, D 최악 모서리 128개(각 2,000회). 효과가 있는 조건마다 조작 137가지를 얹었다(A·B·D 2,000회, C 500회). 판정은 조건마다 단측 이항 검정(유의수준 0.1%)과 격자 합산 ±2SE(PRD 1.3절).
 
-**① 전후 비교는 쓸 수 없다** (실제 절감률 0%)
+**결과(통과 조건 수 / 적용 조건 수).**
 
-| 방법 | 평가 창 | 추정 절감률 |
-|---|---|---|
-| 전후 비교 | 3개월 창 3개 | −2.7%, −8.0%, −4.7% |
-| 전후 비교 | 8개월 | −5.7% |
-| 전후 비교 + 추세 보정 | 8개월 | −7.8% |
-
-효과가 없는데도 세일 효과와 같은 크기의 가짜 효과가 나왔다. 추세를 보정하면 오히려 더 나빠졌다.
-
-**② 무작위 블록 설계** (1년 창, 6시간 블록 기준)
-
-| OFF 비율 | 편향 | 오차 95백분위 | 오탐률(효과 0인데 지급) | 지급 비율 3% / 5% / 8% 세일 |
-|---|---|---|---|---|
-| 20% (5블록 중 1) | +0.01%p | 0.85~0.93%p | 2.5% | 72% / 83% / 90% |
-| 10% (10블록 중 1) | −0.12%p | 1.28~1.40%p | 4.2% | 55% / 73% / 84% |
-| 5% (20블록 중 1) | +0.01%p | 1.85~2.01%p | 3.3% | 38% / 61% / 76% |
-
-- **지급 비율**은 95% 하한 기준 정산 시 실제 절감 중 투자자에게 정산되는 평균 비율이다.
-- 같은 OFF 20%에서 블록 길이를 12시간, 24시간으로 늘리면 5% 세일의 지급 비율이 79%, 64%로 떨어져 6시간을 택했다.
-
-**③ 강건성** (6시간 블록, 5블록 중 1 OFF)
-
-| 시나리오 | 평가 시간 | 편향 | 오차 95백분위 | 오탐률 | 지급 비율 5% / 8% |
+| 기준 | 내용 | A | B | C | D |
 |---|---|---|---|---|---|
-| 기준 | 3,222h | −0.03%p | 0.83%p | 2.7% | 83% / 90% |
-| 만재 운항만 | 1,611h | −0.09%p | 1.11%p | 4.0% | 78% / 86% |
-| 공선 운항만 | 1,611h | −0.06%p | 1.43%p | 3.3% | 70% / 82% |
-| 강풍 구간만 | 806h | −0.01%p | 2.07%p | 1.3% | 60% / 76% |
-| 학습·평가 기간 뒤집기 | 4,548h | −0.08%p | 1.01%p | 2.0% | 80% / 88% |
-| 일부러 나쁜 모델(속력만 사용) | 3,222h | −0.14%p | 1.18%p | 1.3% | 74% / 84% |
+| M1 | 편향 ≤ 0.10%p | 0<!--n:judgement.json:summary.pass.A.M1:.0f-->/0<!--n:judgement.json:summary.of.A.M1:.0f--> | 0<!--n:judgement.json:summary.pass.B.M1:.0f-->/0<!--n:judgement.json:summary.of.B.M1:.0f--> | 0<!--n:judgement.json:summary.pass.C.M1:.0f-->/0<!--n:judgement.json:summary.of.C.M1:.0f--> | 0<!--n:judgement.json:summary.pass.D.M1:.0f-->/0<!--n:judgement.json:summary.of.D.M1:.0f--> |
+| M2 | 오차 95백분위 | 0<!--n:judgement.json:summary.pass.A.M2:.0f-->/0<!--n:judgement.json:summary.of.A.M2:.0f--> | 0<!--n:judgement.json:summary.pass.B.M2:.0f-->/0<!--n:judgement.json:summary.of.B.M2:.0f--> | 0<!--n:judgement.json:summary.pass.C.M2:.0f-->/0<!--n:judgement.json:summary.of.C.M2:.0f--> | 0<!--n:judgement.json:summary.pass.D.M2:.0f-->/0<!--n:judgement.json:summary.of.D.M2:.0f--> |
+| M3 | 효과 0 잘못 지급 | 0<!--n:judgement.json:summary.pass.A.M3:.0f-->/0<!--n:judgement.json:summary.of.A.M3:.0f--> | 0<!--n:judgement.json:summary.pass.B.M3:.0f-->/0<!--n:judgement.json:summary.of.B.M3:.0f--> | 0<!--n:judgement.json:summary.pass.C.M3:.0f-->/0<!--n:judgement.json:summary.of.C.M3:.0f--> | 0<!--n:judgement.json:summary.pass.D.M3:.0f-->/0<!--n:judgement.json:summary.of.D.M3:.0f--> |
+| M4 | 하한 ≤ 참값 | 0<!--n:judgement.json:summary.pass.A.M4:.0f-->/0<!--n:judgement.json:summary.of.A.M4:.0f--> | 0<!--n:judgement.json:summary.pass.B.M4:.0f-->/0<!--n:judgement.json:summary.of.B.M4:.0f--> | 0<!--n:judgement.json:summary.pass.C.M4:.0f-->/0<!--n:judgement.json:summary.of.C.M4:.0f--> | 0<!--n:judgement.json:summary.pass.D.M4:.0f-->/0<!--n:judgement.json:summary.of.D.M4:.0f--> |
+| M5 | 투자자 몫 | 0<!--n:judgement.json:summary.pass.A.M5:.0f-->/0<!--n:judgement.json:summary.of.A.M5:.0f--> | 0<!--n:judgement.json:summary.pass.B.M5:.0f-->/0<!--n:judgement.json:summary.of.B.M5:.0f--> | 0<!--n:judgement.json:summary.pass.C.M5:.0f-->/0<!--n:judgement.json:summary.of.C.M5:.0f--> | 0<!--n:judgement.json:summary.pass.D.M5:.0f-->/0<!--n:judgement.json:summary.of.D.M5:.0f--> |
+| M6-3 | 강풍 안전 예외 | 0<!--n:judgement.json:summary.pass.A.M6-3:.0f-->/0<!--n:judgement.json:summary.of.A.M6-3:.0f--> | 0<!--n:judgement.json:summary.pass.B.M6-3:.0f-->/0<!--n:judgement.json:summary.of.B.M6-3:.0f--> | 0<!--n:judgement.json:summary.pass.C.M6-3:.0f-->/0<!--n:judgement.json:summary.of.C.M6-3:.0f--> | 0<!--n:judgement.json:summary.pass.D.M6-3:.0f-->/0<!--n:judgement.json:summary.of.D.M6-3:.0f--> |
+| M7 | OFF 위반 | 0<!--n:judgement.json:summary.pass.A.M7:.0f-->/0<!--n:judgement.json:summary.of.A.M7:.0f--> | 0<!--n:judgement.json:summary.pass.B.M7:.0f-->/0<!--n:judgement.json:summary.of.B.M7:.0f--> | 0<!--n:judgement.json:summary.pass.C.M7:.0f-->/0<!--n:judgement.json:summary.of.C.M7:.0f--> | 0<!--n:judgement.json:summary.pass.D.M7:.0f-->/0<!--n:judgement.json:summary.of.D.M7:.0f--> |
+| M8-1 | 감속 탐지 | 0<!--n:judgement.json:summary.pass.A.M8-1:.0f-->/0<!--n:judgement.json:summary.of.A.M8-1:.0f--> | 0<!--n:judgement.json:summary.pass.B.M8-1:.0f-->/0<!--n:judgement.json:summary.of.B.M8-1:.0f--> | 0<!--n:judgement.json:summary.pass.C.M8-1:.0f-->/0<!--n:judgement.json:summary.of.C.M8-1:.0f--> | 0<!--n:judgement.json:summary.pass.D.M8-1:.0f-->/0<!--n:judgement.json:summary.of.D.M8-1:.0f--> |
+| M8-2 | 보고값 조작 | 0<!--n:judgement.json:summary.pass.A.M8-2:.0f-->/0<!--n:judgement.json:summary.of.A.M8-2:.0f--> | 0<!--n:judgement.json:summary.pass.B.M8-2:.0f-->/0<!--n:judgement.json:summary.of.B.M8-2:.0f--> | 0<!--n:judgement.json:summary.pass.C.M8-2:.0f-->/0<!--n:judgement.json:summary.of.C.M8-2:.0f--> | 0<!--n:judgement.json:summary.pass.D.M8-2:.0f-->/0<!--n:judgement.json:summary.of.D.M8-2:.0f--> |
+| M8-3 | 검정 오탐 | 0<!--n:judgement.json:summary.pass.A.M8-3:.0f-->/0<!--n:judgement.json:summary.of.A.M8-3:.0f--> | 0<!--n:judgement.json:summary.pass.B.M8-3:.0f-->/0<!--n:judgement.json:summary.of.B.M8-3:.0f--> | 0<!--n:judgement.json:summary.pass.C.M8-3:.0f-->/0<!--n:judgement.json:summary.of.C.M8-3:.0f--> | 0<!--n:judgement.json:summary.pass.D.M8-3:.0f-->/0<!--n:judgement.json:summary.of.D.M8-3:.0f--> |
+| M8-4 | 감속 편향 | 0<!--n:judgement.json:summary.pass.A.M8-4:.0f-->/0<!--n:judgement.json:summary.of.A.M8-4:.0f--> | 0<!--n:judgement.json:summary.pass.B.M8-4:.0f-->/0<!--n:judgement.json:summary.of.B.M8-4:.0f--> | 0<!--n:judgement.json:summary.pass.C.M8-4:.0f-->/0<!--n:judgement.json:summary.of.C.M8-4:.0f--> | 0<!--n:judgement.json:summary.pass.D.M8-4:.0f-->/0<!--n:judgement.json:summary.of.D.M8-4:.0f--> |
+| M9-2 | 유량계 조작 편향 | 0<!--n:judgement.json:summary.pass.A.M9-2:.0f-->/0<!--n:judgement.json:summary.of.A.M9-2:.0f--> | 0<!--n:judgement.json:summary.pass.B.M9-2:.0f-->/0<!--n:judgement.json:summary.of.B.M9-2:.0f--> | 0<!--n:judgement.json:summary.pass.C.M9-2:.0f-->/0<!--n:judgement.json:summary.of.C.M9-2:.0f--> | 0<!--n:judgement.json:summary.pass.D.M9-2:.0f-->/0<!--n:judgement.json:summary.of.D.M9-2:.0f--> |
+| M9-3 | 유량계 조작 탐지 | 0<!--n:judgement.json:summary.pass.A.M9-3:.0f-->/0<!--n:judgement.json:summary.of.A.M9-3:.0f--> | 0<!--n:judgement.json:summary.pass.B.M9-3:.0f-->/0<!--n:judgement.json:summary.of.B.M9-3:.0f--> | 0<!--n:judgement.json:summary.pass.C.M9-3:.0f-->/0<!--n:judgement.json:summary.of.C.M9-3:.0f--> | 0<!--n:judgement.json:summary.pass.D.M9-3:.0f-->/0<!--n:judgement.json:summary.of.D.M9-3:.0f--> |
+| M10 | 전후 비교 대비 | 0<!--n:judgement.json:summary.pass.A.M10:.0f-->/0<!--n:judgement.json:summary.of.A.M10:.0f--> | 0<!--n:judgement.json:summary.pass.B.M10:.0f-->/0<!--n:judgement.json:summary.of.B.M10:.0f--> | 0<!--n:judgement.json:summary.pass.C.M10:.0f-->/0<!--n:judgement.json:summary.of.C.M10:.0f--> | 0<!--n:judgement.json:summary.pass.D.M10:.0f-->/0<!--n:judgement.json:summary.of.D.M10:.0f--> |
 
-모든 조건에서 편향은 0.14%p 이하였다. 모델이 나빠도 편향이 생기지 않고 정밀도만 조금 떨어진다는 점이 핵심이다.
+| 합산 | 내용 | 결과 | 목표 |
+|---|---|---|---|
+| M3 | 효과 0일 때 하한 > 0 | 0<!--n:judgement.json:pooled.M3.rate:.2f*100-->% | ≤ 2.5% + 2SE |
+| M4 | 효과 > 0일 때 하한 ≤ 참값 | 0<!--n:judgement.json:pooled.M4.rate:.2f*100-->% | ≥ 97.5% − 2SE |
+| M8-3 | 조작 없을 때 검정 오탐 | 0<!--n:judgement.json:pooled.M8-3.rate:.2f*100-->% | ≤ 1% + 2SE |
+| M8-1 | OFF 감속 ±3·5% 탐지 | 0<!--n:judgement.json:pooled.M8-1.rate:.2f*100-->% | ≥ 99% − 2SE |
+| M9-3 | 유량계 ±1% 이상 조작 탐지 | 0<!--n:judgement.json:pooled.M9-3.rate:.2f*100-->% | ≥ 99% − 2SE |
 
-**한계.** 선박 1척, 가상 절감률을 시간에 따라 일정하게 넣었다. 실제 세일 효과는 바람에 따라 크게 변하므로 분산이 더 클 수 있다. 무작위 배정 덕분에 평균 효과의 편향은 여전히 없지만, 정밀도는 실제 세일 데이터로 다시 확인해야 한다.
+- 전 조건 최대 편향 0<!--n:judgement.json:summary.worst_bias:.3f-->%p, 기준 잡음·3,600시간 오차 95백분위 최대 0<!--n:judgement.json:summary.worst_p95_3600:.2f-->%p, 효과 5% 이상에서 투자자 몫 최소 0<!--n:judgement.json:summary.min_payout_3600:.1f-->%(3,600시간)·0<!--n:judgement.json:summary.min_payout_1800:.1f-->%(1,800시간).
+- 전후 비교 편향의 중앙값은 0<!--n:judgement.json:summary.ba_median_abs:.2f-->%p였고, 무작위 설계의 편향은 어느 조건에서도 그 0<!--n:judgement.json:summary.ba_worst_ratio:.3f-->배를 넘지 않았다.
+- 조작이 만든 편향(탐지되지 않은 몫)의 최댓값: 보고값 조작 0<!--n:judgement.json:summary.worst_attack.rep:.3f-->%p, 유량계 조작 0<!--n:judgement.json:summary.worst_attack.meter:.3f-->%p, 강풍 안전 예외 0<!--n:judgement.json:summary.worst_attack.storm:.3f-->%p.
+- **한계.** 유량계 잡음이 크고 데이터가 짧은 조건(예: 잡음 5%, 1,800시간)에서는 유량계 1% 조작을 99% 잡는 것이 어떤 검정으로도 불가능하다([`m9_bound.json`](research/results/m9_bound.json)). 추정은 축동력 기준이라 이 조작이 지급액을 바꾸지 않지만 M9③은 그 범위에서 통과하지 못한다. 축동력계(토크미터) 조작은 신뢰 가정이다(11장 20번). 실제 세일 선박 데이터로 다시 확인해야 한다.
+
+**방법 비교(R8, 6개 조건 × 효과 0·5%, 2,000회).**
+
+| 방법 | 효과 0 잘못 지급 | 하한 ≤ 참값 | 투자자 몫 평균 | 최대 오차 95백분위 |
+|---|---|---|---|---|
+| v1: 6시간·로그선형·그룹 부트스트랩·유량계 | 0<!--n:judgement.json:r8.v1_L6_loglin_group.false_pay:.2f*100-->% | 0<!--n:judgement.json:r8.v1_L6_loglin_group.coverage:.2f*100-->% | 0<!--n:judgement.json:r8.v1_L6_loglin_group.payout_mean:.1f-->% | 0<!--n:judgement.json:r8.v1_L6_loglin_group.worst_p95:.2f-->%p |
+| 6시간·스플라인·위약 보정·유량계 | 0<!--n:judgement.json:r8.L6_spline_pcf.false_pay:.2f*100-->% | 0<!--n:judgement.json:r8.L6_spline_pcf.coverage:.2f*100-->% | 0<!--n:judgement.json:r8.L6_spline_pcf.payout_mean:.1f-->% | 0<!--n:judgement.json:r8.L6_spline_pcf.worst_p95:.2f-->%p |
+| 3시간·스플라인·위약 보정·유량계 | 0<!--n:judgement.json:r8.L3_spline_pcf.false_pay:.2f*100-->% | 0<!--n:judgement.json:r8.L3_spline_pcf.coverage:.2f*100-->% | 0<!--n:judgement.json:r8.L3_spline_pcf.payout_mean:.1f-->% | 0<!--n:judgement.json:r8.L3_spline_pcf.worst_p95:.2f-->%p |
+| + 독립 속력·재분석 기상(C20) | 0<!--n:judgement.json:r8.L3_spline_pcf_ind_meter.false_pay:.2f*100-->% | 0<!--n:judgement.json:r8.L3_spline_pcf_ind_meter.coverage:.2f*100-->% | 0<!--n:judgement.json:r8.L3_spline_pcf_ind_meter.payout_mean:.1f-->% | 0<!--n:judgement.json:r8.L3_spline_pcf_ind_meter.worst_p95:.2f-->%p |
+| + 축동력 기준 연료(C22) — **채택** | 0<!--n:judgement.json:r8.L3_spline_pcf_ind_shaft.false_pay:.2f*100-->% | 0<!--n:judgement.json:r8.L3_spline_pcf_ind_shaft.coverage:.2f*100-->% | 0<!--n:judgement.json:r8.L3_spline_pcf_ind_shaft.payout_mean:.1f-->% | 0<!--n:judgement.json:r8.L3_spline_pcf_ind_shaft.worst_p95:.2f-->%p |
+
+첫 전체 격자(v2.0, `research/results/v2.0/`)에서는 유량계 기준 추정이 유량계 조작 편향(M9②)을 다수 조건에서 넘었고, 짧은 구간에서 줄여 맞춘 신뢰구간이 강한 자기상관에서 좁아 합산 포함률이 97.25%로 모자랐다. 그래서 추정 연료를 축동력 기준으로 바꾸고(PRD C22), 신뢰구간을 캠페인과 같은 길이의 구간에서 직접 구하도록 고친 뒤(C23) 격자 전체를 다시 돌린 결과가 위 표다.
 
 ### 5.2 경제성 실험: 누구에게 이익이 되는가
 
-**기준 사례 가정.** 설치비 400만 달러, 예상 절감 연 1,500톤, 연료 750달러/톤, 운영·정비비 연 2%(설치비 대비), 선박별 성능 불확실성 로그정규 표준편차 0.30, 연도별 변동 0.10, 할인율 8%, 선순위 금리 5%, 세일 수명은 계약 종료 후 5년 추가, 2만 회 몬테카를로.
+**가정.** 설치비 400만 달러, 예상 절감 연 1,500톤, 연료 750달러/톤, 운영·정비비 연 2%(설치비 대비), 척별 성능 불확실성 로그정규 0.30, 연도별 변동 0.10, 할인율 8%, 선순위 금리 5%, 선순위 크기는 보수적 연료가 500달러에서 검증 현금흐름 하위 2%가 원리금의 1.5배를 덮는 만큼, 준비금 선순위 1년분. 검증 절감은 측정 실험의 지급 비율(누적 항해시간별, [`payout_table.json`](research/results/payout_table.json))로 깎고, 누적 재정산으로 따라잡는다. 경로 20,000개(`research/econ.py`).
 
-**선순위 크기 결정 규칙.** 검증 절감 현금흐름의 하위 2% 값(P98)을 원리금의 1.5배(DSCR 1.5)로 덮을 수 있는 만큼만 선순위로 잡는다. 이때 연료가격은 실제 기대가격(750달러)이 아니라 **보수적 가격 가정(460~500달러/톤)**을 쓴다.
+**누적 재정산 결과.**
 
-**결과 A. 보수적 가격 가정(500달러)으로 선순위 크기 결정 후 실제 연료가 경로별 결과**
-
-| 계약 기간 | φ | 선순위 비중 | 실제 연료가 경로 | 선순위 손실 확률 | 후순위 IRR 중앙값 | 지급자 NPV 평균 | 지급자 손실 확률 |
-|---|---|---|---|---|---|---|---|
-| 7년 | 0.95 | 19.5% | 750 유지 | 0.00% | 12.9% | 271만 달러 | 0% |
-| 7년 | 0.95 | 19.5% | 2년차부터 600 | 0.01% | 5.6% | 214만 달러 | 0% |
-| 7년 | 0.95 | 19.5% | 2년차부터 460 | 0.16% | −2.8% | 160만 달러 | 0% |
-| **10년** | **0.75** | **18.4%** | **750 유지** | **0.00%** | **11.8%** | **369만 달러** | **0%** |
-| 10년 | 0.75 | 18.4% | 2년차부터 600 | 0.01% | 6.0% | 296만 달러 | 0% |
-| 10년 | 0.75 | 18.4% | 2년차부터 460 | 0.32% | −0.8% | 228만 달러 | 0% |
-
-**결과 B. 선순위를 기대가격(750달러)으로 크게 잡으면 위험해진다** (7년, φ=0.9 고정)
-
-| 선순위 크기 결정 가격 | 선순위 비중 | 연료가 750 유지 시 손실 확률 | 2년차부터 460으로 하락 시 손실 확률 |
-|---|---|---|---|
-| 750달러 | 31% | 0.14% | **4.61%** |
-| 500달러 | 18% | 0.00% | 0.18% |
-| 460달러 | 16% | 0.00% | 0.09% |
+| 계약 | φ | 연료가 경로 | 선순위 비중 | 선순위 미상환 | 후순위 IRR 중앙값 | 후순위 IRR 하위 10% | 지급자 NPV 평균(만 달러) | 지급자 손실 |
+|---|---|---|---|---|---|---|---|---|
+| 7년 | 0.970<!--n:econ.json:table.30.phi:.3f--> | 750 유지 | 20.0<!--n:econ.json:table.30.senior_share:.1f-->% | 0.000<!--n:econ.json:table.30.senior_loss:.3f-->% | 12.0<!--n:econ.json:table.30.junior_irr_med:.1f-->% | −2.0<!--n:econ.json:table.30.junior_irr_p10:.1f-->% | 275<!--n:econ.json:table.30.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.30.payer_loss:.0f-->% |
+| 7년 | 0.970<!--n:econ.json:table.31.phi:.3f--> | 2년차부터 600 | 20.0<!--n:econ.json:table.31.senior_share:.1f-->% | 0.000<!--n:econ.json:table.31.senior_loss:.3f-->% | 5.0<!--n:econ.json:table.31.junior_irr_med:.1f-->% | −8.4<!--n:econ.json:table.31.junior_irr_p10:.1f-->% | 218<!--n:econ.json:table.31.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.31.payer_loss:.0f-->% |
+| 7년 | 0.970<!--n:econ.json:table.32.phi:.3f--> | 2년차부터 460 | 20.0<!--n:econ.json:table.32.senior_share:.1f-->% | 0.025<!--n:econ.json:table.32.senior_loss:.3f-->% | −2.9<!--n:econ.json:table.32.junior_irr_med:.1f-->% | −16.0<!--n:econ.json:table.32.junior_irr_p10:.1f-->% | 164<!--n:econ.json:table.32.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.32.payer_loss:.0f-->% |
+| 7년 | 0.970<!--n:econ.json:table.33.phi:.3f--> | 확률 경로(연 변동성 25%) | 20.0<!--n:econ.json:table.33.senior_share:.1f-->% | 0.000<!--n:econ.json:table.33.senior_loss:.3f-->% | 11.8<!--n:econ.json:table.33.junior_irr_med:.1f-->% | −5.5<!--n:econ.json:table.33.junior_irr_p10:.1f-->% | 285<!--n:econ.json:table.33.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.33.payer_loss:.0f-->% |
+| 7년 | 0.970<!--n:econ.json:table.34.phi:.3f--> | 2~3년차 1,200 | 20.0<!--n:econ.json:table.34.senior_share:.1f-->% | 0.000<!--n:econ.json:table.34.senior_loss:.3f-->% | 20.1<!--n:econ.json:table.34.junior_irr_med:.1f-->% | 3.8<!--n:econ.json:table.34.junior_irr_p10:.1f-->% | 282<!--n:econ.json:table.34.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.34.payer_loss:.0f-->% |
+| 10년 | 0.785<!--n:econ.json:table.35.phi:.3f--> | 750 유지 | 19.7<!--n:econ.json:table.35.senior_share:.1f-->% | 0.000<!--n:econ.json:table.35.senior_loss:.3f-->% | 12.0<!--n:econ.json:table.35.junior_irr_med:.1f-->% | 0.9<!--n:econ.json:table.35.junior_irr_p10:.1f-->% | 359<!--n:econ.json:table.35.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.35.payer_loss:.0f-->% |
+| 10년 | 0.785<!--n:econ.json:table.36.phi:.3f--> | 2년차부터 600 | 19.7<!--n:econ.json:table.36.senior_share:.1f-->% | 0.000<!--n:econ.json:table.36.senior_loss:.3f-->% | 6.3<!--n:econ.json:table.36.junior_irr_med:.1f-->% | −4.5<!--n:econ.json:table.36.junior_irr_p10:.1f-->% | 288<!--n:econ.json:table.36.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.36.payer_loss:.0f-->% |
+| 10년 | 0.785<!--n:econ.json:table.37.phi:.3f--> | 2년차부터 460 | 19.7<!--n:econ.json:table.37.senior_share:.1f-->% | 0.035<!--n:econ.json:table.37.senior_loss:.3f-->% | −0.3<!--n:econ.json:table.37.junior_irr_med:.1f-->% | −11.0<!--n:econ.json:table.37.junior_irr_p10:.1f-->% | 222<!--n:econ.json:table.37.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.37.payer_loss:.0f-->% |
+| 10년 | 0.785<!--n:econ.json:table.38.phi:.3f--> | 확률 경로(연 변동성 25%) | 19.7<!--n:econ.json:table.38.senior_share:.1f-->% | 0.010<!--n:econ.json:table.38.senior_loss:.3f-->% | 12.0<!--n:econ.json:table.38.junior_irr_med:.1f-->% | −1.3<!--n:econ.json:table.38.junior_irr_p10:.1f-->% | 370<!--n:econ.json:table.38.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.38.payer_loss:.0f-->% |
+| 10년 | 0.785<!--n:econ.json:table.39.phi:.3f--> | 2~3년차 1,200 | 19.7<!--n:econ.json:table.39.senior_share:.1f-->% | 0.000<!--n:econ.json:table.39.senior_loss:.3f-->% | 17.3<!--n:econ.json:table.39.junior_irr_med:.1f-->% | 4.4<!--n:econ.json:table.39.junior_irr_p10:.1f-->% | 384<!--n:econ.json:table.39.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.39.payer_loss:.0f-->% |
+| 12년 | 0.717<!--n:econ.json:table.40.phi:.3f--> | 750 유지 | 19.6<!--n:econ.json:table.40.senior_share:.1f-->% | 0.000<!--n:econ.json:table.40.senior_loss:.3f-->% | 12.0<!--n:econ.json:table.40.junior_irr_med:.1f-->% | 2.1<!--n:econ.json:table.40.junior_irr_p10:.1f-->% | 405<!--n:econ.json:table.40.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.40.payer_loss:.0f-->% |
+| 12년 | 0.717<!--n:econ.json:table.41.phi:.3f--> | 2년차부터 600 | 19.6<!--n:econ.json:table.41.senior_share:.1f-->% | 0.000<!--n:econ.json:table.41.senior_loss:.3f-->% | 6.8<!--n:econ.json:table.41.junior_irr_med:.1f-->% | −2.8<!--n:econ.json:table.41.junior_irr_p10:.1f-->% | 326<!--n:econ.json:table.41.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.41.payer_loss:.0f-->% |
+| 12년 | 0.717<!--n:econ.json:table.42.phi:.3f--> | 2년차부터 460 | 19.6<!--n:econ.json:table.42.senior_share:.1f-->% | 0.045<!--n:econ.json:table.42.senior_loss:.3f-->% | 0.9<!--n:econ.json:table.42.junior_irr_med:.1f-->% | −8.7<!--n:econ.json:table.42.junior_irr_p10:.1f-->% | 253<!--n:econ.json:table.42.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.42.payer_loss:.0f-->% |
+| 12년 | 0.717<!--n:econ.json:table.43.phi:.3f--> | 확률 경로(연 변동성 25%) | 19.6<!--n:econ.json:table.43.senior_share:.1f-->% | 0.020<!--n:econ.json:table.43.senior_loss:.3f-->% | 12.0<!--n:econ.json:table.43.junior_irr_med:.1f-->% | 0.5<!--n:econ.json:table.43.junior_irr_p10:.1f-->% | 416<!--n:econ.json:table.43.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.43.payer_loss:.0f-->% |
+| 12년 | 0.717<!--n:econ.json:table.44.phi:.3f--> | 2~3년차 1,200 | 19.6<!--n:econ.json:table.44.senior_share:.1f-->% | 0.000<!--n:econ.json:table.44.senior_loss:.3f-->% | 16.3<!--n:econ.json:table.44.junior_irr_med:.1f-->% | 4.9<!--n:econ.json:table.44.junior_irr_p10:.1f-->% | 437<!--n:econ.json:table.44.payer_npv_mean:.0f--> | 0<!--n:econ.json:table.44.payer_loss:.0f-->% |
 
 **해석.**
 
-1. **지급자는 어떤 경우에도 손해를 보지 않는다.** 고정 지급이 없기 때문이다(모든 경로에서 손실 확률 0%).
-2. **개인 투자자 몫(선순위)은 작고 안전하게.** 설치비의 16~20%만 선순위로 두면, 연료가가 750에서 460달러로 떨어져도 손실 확률이 0.32% 이하다. 크게 잡으면(31%) 같은 하락에서 4.6%로 뛴다. 안전성의 대가로 개인 몫이 작아지는 것은 의도한 설계다.
-3. **위험은 후순위가 진다.** 연료가 급락 시 후순위 수익률은 0% 근처로 떨어진다. 그래서 연료비 하락으로 이득을 보는 용선주가 후순위에 적합하다(3.3절).
-4. **선사가 직접 사는 것과 비교.** 같은 사례에서 선사가 해양진흥공사 보증 대출(80% 대출, 이자 2%p 보전)로 직접 사면 NPV 평균은 더 높다(7년 401만 달러, 10년 508만 달러). 하지만 손실 확률이 7년 2.3%, 10년 0.9%이고 차입이 재무제표에 남는다. SaveSail은 **기대이익을 조금 덜 받는 대신 위험·초기비용·차입을 0으로 만드는 선택지**다. 재무 여력이 충분하고 위험을 감수할 선사에게는 직접 구매가 낫다는 점도 숨기지 않는다.
-5. **선별 기준.** `연간 절감액(달러) ÷ 설치비`가 대략 0.28 이상(7년) 또는 0.24 이상(10년)이어야 후순위 목표 수익이 나왔다. 기준 사례는 1,500 × 750 ÷ 4,000,000 = 0.28이다. 이 기준 미만인 선박은 구조에 넣지 않는다.
+1. **지급자는 어떤 경로에서도 손해를 보지 않는다.** 고정 지급이 없기 때문이다(45개 시나리오 모두 손실 확률 0%).
+2. **선순위는 작고 안전하게.** 설치비의 약 20%만 선순위로 두면 연료가가 460달러로 떨어져도 미상환 확률이 0.1% 아래다.
+3. **위험은 후순위가 진다.** 연료가 급락 때 후순위 수익률은 0% 근처로 떨어진다. 연료비 하락으로 이득을 보는 용선주가 후순위에 맞는 이유다(3.3절).
+4. **초과 지급은 생기지 않았다.** 누적 재정산에서 이미 낸 돈이 정산액을 넘는 경우가 경로 20,000개 × 15개 누적 재정산 시나리오에서 0건이었다. 누적 연료가 쌓이는 속도가 하한 변동보다 훨씬 커서다.
 
-**한계.** 설치비·절감량은 공개 자료 기반 가정이며 제조사 견적으로 교체해야 한다. 환율, 선사 부도, 선박 매각은 아직 모델에 없다.
+**한계.** 설치비·절감량은 공개 자료 기반 가정이며 제조사 견적으로 바꿔야 한다. 환율, 선사 부도, 선박 매각은 아직 모델에 없다.
 
 ---
 
