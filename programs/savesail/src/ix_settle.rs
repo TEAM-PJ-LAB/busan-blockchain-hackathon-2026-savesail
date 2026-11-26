@@ -69,8 +69,8 @@ pub fn approve_attestation_handler(ctx: Context<ApproveAttestation>, payload: At
     let mut n =
         st::Counts { groups: gpp as u32, override_groups: payload.override_groups as u32, ..Default::default() };
     let mut missing_groups = 0u32;
-    for g in p * gpp..(p + 1) * gpp {
-        let m = sch::missing_of(c.status[g]);
+    for &sb in &c.status[p * gpp..(p + 1) * gpp] {
+        let m = sch::missing_of(sb);
         n.payer_miss += (m & 1) as u32;
         n.inv_miss += ((m >> 1) & 1) as u32;
         n.ver_miss += ((m >> 2) & 1) as u32;
