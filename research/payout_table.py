@@ -1,12 +1,15 @@
 """Payout ratio h(H) = E[max(lb, 0) / truth] vs cumulative randomized hours, demo condition (PRD F1):
 bulk carrier (VLOC), trade winds, wind-linked effect 7%, adopted method (R8). Feeds econ.py (R1)."""
 import json
+import os
 import sys
 from multiprocessing import Pool
 
 import numpy as np
 
 import measure as m
+
+RESULTS = os.environ.get("SAVESAIL_RESULTS", "results")  # run_all.py --quick uses a separate directory
 
 COND = dict(ship="bulk", clim="trade", s=0.07, hetero=True)
 HOURS = [900, 1800, 3600, 5400, 7200, 10800]
@@ -29,7 +32,7 @@ def main(reps=2000):
             out["sd"].append(float(h.std(ddof=1)))
             out["p05"].append(float(np.percentile(h, 5)))
             print(H, round(h.mean(), 4), round(h.std(), 4), flush=True)
-    json.dump(out, open("results/payout_table.json", "w"), indent=1)
+    json.dump(out, open(f"{RESULTS}/payout_table.json", "w"), indent=1)
 
 
 if __name__ == "__main__":

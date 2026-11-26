@@ -14,6 +14,8 @@ import numpy as np
 import measure as m
 from grids import ATTACK_REPS, GRIDS, REPS, attack_panel
 
+RESULTS = os.environ.get("SAVESAIL_RESULTS", "results")  # run_all.py --quick uses a separate directory
+
 CHUNK = 250
 PANEL = attack_panel()
 
@@ -65,8 +67,8 @@ def jobs_for(grid, quick=None):
 def main():
     grid, shard, nshards = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
     quick = int(sys.argv[5]) if len(sys.argv) > 5 and sys.argv[4] == "--quick" else None
-    os.makedirs("results/raw", exist_ok=True)
-    path = f"results/raw/{grid}_{shard}.jsonl"
+    os.makedirs(f"{RESULTS}/raw", exist_ok=True)
+    path = f"{RESULTS}/raw/{grid}_{shard}.jsonl"
     done = set()
     if os.path.exists(path):
         for line in open(path):

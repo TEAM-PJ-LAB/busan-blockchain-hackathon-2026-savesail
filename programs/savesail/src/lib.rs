@@ -1,4 +1,3 @@
-#![allow(unexpected_cfgs)]
 //! SaveSail — performance-linked wind-sail financing on Solana.
 //! Rules: docs/PRD.md §6. Reference model: offchain/reference/savesail_ref.py.
 

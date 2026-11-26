@@ -17,7 +17,8 @@ BASE = dict(
 
 # payout ratio h(H) = E[max(LB,0)/true] and its sd vs cumulative randomized hours H, measured with the
 # adopted method at the demo condition (payout_table.py -> results/payout_table.json, PRD F1)
-_T = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "payout_table.json")
+_T = os.path.join(os.environ.get("SAVESAIL_RESULTS", os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")),
+                  "payout_table.json")
 H_TABLE = json.load(open(_T)) if os.path.exists(_T) else {"H": [900, 1800, 3600, 7200],
                                                          "mean": [0.60, 0.72, 0.83, 0.88], "sd": [0.12, 0.08, 0.05, 0.03]}
 

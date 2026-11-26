@@ -5,11 +5,14 @@ Ratio criteria: one-sided binomial test per condition at alpha = 0.1% plus the p
 """
 import glob
 import json
+import os
 import math
 import sys
 from collections import defaultdict
 
 from scipy.stats import binom
+
+RESULTS = os.environ.get("SAVESAIL_RESULTS", "results")  # run_all.py --quick uses a separate directory
 
 ALPHA = 0.001
 LOW_NOISE = lambda c: c.get("sd_e", 0.03) <= 0.03 + 1e-12 and c.get("sd_m", 0.02) <= 0.02 + 1e-12
@@ -17,25 +20,25 @@ LOW_NOISE = lambda c: c.get("sd_e", 0.03) <= 0.03 + 1e-12 and c.get("sd_m", 0.02
 
 def load(paths):
     agg = {}
-    for p in paths:
-        for line in open(p):
-            d = json.loads(line)
-            key = (d["grid"], d["cond"])
-            a = agg.setdefault(key, dict(cfg=d["cfg"], err=[], lb_pos=0, cover=0, pay=[], det=0, ba=[], n=0,
-                                         flags=defaultdict(int), attacks=defaultdict(lambda: defaultdict(float))))
-            h = d["honest"]
-            a["n"] += d["n"]
-            a["err"] += h["err"]
-            a["lb_pos"] += sum(h["lb_pos"])
-            a["cover"] += sum(h["cover"])
-            a["pay"] += [x for x in h["pay"] if x is not None]
-            a["det"] += sum(h["det"])
-            a["ba"] += h["ba"]
-            for k, v in h["flags"].items():
-                a["flags"][k] += v
-            for k, v in d["attacks"].items():
-                for kk, vv in v.items():
-                    a["attacks"][k][kk] += vv
+    lines = [json.loads(line) for p in paths for line in open(p)]
+    lines.sort(key=lambda d: (d["grid"], d["cond"], d["rep0"]))  # float sums independent of completion order
+    for d in lines:
+        key = (d["grid"], d["cond"])
+        a = agg.setdefault(key, dict(cfg=d["cfg"], err=[], lb_pos=0, cover=0, pay=[], det=0, ba=[], n=0,
+                                     flags=defaultdict(int), attacks=defaultdict(lambda: defaultdict(float))))
+        h = d["honest"]
+        a["n"] += d["n"]
+        a["err"] += h["err"]
+        a["lb_pos"] += sum(h["lb_pos"])
+        a["cover"] += sum(h["cover"])
+        a["pay"] += [x for x in h["pay"] if x is not None]
+        a["det"] += sum(h["det"])
+        a["ba"] += h["ba"]
+        for k, v in h["flags"].items():
+            a["flags"][k] += v
+        for k, v in d["attacks"].items():
+            for kk, vv in v.items():
+                a["attacks"][k][kk] += vv
     return agg
 
 
@@ -140,7 +143,7 @@ def judge(agg):
 
 
 def main():
-    paths = sys.argv[1:] or glob.glob("results/raw/*.jsonl")
+    paths = sys.argv[1:] or glob.glob(f"{RESULTS}/raw/*.jsonl")
     agg = load(paths)
     rows, pooled, fails = judge(agg)
     by = defaultdict(lambda: defaultdict(lambda: [0, 0]))
@@ -148,7 +151,7 @@ def main():
         for k, ok in r["checks"].items():
             by[r["grid"]][k][0] += ok
             by[r["grid"]][k][1] += 1
-    json.dump(dict(rows=rows, pooled=pooled, fails=fails), open("results/judgement.json", "w"), indent=1, default=str)
+    json.dump(dict(rows=rows, pooled=pooled, fails=fails), open(f"{RESULTS}/judgement.json", "w"), indent=1, default=str)
     crit = ["M1", "M2", "M3", "M4", "M5", "M6-3", "M7", "M8-1", "M8-2", "M8-3", "M8-4", "M9-2", "M9-3", "M10"]
     lines = ["| 격자 | 조건 | " + " | ".join(crit) + " |", "|---|---|" + "---|" * len(crit)]
     for g in sorted(by):
@@ -161,7 +164,7 @@ def main():
         lines.append(f"| {k} | {100 * v['rate']:.3f}% (n={v['n']:,}) | {100 * v['target']:.1f}% | {100 * 2 * v['se']:.3f}%p | {'통과' if v['ok'] else '실패'} |")
     lines.append("")
     lines.append(f"실패 {len(fails)}건" + ("" if not fails else ": " + ", ".join(f"{g}{c}:{k}" for g, c, k in fails[:60])))
-    open("results/judgement.md", "w").write("\n".join(lines) + "\n")
+    open(f"{RESULTS}/judgement.md", "w").write("\n".join(lines) + "\n")
     print("\n".join(lines))
     return 1 if fails else 0
 

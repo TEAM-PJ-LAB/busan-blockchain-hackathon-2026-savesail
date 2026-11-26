@@ -1,7 +1,10 @@
 """Economics experiments R1, R5, R6 and criteria F1-F5 (PRD §1.4, §8). Writes results/econ.json and .md."""
 import json
+import os
 
 import econ
+
+RESULTS = os.environ.get("SAVESAIL_RESULTS", "results")  # run_all.py --quick uses a separate directory
 
 PRICES = ["flat750", "drop600", "drop460", "ou", "spike"]
 SETTLES = ["ideal", "period", "trueup"]
@@ -56,7 +59,7 @@ def main():
         b = econ.simulate(dict(T=7, settle="ideal", price="drop460", p_cons=pc), 0.9)
         out["R6"].append(dict(p_cons=pc, senior_share=float(a["senior_share"]), loss_flat=a["senior_loss"],
                               loss_drop460=b["senior_loss"]))
-    json.dump(out, open("results/econ.json", "w"), indent=1, default=float)
+    json.dump(out, open(f"{RESULTS}/econ.json", "w"), indent=1, default=float)
     lines = ["| 정산 | 기간 | φ | 연료가 | 선순위 비중 | 선순위 손실 | 후순위 IRR 중앙값 | 후순위 IRR 10% | 지급자 NPV 평균(만 달러) | 지급자 손실 |",
              "|---|---|---|---|---|---|---|---|---|---|"]
     for x in out["table"]:
@@ -66,7 +69,7 @@ def main():
     lines.append("")
     for k, v in ck.items():
         lines.append(f"- {k}: {'통과' if v['ok'] else '실패'} {json.dumps({a: b for a, b in v.items() if a != 'ok'}, default=float)}")
-    open("results/econ.md", "w").write("\n".join(lines) + "\n")
+    open(f"{RESULTS}/econ.md", "w").write("\n".join(lines) + "\n")
     print("\n".join(lines[-6:]))
 
 
