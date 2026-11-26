@@ -18,7 +18,7 @@ def main(run_path, which="scenario"):
     sc = json.load(open(os.path.join(ROOT, "scripts/config/demo.json")))[which]
     gpp = sc["groups_per_period"]
     caps = [int(x) for x in sc["caps"]]
-    d = ref.Deal(phi_bps=9000, ref_rate_bps=600, comp_min_bps=9500, miss_max_bps=50, opex=int(sc["opex_per_period"]),
+    d = ref.Deal(phi_bps=int(sc["phi_bps"]), ref_rate_bps=600, comp_min_bps=9500, miss_max_bps=50, opex=int(sc["opex_per_period"]),
                  senior_sched=[int(sc["senior_per_period"])] * sc["senior_periods"], reserve_target=int(sc["reserve_target"]),
                  senior_units=caps[0], junior_units=caps[1])
     sched = run["schedule"]

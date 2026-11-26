@@ -197,7 +197,7 @@ async function main() {
   const params = {
     dealId: new BN(dealId.toString()), payer: pk("payer"), investorRep: pk("investor_rep"),
     verifiers: [pk("verifier0"), pk("verifier1"), pk("verifier2")], manufacturer: pk("manufacturer"), opexToken: ata(pk("opex")),
-    envelopeHash: hex32(env.hash), phiBps: 9000, refRateBps: 600, compMinBps: 9500, missMaxBps: 50,
+    envelopeHash: hex32(env.hash), phiBps: sc.phi_bps, refRateBps: 600, compMinBps: 9500, missMaxBps: 50,
     installCost: new BN(sc.install_cost), caps: [new BN(sc.caps[0]), new BN(sc.caps[1])], opexPerPeriod: new BN(sc.opex_per_period),
     reserveTarget: new BN(sc.reserve_target), seniorSchedule: sched, nGroups, groupsPerPeriod: gpp,
     revealTimeoutSlots: new BN(sc.reveal_timeout_slots), bondAmount: new BN(sc.bond), slashPerMiss: new BN(sc.slash),

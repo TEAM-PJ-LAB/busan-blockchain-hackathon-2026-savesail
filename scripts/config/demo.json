@@ -1,25 +1,78 @@
 {
-  "note": "PRD §4 demo. Amounts in dUSD base units (6 decimals). Retail limit = KRW 100,000,000 / 1,430 KRW per USD (demo rate, PRD Q7).",
+  "note": "PRD §4 demo. Amounts in dUSD base units (6 decimals). Retail limit = KRW 100,000,000 / 1,430 KRW per USD (demo rate, PRD Q7). phi_bps and the senior cap come from research/results/econ.json (10-year true-up row, F1); senior_per_period = 5%/yr level annuity over 40 quarters; reserve_target = 2 periods. scripts/check_numbers.py checks these against the results file.",
   "scenario": {
-    "deal_id": 1215, "n_groups": 240, "groups_per_period": 60,
+    "deal_id": 1215,
+    "n_groups": 240,
+    "groups_per_period": 60,
     "synth_seed": 20261215,
-    "synth": {"ship": "bulk", "clim": "trade", "s": 0.07, "hetero": true, "camp_h": 3600, "train_h": 3600},
-    "install_cost": "4000000000000", "caps": ["736000000000", "3264000000000"],
-    "senior_periods": 40, "senior_per_period": "23494160637", "opex_per_period": "20000000000", "reserve_target": "46988321274",
-    "retail_limit": "69930000000", "pro_limit": "4000000000000",
-    "reveal_timeout_slots": 25, "bond": "1000000000", "slash": "300000000",
-    "withhold": {"197": 1},
-    "off_violations": [125, 135, 145, 155, 165, 175]
+    "synth": {
+      "ship": "bulk",
+      "clim": "trade",
+      "s": 0.07,
+      "hetero": true,
+      "camp_h": 3600,
+      "train_h": 3600
+    },
+    "install_cost": "4000000000000",
+    "caps": [
+      "786232000000",
+      "3213768000000"
+    ],
+    "senior_periods": 40,
+    "senior_per_period": "25097637100",
+    "opex_per_period": "20000000000",
+    "reserve_target": "50195274200",
+    "retail_limit": "69930000000",
+    "pro_limit": "4000000000000",
+    "reveal_timeout_slots": 25,
+    "bond": "1000000000",
+    "slash": "300000000",
+    "withhold": {
+      "197": 1
+    },
+    "off_violations": [
+      125,
+      135,
+      145,
+      155,
+      165,
+      175
+    ],
+    "phi_bps": 7850
   },
   "quick": {
-    "deal_id": 7, "n_groups": 20, "groups_per_period": 5,
+    "deal_id": 7,
+    "n_groups": 20,
+    "groups_per_period": 5,
     "synth_seed": 7,
-    "synth": {"ship": "bulk", "clim": "trade", "s": 0.07, "hetero": true, "camp_h": 300, "train_h": 3600},
-    "install_cost": "4000000000000", "caps": ["736000000000", "3264000000000"],
-    "senior_periods": 4, "senior_per_period": "23494160637", "opex_per_period": "20000000000", "reserve_target": "46988321274",
-    "retail_limit": "69930000000", "pro_limit": "4000000000000",
-    "reveal_timeout_slots": 25, "bond": "1000000000", "slash": "300000000",
-    "withhold": {"17": 1},
-    "off_violations": [12]
+    "synth": {
+      "ship": "bulk",
+      "clim": "trade",
+      "s": 0.07,
+      "hetero": true,
+      "camp_h": 300,
+      "train_h": 3600
+    },
+    "install_cost": "4000000000000",
+    "caps": [
+      "786232000000",
+      "3213768000000"
+    ],
+    "senior_periods": 4,
+    "senior_per_period": "25097637100",
+    "opex_per_period": "20000000000",
+    "reserve_target": "50195274200",
+    "retail_limit": "69930000000",
+    "pro_limit": "4000000000000",
+    "reveal_timeout_slots": 25,
+    "bond": "1000000000",
+    "slash": "300000000",
+    "withhold": {
+      "17": 1
+    },
+    "off_violations": [
+      12
+    ],
+    "phi_bps": 7850
   }
 }

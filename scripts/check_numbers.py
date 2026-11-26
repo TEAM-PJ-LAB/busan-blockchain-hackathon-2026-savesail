@@ -69,8 +69,21 @@ def check(path):
     return n, bad
 
 
+def check_demo():
+    """scripts/config/demo.json takes phi and the senior cap from the 10-year true-up row of econ.json."""
+    from decimal import ROUND_FLOOR, Decimal
+    d = json.load(open(os.path.join(ROOT, "scripts", "config", "demo.json")))["scenario"]
+    row = next(r for r in value("econ.json", "table") if (r["settle"], r["T"], r["price"]) == ("trueup", 10, "flat750"))
+    base, r = 10 ** 6, Decimal("0.0125")
+    senior = round(int(d["install_cost"]) // base * row["senior_share"] / 100) * base
+    pay = (Decimal(senior) * r / (1 - (1 + r) ** -int(d["senior_periods"]))).to_integral_value(ROUND_FLOOR)
+    want = dict(phi_bps=round(row["phi"] * 10000), caps=[str(senior), str(int(d["install_cost"]) - senior)],
+                senior_per_period=str(pay), reserve_target=str(2 * pay))
+    return [f"scripts/config/demo.json: {k} is {d[k]}, econ.json gives {v}" for k, v in want.items() if d[k] != v]
+
+
 def main(files):
-    total, bad = 0, []
+    total, bad = 0, check_demo()
     for f in files or DEFAULT:
         if os.path.exists(os.path.join(ROOT, f)):
             n, b = check(f)
