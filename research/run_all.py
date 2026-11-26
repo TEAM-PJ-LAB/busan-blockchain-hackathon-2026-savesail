@@ -15,7 +15,7 @@ import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUTPUTS = ["judgement.json", "judgement.md", "payout_table.json", "econ.json", "econ.md", "m9_bound.json"]
+OUTPUTS = ["judgement.json", "judgement.md", "payout_table.json", "econ.json", "econ.md", "m9_bound.json", "r4.json", "r4.md"]
 
 
 def sha(path):
@@ -41,6 +41,7 @@ def run(out, grids, quick):
     step("payout table", ["payout_table.py", str(quick or 2000)])
     step("economics", ["run_econ.py"])
     step("meter detection bound", ["m9_bound.py"])
+    step("refusal incentives (R4)", ["run_r4.py"] + (["20", str(min(quick, 50))] if quick else []))
     rec = dict(grids=grids, quick=quick, steps=steps, sha256={f: sha(os.path.join(out, f)) for f in OUTPUTS})
     json.dump(rec, open(os.path.join(out, "run_all.json"), "w"), indent=1)
     return rec

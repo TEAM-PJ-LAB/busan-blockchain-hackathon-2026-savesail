@@ -129,7 +129,7 @@ class Verifier:
             raise SystemExit("data accumulator does not match the chain snapshot; no payload (PRD 7.2-10 3)")
 
         groups = range((p + 1) * gpp)
-        recs, excluded, report_groups = [], {}, []
+        recs, excluded, report_groups, unpaired = [], {}, [], []
         meter_ok = True
         payer_miss = inv_miss = override_below = 0
         kg_on = kg_miss_payer = kg_miss_inv = 0.0
@@ -184,28 +184,34 @@ class Verifier:
                 ship_wind = max(float(uo[hour == t][0]) for t in folded if (hour == t).any()) if any((hour == t).any() for t in folded) else 0.0
                 storm = ship_wind >= env["storm_wind_ms"] and float(Ur.max()) >= env["storm_wind_ref_ms"]
             on_fuel_w = float((fuel * w * ~is_off).sum())
+            # groups without a valid OFF block keep their commanded-ON hours for the estimate (C24)
+            unp = dict(g=g, per=per, hour=hour, w=w, on=~is_off, D=draft / DRAFT_REF_M, shaft=shaft, fuel=fuel)
             if missing & 1:
                 if per == p:
                     payer_miss += 1
                     kg_miss_payer += float((fuel * w).sum())
                 excluded[g] = "payer_missing"
+                unpaired.append(dict(unp, kind="payer"))
                 continue
             if missing & 2:
                 if per == p:
                     inv_miss += 1
                     kg_miss_inv += float((fuel * w).sum())
                 excluded[g] = "investor_missing"
+                unpaired.append(dict(unp, kind="investor"))
                 continue
             if missing & 4:
                 if per == p:
                     kg_on += float((fuel * w).sum())
                 excluded[g] = "verifier_missing"
+                unpaired.append(dict(unp, kind="verifier"))
                 continue
             if folded and not storm:
                 if per == p:
                     override_below += 1
                     kg_miss_payer += on_fuel_w
                 excluded[g] = "override_below_threshold"
+                unpaired.append(dict(unp, kind="payer"))
                 continue
             if per == p:
                 kg_on += on_fuel_w
@@ -214,9 +220,7 @@ class Verifier:
                 continue
             if viol:
                 excluded[g] = "off_violation"
-                continue
-            if per < len(prev) and prev[per] in (OUT_PAYER, OUT_INV):
-                excluded[g] = "period_excluded"
+                unpaired.append(dict(unp, kind="payer"))
                 continue
             recs.append(dict(g=g, hour=hour, w=w, off=is_off, D=draft / DRAFT_REF_M, vlog=vlog, uo=uo, tho=tho, hso=hso,
                              shaft=shaft, fuel=fuel))
@@ -234,14 +238,10 @@ class Verifier:
                       (P * r["w"] * off).sum()])
             r.update(V=V, Uref=Uref, thref=thref, Href=Hs, uho=r["uo"] * np.cos(np.radians(r["tho"])))
             allv.append(r)
-        S = np.array(S)
+        S = np.array(S).reshape(-1, 4)
+        paired_g = [r["g"] for r, row in zip(recs, S) if row[1] > 0 and row[3] > 0]
         S = S[(S[:, 1] > 0) & (S[:, 3] > 0)]
         n_hours = float(sum(r["hour"].size for r in recs))
-        r_hat = float(m.ratio(S.sum(0))) if len(S) else 0.0
-        rng = np.random.default_rng(rng_seed)
-        A, Pt, wt = self.placebo
-        eps = m.placebo_eps(rng, A, Pt, wt, L, G, c["B"], max(len(S), 1))
-        lb, ub = m.interval_from_eps(S, eps) if len(S) else (0.0, 0.0)
 
         # manipulation checks on the cumulative included data (C11, C13)
         flags = 0
@@ -301,6 +301,55 @@ class Verifier:
         if miss_rate > env["max_missing"]:
             flags |= 8
 
+        # cumulative estimate (PRD 7.2-3/4, C24). Unpaired groups: within the party's limit they re-enter through
+        # their neighbours' OFF ratio; groups a party left unpaired in a period where it is over its limit count at
+        # that party's worst case (payer 100% saving, investor representative 0%), so refusing never pays (R4).
+        miss_max, comp_min = int(chain.get("miss_max_bps", 50)), int(chain.get("comp_min_bps", 9500))
+        compliance_now = 10_000 * off_ok // off_blocks if off_blocks else 10_000
+        payer_over = {q for q in range(p) if q < len(prev) and prev[q] == OUT_PAYER}
+        inv_over = {q for q in range(p) if q < len(prev) and prev[q] == OUT_INV}
+        if ((payer_miss + override_below) * 10_000 > miss_max * gpp or compliance_now < comp_min
+                or flags & 0b1011):
+            payer_over.add(p)
+        if inv_miss * 10_000 > miss_max * gpp:
+            inv_over.add(p)
+        ng_all = (p + 1) * gpp
+        Sg = np.zeros((ng_all, 4))
+        for r, row in zip([r for r in recs if r["g"] in set(paired_g)], S):
+            Sg[r["g"]] = row
+        paired = np.zeros(ng_all, bool)
+        paired[paired_g] = True
+        nb, adverse = np.zeros(ng_all, bool), []
+        for u in unpaired:
+            V, Uh, Hs, _, _ = self.ind_cols(u["hour"])
+            P = m.predict(c["model"], self.kn, self.beta, V, u["D"], Uh, Hs)
+            F = self.est_fuel(u["fuel"], u["shaft"])
+            on_w = u["w"] * u["on"]
+            row = [(F * on_w).sum(), (P * on_w).sum()]
+            if row[1] <= 0:
+                continue
+            if u["kind"] == "payer" and u["per"] in payer_over:
+                adverse.append((row[1], 1.0))
+                excluded[u["g"]] += ":imputed_payer_worst_case"
+            elif u["kind"] == "investor" and u["per"] in inv_over:
+                adverse.append((row[1], 0.0))
+                excluded[u["g"]] += ":imputed_investor_worst_case"
+            else:
+                Sg[u["g"], :2] = row
+                nb[u["g"]] = True
+                excluded[u["g"]] += ":neighbour_calibrated"
+        S_est = np.vstack([S, m.neighbor_rows(Sg, paired, nb)]) if nb.any() else S
+        r_hat = float(m.ratio(S_est.sum(0))) if len(S) else 0.0
+        rng = np.random.default_rng(rng_seed)
+        A, Pt, wt = self.placebo
+        eps = m.placebo_eps(rng, A, Pt, wt, L, G, c["B"], max(len(S), 1))
+        lb, ub = m.interval_from_eps(S_est, eps, len(S)) if len(S) else (0.0, 0.0)
+        if adverse and len(S):
+            pv = float(S_est[:, 1].sum())
+            pa, ra = sum(a for a, _ in adverse), sum(a * x for a, x in adverse)
+            mix = lambda x: (pv * x + ra) / (pv + pa)  # noqa: E731
+            r_hat, lb, ub = mix(r_hat), mix(lb), mix(ub)
+
         bps = lambda x: int(np.floor(x * 10_000))
         lb_b, est_b, ub_b = bps(lb), int(round(r_hat * 10_000)), int(np.ceil(ub * 10_000))
         est_b = min(max(est_b, lb_b), ub_b)
@@ -316,7 +365,8 @@ class Verifier:
         report = dict(
             format_version=FORMAT_VERSION, period=p, data_root_ops=chain["snap_ops"], data_root_ctrl=chain["snap_ctrl"],
             model=dict(kind=c["model"], coef=self.model_coef, knots={k: list(map(float, v)) for k, v in (self.kn or {}).items()}),
-            groups=dict(included=len(S), excluded=excluded, hours=n_hours),
+            groups=dict(included=len(S), neighbour_calibrated=int(nb.sum()), imputed=len(adverse), excluded=excluded,
+                        hours=n_hours),
             sums=S.sum(0).tolist() if len(S) else [0, 0, 0, 0],
             interval=dict(method="cross-fitted placebo", folds=c["pcf_k"], draws=c["B"], seed=rng_seed),
             lb=lb, est=r_hat, ub=ub, compliance_bps=payload["compliance_bps"], tests=tests, meter_signatures_ok=meter_ok,

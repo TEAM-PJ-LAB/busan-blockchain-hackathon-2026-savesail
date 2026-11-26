@@ -11,7 +11,7 @@ let fetch: Fetch;
 if (run.cluster === "local") {
   const { LiteSvm } = createRequire(import.meta.url)("litesvm/dist/internal");
   const svm = LiteSvm.loadFromFile(statePath);
-  fetch = async (a) => a.map((x) => { const acc = svm.getAccount(new PublicKey(x).toBytes()); return acc ? Uint8Array.from(acc.data()) : null; });
+  fetch = async (a: string[]) => a.map((x: string) => { const acc = svm.getAccount(new PublicKey(x).toBytes()); return acc ? Uint8Array.from(acc.data()) : null; });
 } else fetch = rpcFetch(process.env.RPC_URL ?? "https://api.devnet.solana.com");
 
 const r = await compareChain(run, fetch);

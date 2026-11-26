@@ -363,7 +363,7 @@ async function settlePeriod(p: number, gpp: number, env: { path: string; hash: s
   for (let q = 0; q < p; q++) prev.push((await decode("PeriodState", periodPda(q))).outcome);
   const chainJson = { period: p, groups_per_period: gpp, status: Array.from(cam.status as number[]),
     snap_ops: Buffer.from(cam.periodSnap[p][0]).toString("hex"), snap_ctrl: Buffer.from(cam.periodSnap[p][1]).toString("hex"),
-    prev_outcomes: prev, price_micro_per_t: 750_000_000 };
+    prev_outcomes: prev, price_micro_per_t: 750_000_000, miss_max_bps: 50, comp_min_bps: 9500 };
   const pl = verify(chainJson, env.path, p); // re-run on resume too: the payload is deterministic (PRD 7.2-10 2)
   const payload = { period: p, dataRootOps: hex32(pl.data_root_ops), dataRootCtrl: hex32(pl.data_root_ctrl), kgOn: new BN(pl.kg_on),
     kgMissPayer: new BN(pl.kg_miss_payer), kgMissInv: new BN(pl.kg_miss_inv), overrideGroups: pl.override_groups,

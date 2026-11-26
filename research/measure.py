@@ -31,6 +31,7 @@ BASE = dict(
     sd_q=0.005, sd_eta=0.005, sfoc_err=0.05, bdn_sd=0.001,
     foul=0.03, drydock=False, model="spline", camp_h=3600, train_h=3600, L=3, G=5, trans=0.25, miss=0.0,
     ci="pcf", pcf_k=5, B=1000, mbb=4, ba=True, speed_src="ind", wx_src="ind", draft_sd=0.005, fuel_src="shaft",
+    refusal="neighbor",
     # detection thresholds (R9): floor on |D| and z = |D|/SE per test
     det=True, cov_floor=0.005, cov_z=4.0, speed_floor=0.0, speed_z=4.0, q_floor=0.002, q_z=3.0,
     mass_tol=0.005, mass_z=4.0, storm_ms=17.2, storm_ref_ms=13.9,
@@ -151,6 +152,25 @@ def _eps_window(rng, a, p, G, B):
     return (Ao / Po) / ((a.sum() - Ao) / (p.sum() - Po)) - 1
 
 
+def neighbor_rows(S_all, paired, unpaired, m_side=3):
+    """C24: a group without an OFF block (refused within the cap) keeps its ON hours. Its prediction is
+    rescaled by the OFF ratio of the nearest `m_side` paired groups on each side relative to the campaign's OFF
+    ratio, so the slow residual drift that pairing removes is removed locally too. Meant for isolated groups;
+    long runs of refusals are over the cap and settle by adverse imputation instead (run_r4.py).
+    Returns rows [ON fuel, ON pred', 0, 0]."""
+    idx = np.flatnonzero(paired)
+    if not len(idx) or not unpaired.any():
+        return np.zeros((0, 4))
+    k_all = S_all[idx, 2].sum() / S_all[idx, 3].sum()
+    out = []
+    for g in np.flatnonzero(unpaired):
+        j = np.searchsorted(idx, g)
+        nb = list(idx[max(0, j - m_side):j]) + list(idx[j:j + m_side])
+        k_loc = S_all[nb, 2].sum() / S_all[nb, 3].sum()
+        out.append([S_all[g, 0], S_all[g, 1] * k_loc / k_all, 0.0, 0.0])
+    return np.array(out)
+
+
 def placebo_eps(rng, A, P, wt, L, G, B, n_target, windows=5):
     """Counterfactual calibration error under the same random design on pre-installation data.
 
@@ -175,8 +195,10 @@ def placebo_eps(rng, A, P, wt, L, G, B, n_target, windows=5):
     return [(full, ngt, alpha)]
 
 
-def interval_from_eps(S, eps_windows):
-    eps = np.concatenate([e * (m / len(S)) ** (al / 2) for e, m, al in eps_windows])
+def interval_from_eps(S, eps_windows, n_groups=None):
+    """S: per-group [ON fuel, ON pred, OFF fuel, OFF pred]; n_groups: groups that carry an OFF block (default len(S))."""
+    n = n_groups or len(S)
+    eps = np.concatenate([e * (m / n) ** (al / 2) for e, m, al in eps_windows])
     Aon, Pon, Aoff, Poff = S.sum(0)
     k = Aoff / Poff
     lo, hi = np.percentile(eps, [2.5, 97.5])
@@ -376,19 +398,25 @@ def evaluate(st, sc=None):
             st["P0"] = P
 
     obs = st["obs"][camp]
+    # paired groups; refused groups re-enter below through their neighbours' OFF ratio (C24). Unpaired ON hours
+    # with the campaign-wide OFF ratio would bring back slow residual drift (run_r4.py, rule include_on).
     inc = ~withheld[grp] & ~storm_grp[grp] & obs
     if sc["exclude_viol"]:
         inc &= ~viol_grp[grp]
     w_on, w_off = (inc & ~off_eff) * tw, (inc & off_eff) * tw
     fs = shaft_fuel(shaft_m, st["mcr"], st["bq"])  # shaft-implied fuel on the meter's scale
     F = fs if c["fuel_src"] == "shaft" else meas
-    S = np.column_stack([np.bincount(grp, F * w_on, ng), np.bincount(grp, P * w_on, ng),
-                         np.bincount(grp, F * w_off, ng), np.bincount(grp, P * w_off, ng)])
-    ok_g = (S[:, 1] > 0) & (S[:, 3] > 0)
-    S = S[ok_g]
+    S_all = np.column_stack([np.bincount(grp, F * w_on, ng), np.bincount(grp, P * w_on, ng),
+                             np.bincount(grp, F * w_off, ng), np.bincount(grp, P * w_off, ng)])
+    ok_g = (S_all[:, 1] > 0) & (S_all[:, 3] > 0)
+    S = S_all[ok_g]
+    if c["refusal"] == "neighbor" and withheld.any():  # refused groups keep their ON hours (C24)
+        w_ref = (withheld[grp] & ~storm_grp[grp] & obs) * tw  # all five blocks were ON
+        R = np.column_stack([np.bincount(grp, F * w_ref, ng), np.bincount(grp, P * w_ref, ng), S_all[:, 2], S_all[:, 3]])
+        S = np.vstack([S, neighbor_rows(R, ok_g, withheld & (R[:, 1] > 0))])
     r_hat = float(ratio(S.sum(0)))
     if st["eps"] is not None:
-        lb, ub = interval_from_eps(S, st["eps"])
+        lb, ub = interval_from_eps(S, st["eps"], int(ok_g.sum()))
     else:
         lb, ub = np.percentile(ratio(boot_weights(rng, len(S), c["B"], c["ci"], c["mbb"]) @ S), [2.5, 97.5])
 

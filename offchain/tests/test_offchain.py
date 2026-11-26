@@ -279,4 +279,28 @@ def test_off_block_sail_on_is_violation(base, tmp_path):
     rewrite(f"{d}/ctrl_{g}.csv", lambda r: r[:4] + ["ON", "120.0", "1"] if int(r[2]) == off else r)
     pl, rep = attest(d, env, status)
     assert pl["compliance_bps"] < 10_000 and pl["override_groups"] == 0
-    assert json.loads(rep)["groups"]["excluded"][str(g)] == "off_violation"
+    # one violated OFF block of 60 keeps compliance above 95%: the group re-enters through its neighbours (C24)
+    assert json.loads(rep)["groups"]["excluded"][str(g)] == "off_violation:neighbour_calibrated"
+
+
+def _refuse(d, status, g, who_bit):
+    """Group g refused by one party: no OFF block, every block commanded and run ON (PRD C2)."""
+    status[g] = 0x80 | (who_bit << 3) | 7
+    rewrite(f"{d}/ctrl_{g}.csv", lambda r: r[:3] + ["ON", "ON", "120.0", "0"])
+
+
+def test_refusal_over_limit_is_imputed_at_worst_case(base, tmp_path):
+    """C24 / R4: a refusal over the cap counts at the refuser's worst case, so it cannot lower (payer) or raise
+    (investor representative) the bound; a verifier refusal re-enters through the neighbours."""
+    d, wd, status, env = copy(base, tmp_path)
+    pl0, _ = attest(d, env, status)
+    g = 3 * GPP + 21
+    out = {}
+    for who, bit in (("payer", 1), ("investor", 2), ("verifier", 4)):
+        st = list(status)
+        _refuse(d, st, g, bit)
+        pl, rep = attest(d, env, st)
+        out[who] = (pl["est_bps"] - pl0["est_bps"], json.loads(rep)["groups"]["excluded"][str(g)])
+    assert out["payer"][0] >= 25 and out["payer"][1].endswith("imputed_payer_worst_case")
+    assert out["investor"][0] < 0 and out["investor"][1].endswith("imputed_investor_worst_case")
+    assert abs(out["verifier"][0]) <= 5 and out["verifier"][1].endswith("neighbour_calibrated")

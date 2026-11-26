@@ -1,7 +1,7 @@
 {
  "cluster": "local",
  "program": "9yjBhvjDC31vYuhc84ajpB9aMtfoYHvoU8GtAoicQaV5",
- "started": "2026-11-26T22:16:49.584Z",
+ "started": "2026-11-26T22:44:36.285Z",
  "steps": [
   {
    "step": "invest_A_junior",
@@ -30,7 +30,7 @@
     "compliance_bps": 10000,
     "flags": 4,
     "envelope_hash": "b1e7b1a188304a17a6844aee4e1385dbc506dde23a553f9af07129347b6ab27b",
-    "report_hash": "9751beee241e7d1bf7998a5bdd335e583714b1cff4650494bb73e08b76fd1725"
+    "report_hash": "4180e39379baffa3a11dc8b0aab1256dbe0a38c2ad312201ff36cb02be2354e7"
    },
    "outcome": 3,
    "due": "0",
@@ -65,7 +65,7 @@
     "compliance_bps": 10000,
     "flags": 0,
     "envelope_hash": "b1e7b1a188304a17a6844aee4e1385dbc506dde23a553f9af07129347b6ab27b",
-    "report_hash": "6a08c64f1412b1baa126d71f4f27da731aa99b5c17a529d63c9eb49314b880d0"
+    "report_hash": "7c5d982adede481b50feb4912a217c68545fe8548fd092deb06fbc2162eb1306"
    },
    "outcome": 0,
    "due": "92513861185",
@@ -94,27 +94,27 @@
     "kg_miss_inv": 0,
     "override_groups": 0,
     "price_micro_per_t": 750000000,
-    "lb_bps": 697,
-    "est_bps": 735,
-    "ub_bps": 771,
+    "lb_bps": 1034,
+    "est_bps": 1070,
+    "ub_bps": 1106,
     "compliance_bps": 9000,
     "flags": 0,
     "envelope_hash": "b1e7b1a188304a17a6844aee4e1385dbc506dde23a553f9af07129347b6ab27b",
-    "report_hash": "f9618fa96d71aad99fb13065a7a6e10625f831efd099da5e1742e87dd3459274"
+    "report_hash": "716aef9a495e448fb0afae17a3198ad828994b1d7e0d69d24aca8c01e6c9e948"
    },
    "outcome": 1,
-   "due": "56632771493",
-   "entitlement": "149146632678",
+   "due": "84299710936",
+   "entitlement": "176813572121",
    "dist": [
     "20000000000",
     "25097637100",
     "0",
-    "11535134393",
+    "39202073836",
     "0"
    ],
-   "lb": 0.06978768690478765,
-   "est": 0.07346251931937176,
-   "ub": 0.07707486042178369,
+   "lb": 0.10349103138573122,
+   "est": 0.10703271769911357,
+   "ub": 0.11051417687828785,
    "flags": 0,
    "excluded": 6
   },
@@ -129,32 +129,32 @@
     "kg_miss_inv": 15838,
     "override_groups": 0,
     "price_micro_per_t": 750000000,
-    "lb_bps": 687,
-    "est_bps": 724,
-    "ub_bps": 760,
+    "lb_bps": 921,
+    "est_bps": 953,
+    "ub_bps": 983,
     "compliance_bps": 10000,
     "flags": 0,
     "envelope_hash": "b1e7b1a188304a17a6844aee4e1385dbc506dde23a553f9af07129347b6ab27b",
-    "report_hash": "a1534a9c20292142733a070a86ab3e85fad5a0ff11c01a29eddf4deb25e73ea3"
+    "report_hash": "08fdff178e42652118668d7412bf8864b66c5cc59becfd025d3ebc2c3907b0ff"
    },
    "outcome": 2,
    "due": "0",
-   "entitlement": "149146632678",
+   "entitlement": "176813572121",
    "dist": [
     "0",
-    "14153721378",
-    "14153721378",
+    "25097637100",
+    "25097637100",
     "0",
     "0"
    ],
-   "lb": 0.06879026600368277,
-   "est": 0.07237536000971867,
-   "ub": 0.07598427600498359,
+   "lb": 0.09216922378355491,
+   "est": 0.09531258416028583,
+   "ub": 0.09824908712737676,
    "flags": 0,
-   "excluded": 61
+   "excluded": 7
   }
  ],
- "finished": "2026-11-26T22:17:00.103Z",
+ "finished": "2026-11-26T22:44:46.418Z",
  "scenario": {
   "withhold": {
    "197": 1
@@ -169,7 +169,7 @@
   ],
   "groups_per_period": 60
  },
- "seconds": 11,
+ "seconds": 10,
  "accounts": {
   "deal": "FTv2bgywKFZ2UrqxPUJu2QFCLgbVUgD6DGPBABLLE3Ab",
   "campaign": "6LppzyRBrJyZBKjb5LYbLycqey7rFX9SRkEad9miY4vt",
@@ -205,16 +205,16 @@
  "deal": {
   "phi_bps": 7850,
   "ref_rate_bps": 600,
-  "entitlement": "149146632678",
-  "paid_cum": "149146632678",
+  "entitlement": "176813572121",
+  "paid_cum": "176813572121",
   "last_lb_bps": 737,
   "acc": [
-   "113766207273",
+   "127685655632",
    "0"
   ],
-  "reserve": "0",
+  "reserve": "16723023721",
   "opex_arrears": "20000000000",
-  "senior_arrears": "10943915722",
+  "senior_arrears": "0",
   "install_cost": "4000000000000",
   "caps": [
    "786232000000",
@@ -256,21 +256,21 @@
    "tranche": 0,
    "address": "3n4uFBBiccRG7UQmUozf4ikqhHD7g1iPxQ9JE7xZ44A2",
    "units": "69930000000",
-   "claimed": "7955670874"
+   "claimed": "8929057898"
   },
   {
    "investor": "investorB",
    "tranche": 0,
    "address": "H2s9CMH4ifJXWkgA5JY8yryA69UT7ryDR11wj4m4Mhdd",
    "units": "69930000000",
-   "claimed": "7955670874"
+   "claimed": "8929057898"
   },
   {
    "investor": "investorC",
    "tranche": 0,
    "address": "5UpqYjyWpkmU5zeUkBTM93uUMHcWZrRmRpP4btbrtvqD",
    "units": "646372000000",
-   "claimed": "73535290927"
+   "claimed": "82532432602"
   },
   {
    "investor": "investorC",
@@ -281,16 +281,16 @@
   }
  ],
  "balances": {
-  "senior_vault": "3",
+  "senior_vault": "2",
   "junior_vault": "0",
-  "reserve_vault": "0",
+  "reserve_vault": "16723023721",
   "collection_vault": "0",
   "bond_vault": "0",
   "raise_vault": "0",
-  "investorA": "138025670874",
-  "investorB": "138025670874",
-  "investorC": "213395290927",
-  "payer": "2850853367322",
+  "investorA": "138999057898",
+  "investorB": "138999057898",
+  "investorC": "222392432602",
+  "payer": "2823186427879",
   "opex": "60000000000",
   "manufacturer": "4000000000000"
  },
@@ -3203,13 +3203,13 @@
   },
   {
    "step": "approve_0_verifier0",
-   "sig": "2sDHStEhctEzXCZ1R9vVG6J6tky3NkQHcKr6woTwyRvYnK2oqZdPeSg9DPG8wcezkm5Ftay7tpRMoWhRxZ7824tz",
+   "sig": "55nweW5s74SEUipfe4o6kGJZ59W4LP4qZic4tgKgdpu7AYChQ7UqE7fCN2k4ikPJ84cDD3MtAWtpZSMCHg1K9dJ6",
    "slot": 459648000,
    "cu": 32864
   },
   {
    "step": "approve_0_verifier1",
-   "sig": "5THakhiQybJPTJQ5omz4v2E8A5jx3AowZ2p1HxC4U3JU8LZLrqWmfXbUU2o9ZYzFBkYLSHUjg5cF77HdbmhD9ZCD",
+   "sig": "2hSRfmybzJoA1GZ1PuPjUGp5fmqnYBV26Kbbs2Fubvri2KCNQVr4LdoBV4GGZ3yr3KdYwT4xrDxWwXjaEJybeoNf",
    "slot": 459648000,
    "cu": 33930
   },
@@ -5027,13 +5027,13 @@
   },
   {
    "step": "approve_1_verifier0",
-   "sig": "4SZYcXrVe5g5eREHC3kmxeKgfP2jdjYwMVyfzp6CsyrAQ1b93Cq7BqgNn6kryzZrBM1EhVB6s578Qwf2ZRU4298S",
+   "sig": "2qvQwu2J3FKjbbRgfFmrDxMHhSbj65Zh1pfqsRiHv8DwFLQgQJPnNSqQv97imLsbtsf9VTfABHSqxmvgVuxwxLY1",
    "slot": 459648000,
    "cu": 31364
   },
   {
    "step": "approve_1_verifier1",
-   "sig": "5QXgvbi3wDrva2j6KTUn2mVnCKaDS9MVJcp2GSbQGabkDGD9CdPTf8h7txFnVYAHzL7xfMZvZTF9dwcuKCLUXAto",
+   "sig": "4zqgBRPyED5sKZiwTcVv5gX5ryfip9L2EZNkpk1h1EV6Cv4RGqBaoxXfs5fftFoGJ6puiVZCzYnsHbBvQi3reeTS",
    "slot": 459648000,
    "cu": 32557
   },
@@ -6851,13 +6851,13 @@
   },
   {
    "step": "approve_2_verifier0",
-   "sig": "ggsHTmvirSPcTfoCnw1VcX697iyoxijE3gzZbDPETMdbDPfA2jWoNMvud3zujiNsgSmhdi25HdwQXZnxBB2i4uM",
+   "sig": "3kJC69X5tJdLM3udT5ifDAjqkKHCHynoLeQK2vRksLyJNJdphcmVQp2R2uZkRhNXK7ernZDiGkcSo4k1GK3Mniy6",
    "slot": 459648000,
    "cu": 31445
   },
   {
    "step": "approve_2_verifier1",
-   "sig": "5aV6bv8jaiDUwuwc6B9bBmGrsEdswynEDDUKDdExLbF8rtskQD9VA38JMbg8FCXcuDmeiHKc2Qv5z2gLkCjY7xgW",
+   "sig": "4YxX9D26LtCvJj3fE5j5rYKtyftDtPaNzB7htnrEE6M8KmU2vnJ6JvuRRMTuNLuGNqSb86Lh9uFb5F7JqLJpuEts",
    "slot": 459648000,
    "cu": 32820
   },
@@ -8675,13 +8675,13 @@
   },
   {
    "step": "approve_3_verifier0",
-   "sig": "3RAoJ6TEerJnvw3AddSQM52gXcPpCyD1GzoD3pX7DGFL3vJYgY4qAWgjr2puYgfX98wf9pjMuDxPCLYQzTqXrKP1",
+   "sig": "3YP6PGH6MXUWWAdXbqyxuGefnS27KT11TZK5ZDkMMv3FJprBaNe2xQBsCAdRetR5NDe84YoVkYEjVavXkhqZCviE",
    "slot": 459648026,
    "cu": 34445
   },
   {
    "step": "approve_3_verifier1",
-   "sig": "wm2MsvBepytGEiAqdcQdxF9paFKy8K42ex5xGqRqBBtRc2hFJPdNw9udKxH9iNykcrrE17h3Af6vAsQ5YgKwRJR",
+   "sig": "5D9zd4Sbj9ouCDxkDQLR38QhXTLnNZmXyVHP3Qq9NLYNfCFbXWp422sUZ9UWskqWHWZxMmgCJW4UKymD5rowybr7",
    "slot": 459648026,
    "cu": 35562
   },
@@ -8695,25 +8695,25 @@
    "step": "distribute_3",
    "sig": "3XdCvNrD86en7iuEgqwwh2nwNk8NbHQJQ4Ec3ZuyFTjJwtVrrbP4TDiYsNSNZRVjCADQCUAyLto6JXiAKJ5dZuMh",
    "slot": 459648026,
-   "cu": 33054
+   "cu": 33052
   },
   {
    "step": "claim_investorA_0",
    "sig": "eA5PUm9hgCJDgWiBsTS3b1EYdYnX19zPCaZ4T1UA51kaCuH4VqRf4RJdTQFpPJxSjdhw3eZr32m7aQR8TChPBkF",
    "slot": 459648026,
-   "cu": 17764
+   "cu": 17763
   },
   {
    "step": "claim_investorB_0",
    "sig": "2ZuvUZapxB1wxj8V78xawVdWwdsWxeY3VK2cot9pvxU28fFvFFAAFkaUZE7tzApcFvrX2asn2sr9MxvKKGDpKsXx",
    "slot": 459648026,
-   "cu": 17764
+   "cu": 17763
   },
   {
    "step": "claim_investorC_0",
    "sig": "4TPqwKm96aRo78Hrr22vaUQVtVeeBy1Jr9zyeQpzh4kAXP1SDCSEED3KtLCx6aDVXLmgjpyTQqvmFR8brvZEV7Yw",
    "slot": 459648026,
-   "cu": 17781
+   "cu": 17780
   },
   {
    "step": "release_bonds",
