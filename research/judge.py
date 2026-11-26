@@ -166,6 +166,30 @@ def r8_table(agg):
             for k, v in by.items()}
 
 
+def summarize_rows(rows, by):
+    """Stable named figures for the documents (README, deck, Q&A cite these keys via scripts/check_numbers.py)."""
+    out = {"pass": {g: {k: v[0] for k, v in d.items()} for g, d in by.items()},
+           "of": {g: {k: v[1] for k, v in d.items()} for g, d in by.items()},
+           "conditions": {g: sum(1 for r in rows if r["grid"] == g) for g in by}}
+    allr = [r for r in rows]
+    out["worst_bias"] = max(abs(r["bias"]) for r in allr)
+    low = [r for r in allr if LOW_NOISE(r["cfg"])]
+    out["worst_p95_3600"] = max(r["p95"] for r in low if r["cfg"].get("camp_h", 3600) >= 3600)
+    out["worst_p95_1800"] = max([r["p95"] for r in low if r["cfg"].get("camp_h", 3600) < 3600] or [0.0])
+    m5 = [r for r in allr if "M5" in r["checks"]]
+    out["min_payout_3600"] = min(r["payout"] for r in m5 if r["cfg"].get("camp_h", 3600) >= 3600)
+    out["min_payout_1800"] = min([r["payout"] for r in m5 if r["cfg"].get("camp_h", 3600) < 3600] or [100.0])
+    out["worst_attack"] = {k: max(abs(r["worst_attack"].get(k, 0.0)) for r in allr) for k in ("storm", "rep", "meter")}
+    ba = [r for r in allr if "M10" in r["checks"]]
+    out["ba_conditions"] = len(ba)
+    out["ba_median_abs"] = float(sorted(abs(r["ba_bias"]) for r in ba)[len(ba) // 2]) if ba else 0.0
+    out["ba_worst_ratio"] = max((abs(r["bias"]) / abs(r["ba_bias"]) for r in ba), default=0.0)
+    a = {f"s{int(round(1000 * r['cfg']['s']))}_{'w' if r['cfg'].get('hetero') else 'c'}": r for r in allr if r["grid"] == "A"}
+    out["A"] = {k: dict(bias=r["bias"], p95=r["p95"], fp=r.get("fp"), cover=r.get("cover"), payout=r.get("payout"),
+                        ba_bias=r["ba_bias"]) for k, r in a.items()}
+    return out
+
+
 def main():
     paths = sys.argv[1:] or glob.glob(f"{RESULTS}/raw/*.jsonl")
     agg = load(paths)
@@ -176,7 +200,9 @@ def main():
             by[r["grid"]][k][0] += ok
             by[r["grid"]][k][1] += 1
     r8 = r8_table(agg)
-    json.dump(dict(rows=rows, pooled=pooled, fails=fails, r8=r8), open(f"{RESULTS}/judgement.json", "w"), indent=1, default=str)
+    summary = summarize_rows(rows, by)
+    json.dump(dict(rows=rows, pooled=pooled, fails=fails, r8=r8, summary=summary), open(f"{RESULTS}/judgement.json", "w"),
+              indent=1, default=str)
     crit = ["M1", "M2", "M3", "M4", "M5", "M6-3", "M7", "M8-1", "M8-2", "M8-3", "M8-4", "M9-2", "M9-3", "M10"]
     lines = ["| 격자 | 조건 | " + " | ".join(crit) + " |", "|---|---|" + "---|" * len(crit)]
     for g in sorted(by):

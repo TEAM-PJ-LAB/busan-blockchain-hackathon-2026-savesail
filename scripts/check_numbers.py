@@ -46,6 +46,23 @@ def fmt(v, spec):
     return format(float(v) * scale, spec)
 
 
+def fix(path):
+    """Rewrite every marked number from its result file (used after a new experiment run)."""
+    full = os.path.join(ROOT, path)
+    text = open(full, encoding="utf-8").read()
+
+    def sub(m):
+        shown, unit, file, key, spec = m.groups()
+        want = fmt(value(file, key), spec)
+        if want.startswith("-"):
+            want = "−" + want[1:]  # typographic minus in the Korean documents
+        return want + m.group(0)[len(shown):]
+
+    new = MARK.sub(sub, text)
+    if new != text:
+        open(full, "w", encoding="utf-8").write(new)
+
+
 def check(path):
     text = open(os.path.join(ROOT, path), encoding="utf-8").read()
     bad, n = [], 0
@@ -96,4 +113,7 @@ def main(files):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    if sys.argv[1:2] == ["--fix"]:
+        for f in sys.argv[2:] or DEFAULT:
+            fix(f)
+    sys.exit(main([a for a in sys.argv[1:] if a != "--fix"]))
