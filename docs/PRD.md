@@ -21,6 +21,8 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 | C3 | 세일 제어기 기록 서명(주체 미정) | 제어기 로그는 **제조사 키**로 운항 데이터와 따로 커밋 | 가장 위험한 조작(OFF 블록에 세일 켜기)의 증거를 조작 당사자인 지급자 장비에만 맡기지 않는다 |
 | C4 | 10년 φ=0.75 | φ는 R1 재계산 후 확정. **데모 가정 φ=0.90** | 하한 정산을 반영하면 같은 수익에 φ≈0.75/0.83≈0.90이 필요하다는 역산 결과 |
 | C5 | 프로그램 4종 | 예선은 **Anchor 프로그램 1개**(`savesail`)에 모듈로 나눈다 | 프로그램 간 호출(CPI)과 배포 4회를 없애 13일 안에 끝낸다. 모듈 경계는 유지해 이후 분리할 수 있다 |
+| C6 | (구현 중 추가) 계약 생성 1회에 금고 6개까지 생성 | 금고 생성을 `init_vaults`로 분리 → **명령 15개** | 초기화 트랜잭션이 솔라나 크기 한도(1,232바이트)와 스택 한도에 닿는다 |
+| C7 | (구현 중 추가) 첫 제출 내용에 나머지 검증기관이 동의 | 검증기관마다 내용 해시에 **투표**, 같은 해시 2표면 확정 | 한 곳이 틀린 내용을 먼저 올리면 나머지 둘이 확정할 수 없는 교착을 없앤다 |
 
 ---
 
@@ -40,7 +42,7 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 
 | 우선순위 | 포함 | 비고 |
 |---|---|---|
-| **P0 (제출 필수)** | 6장 명령 14개, 오프체인 4종(합성 데이터·검증기·실행기·웹), 데모 모드, 테스트 | 지분은 토큰 대신 포지션 계정(Position PDA)으로 기록. 검증·정산은 캠페인 기간(최대 4)만 다룬다. 데모 설정은 `n_periods=40`(선순위 일정 길이)이지만 1~4분기만 진행하고, `close_deal`은 `n_periods`를 캠페인 기간 수와 같게 둔 테스트 설정으로 검증한다 |
+| **P0 (제출 필수)** | 6장 명령 15개, 오프체인 4종(합성 데이터·검증기·실행기·웹), 데모 모드, 테스트 | 지분은 토큰 대신 포지션 계정(Position PDA)으로 기록. 검증·정산은 캠페인 기간(최대 4)만 다룬다. 데모 설정은 `n_periods=40`(선순위 일정 길이)이지만 1~4분기만 진행하고, `close_deal`은 `n_periods`를 캠페인 기간 수와 같게 둔 테스트 설정으로 검증한다 |
 | **P1 (12/7 하루, 안 되면 제외)** | ① 선·후순위를 Token-2022 토큰으로 발행하고 Token ACL로 보유 자격 통제 ② 이전 시 배분 정산을 Transfer Hook에서 처리 ③ Ed25519 서명 검증으로 검증 승인 대리 제출 | Token ACL은 devnet·mainnet 모두 배포됨(부록 B) |
 | **P2 (발표 자료로만)** | Transfer Hook 연간 한도 통제, Squads 다중서명·타임락, ORAO VRF 추가 입력, 다중 캠페인(2년차 이후 3개월 캠페인), 지급자 부도 처리, 권한형 원장 | 구조만 설명 |
 | 제외 | 실자금, 실제 KYC, 메인넷 배포, 원본 운항 데이터 | 원본 데이터는 라이선스 문제로 저장소에 넣지 않는다 |
@@ -145,7 +147,7 @@ docs/PRD.md            이 문서
 |---|---|---|
 | `Deal` | `["deal", admin, deal_id: u64 LE]` | 매개변수(6.3 `initialize_deal`), `status: Fundraising/Funded/Active/Closed`, `senior_raised`, `junior_raised`, `w_norm: u128`, `sv_fixed: u128`, `last_lb_bps: Option<i32>`, `entitlement: u64`(E), `paid_cum: u64`, `next_period: u16`, `opex_arrears`, `senior_arrears`, `acc[2]: u128`, `bump` |
 | `Campaign` | `["campaign", deal, 0u8]` | `n_groups`, `groups_per_period`, `reveal_timeout_slots`, `bond_amount`, `slash_per_miss`, `anchors_set: u8`(비트), `last_hash[3]: [u8;32]`, `last_group[3]: i32`(앵커는 −1), `bond_left[3]: u64`, `current_group: u16`, `group_opened_slot: u64`, `pending: u8`(비트), `pending_val[3]: [u8;32]`, `status[512]: u8`, `data_acc[2]: [u8;32]`, `next_data_group[2]: u16`, `period_snap[4][2]: [u8;32]`, `snap_ready: u8` |
-| `PeriodState` | `["period", deal, p: u16 LE]` | `payload: AttestationPayload`, `payload_hash: [u8;32]`, `approvals: u8`(비트), `finalized`, `violation`, `due: u64`, `settled`, `distributed`, 배분 결과 |
+| `PeriodState` | `["period", deal, p: u16 LE]` | `votes[3]: [u8;32]`, `voted: u8`(비트), `payload`(확정 시 저장), `payload_hash`, `finalized`, `violation`, `due: u64`, `settled`, `distributed`, 배분 결과 |
 | `Kyc` | `["kyc", deal, investor]` | `tier: Retail/Pro`, `annual_limit: u64`, `used: u64`, `window_start: i64` |
 | `Position` | `["pos", deal, tranche: u8, owner]` | `units: u64`, `acc_snapshot: u128`, `claimed: u64` |
 | 금고 (토큰 계정, 권한 = `Deal` PDA) | `["vault", deal, kind: u8]` | kind 0 모집, 1 정산 수납, 2 선순위, 3 후순위, 4 준비금, 5 보증금 |
@@ -169,11 +171,12 @@ docs/PRD.md            이 문서
 
 검증기관 미공개 그룹의 연료는 `kg_on`에 포함한다(정상 하한으로 정산, 추정에서는 제외).
 
-### 6.3 명령 (P0, 14개)
+### 6.3 명령 (P0, 15개)
 
 | # | 명령 | 서명자 | 검사 | 효과 |
 |---|---|---|---|---|
-| 1 | `initialize_deal(params)` | admin | `install_cost == senior_cap + junior_cap`, `n_groups == groups_per_period × 캠페인 기간 수 ≤ 512`, 비율 범위, `n_periods ≤ 40` | `Deal`·`Campaign`·금고 6개 생성. 매개변수: `deal_id, payment_mint, phi_bps, ref_rate_bps, comp_min_bps(9500), miss_max_bps(500), install_cost, senior_cap, junior_cap, opex_per_period, opex_recipient, reserve_target, senior_schedule[40], n_periods, payer, investor_rep, verifiers[3], manufacturer` + 캠페인 매개변수 |
+| 1 | `initialize_deal(params)` | admin | `install_cost == senior_cap + junior_cap`, `n_groups == groups_per_period × 캠페인 기간 수 ≤ 512`, 비율 범위, `n_periods ≤ 40`, 검증기관 3곳 서로 다름 | `Deal`·`Campaign` 생성(금고는 1b). 매개변수: `deal_id, payment_mint, phi_bps, ref_rate_bps, comp_min_bps(9500), miss_max_bps(500), install_cost, senior_cap, junior_cap, opex_per_period, opex_recipient, reserve_target, senior_schedule[40], n_periods, payer, investor_rep, verifiers[3], manufacturer` + 캠페인 매개변수 |
+| 1b | `init_vaults()` | admin | 모집 단계, 금고 미생성 | 금고 6개 생성 |
 | 2 | `set_kyc(investor, tier, annual_limit)` | admin | | `Kyc` 생성·갱신 |
 | 3 | `invest(tranche, amount)` | 투자자 | `Fundraising`, `Kyc` 존재, 선순위는 `Retail`/`Pro`, 후순위는 `Pro`만, 한도 창(365일) 안 `used + amount ≤ annual_limit`, 모집 상한 | 모집 금고로 이체, `Position.units += amount` |
 | 4 | `close_fundraising()` | admin | 양 트랜치 완판 | 설치비를 제조사에 이체, `Funded` |
@@ -181,7 +184,7 @@ docs/PRD.md            이 문서
 | 6 | `reveal(role, group, value)` | 역할 당사자 | `group == current_group`, 미공개, `k = group − last_group[role]`, `1 ≤ k ≤ 8`, `H^k(value) == last_hash[role]` | `last_hash/last_group` 갱신. 세 번째 공개면 6.4절로 결정하고 다음 그룹 열기(`pending` 초기화, `group_opened_slot` 갱신) |
 | 7 | `resolve_missing(group)` | 누구나 | `group == current_group`, 결정 전, `현재 슬롯 ≥ group_opened_slot + reveal_timeout_slots` | `off_index = NO_OFF`, 미공개 비트 기록, 미공개 역할마다 `min(slash_per_miss, bond_left)`를 준비금 금고로, 다음 그룹 열기(`pending` 초기화) |
 | 8 | `commit_group_data(kind, group, root)` | kind 0 지급자 / 1 제조사 | `group` 결정 완료, `group == next_data_group[kind]` | `data_acc[kind] = H(data_acc ‖ group u32 LE ‖ root)`. 기간 마지막 그룹이면 `period_snap[p][kind]` 저장 |
-| 9 | `approve_attestation(period, payload)` | `verifiers[i]` | `period == next_period`, 첫 승인이면 `PeriodState` 생성·저장, 아니면 `sha256(borsh(payload)) == payload_hash`, 같은 검증기관 중복 불가 | 승인 비트 기록. 2개째에서 확정: 스냅숏 일치, `lb ≤ est ≤ ub < 5000`, `lb > −10000`, 해당 미공개 그룹이 없으면 `kg_miss_* == 0`, 직전 기간 정산 완료 → 6.5절로 `due` 계산 |
+| 9 | `approve_attestation(payload)` | `verifiers[i]` | `period == next_period`, 같은 검증기관 중복 불가 | `votes[i] = sha256(borsh(payload))`. 같은 해시가 2표 모이면 확정: 스냅숏 일치, `lb ≤ est ≤ ub < 5000`, `lb > −10000`, 해당 미공개 그룹이 없으면 `kg_miss_* == 0`, 직전 기간 정산 완료 → 6.5절로 `due` 계산 |
 | 10 | `settle(period)` | 지급자 | 확정, 미정산 | 지급자 → 수납 금고로 `due` 이체, `paid_cum += due` |
 | 11 | `distribute(period)` | 누구나 | 정산 완료, 미배분 | 6.5절 워터폴, `next_period += 1` |
 | 12 | `claim(tranche)` | 포지션 보유자 | 받을 몫 > 0 | `units × (acc − acc_snapshot) / ACC`만큼 트랜치 금고에서 이체 |
@@ -249,7 +252,7 @@ due = max(0, E − paid_cum)
 
 ### 6.7 오류 코드
 
-`Unauthorized`, `InvalidState`, `InvalidParams`, `AlreadyRegistered`, `WrongGroup`, `AlreadyRevealed`, `HashChainMismatch`, `SkipTooLarge`, `TimeoutNotReached`, `AlreadyResolved`, `GroupNotResolved`, `WrongDataOrder`, `PeriodNotReady`, `SnapshotMismatch`, `PayloadMismatch`, `AlreadyApproved`, `InvalidRateBounds`, `MissingKgInconsistent`, `PreviousPeriodOpen`, `NotFinalized`, `AlreadySettled`, `NotSettled`, `AlreadyDistributed`, `KycRequired`, `TierNotAllowed`, `LimitExceeded`, `CapExceeded`, `NotFullySubscribed`, `NothingToClaim`, `MathOverflow`, `DealNotEnded`.
+`Unauthorized`, `InvalidState`, `InvalidParams`, `AlreadyRegistered`, `WrongGroup`, `AlreadyRevealed`, `HashChainMismatch`, `SkipTooLarge`, `TimeoutNotReached`, `AlreadyResolved`, `GroupNotResolved`, `WrongDataOrder`, `PeriodNotReady`, `SnapshotMismatch`, `AlreadyApproved`, `InvalidRateBounds`, `MissingKgInconsistent`, `PreviousPeriodOpen`, `NotFinalized`, `AlreadySettled`, `NotSettled`, `AlreadyDistributed`, `KycRequired`, `TierNotAllowed`, `LimitExceeded`, `CapExceeded`, `NotFullySubscribed`, `NothingToClaim`, `MathOverflow`, `DealNotEnded`.
 
 ---
 
@@ -334,7 +337,7 @@ due = max(0, E − paid_cum)
 
 | ID | 종류 | 기준 |
 |---|---|---|
-| T1 | 명령 단위 (LiteSVM) | 명령 14개 × (정상 1건 + 오류 1건 이상) = **28건 이상** 통과 |
+| T1 | 명령 단위 (LiteSVM) | 명령 15개 × (정상 1건 + 오류 1건 이상) = **30건 이상** 통과 |
 | T2 | 테스트 벡터 | 부록 A 전 항목을 Rust와 Python이 동일하게 출력 |
 | T3 | 불변식 (무작위 입력 1만 회) | ① 받은 돈 = 운영비 지급 + 선순위 금고 + 후순위 금고 + 준비금 + 수납 잔액 + 환급 ② 청구 합계 ≤ 금고 잔액 ③ 선순위 이월이 있으면 그 기간 후순위 배분 0 ④ `paid_cum`은 줄지 않음 |
 | T4 | 검증 통계 (2,000회) | s ∈ {0,3,5,8}%에서 편향 절댓값 ≤ 0.2%p, s=0에서 `lb>0` 비율 2.5%±0.7%p, s>0에서 `lb ≤ s` 비율 ≥ 96.8% |
