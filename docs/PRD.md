@@ -618,10 +618,11 @@ P1(2.1절)은 위 합계와 별도로 `tests/p1.rs` 13건(P1-1 4, P1-2 3, P1-3 6
 
 | ID | 질문 | 담당 | 영향 |
 |---|---|---|---|
-| Q1 | 제출물 형식(저장소, 영상 길이, 피치덱, 배포 네트워크) | 정우진 | 대회 페이지에 없고 디스코드에서 안내. devnet 전제가 틀리면 7.4·T7 수정 |
+| Q1 | 제출물 형식(저장소, 영상 길이, 피치덱, 배포 네트워크) | 정우진 | **일부 확인(11/27, 디스코드 문의 답변)**: devnet 배포로 충분(mainnet·devnet 모두 가능), 제출 폼은 등록 폼과 별개로 12/1부터 받고 팀장 1명이 팀을 대표해 제출. 영상 길이·제출 항목은 제출 폼 공개 때 확인 |
 | Q2 | 제출 마감 시각(12/9 몇 시, 기준 시간대) | 정우진 | 11장 버퍼 |
 | Q3 | 영상·발표 언어 | 정우진 | 웹 문구 |
-| Q4 | 저장소 공개 필수 여부 | 정우진 | 현재 공개 |
+| Q4 | 저장소 공개 필수 여부 | 정우진 | 현재 공개. 제출 폼 공개(12/1) 때 확인 |
+| Q11 | 주제 범위와 Solana 활용 평가 | 박부건 | **확인(11/27, 디스코드 문의 답변)**: 아이디어·주제 제한 없음(DB증권 실증을 넓히는 방향도 가능). Solana 기반으로 구현하면 Solana 활용으로 인정되고, 얼마나 활용했는지는 내부 평가 기준으로 따로 본다. 데모데이 발표·질의응답 시간은 데모데이 공지 때 안내 |
 | Q5 | 심사 기준과 배점 | 정우진 | 공식 배점은 미공개. 우리 트랙 심사 주체·관점은 보도로 확인(부록 B). 배점이 나오면 데모·발표 비중 조정 |
 | Q6 | Token ACL이 우리 민트 구성(Token-2022 + Transfer Hook)과 devnet에서 함께 동작하는지 | 박부건 | **확인(11/27)**: devnet에서 기본 동결 + SaveSail 훅 민트에 MintConfig·ABL 허용 목록을 걸고 해제·발행·훅 이전까지 동작(`docs/deployments.md` P1절) |
 | Q7 | 데모 연간 한도 값(원화 1억 원 상당을 dUSD로 바꾸는 환율 설정) — **결정: 1 dUSD = 1,430원 고정, 한도 69,930 dUSD**(1억 원 ÷ 1,430원, 소수점 이하 버림) | 박부건 | `demo.json` |
@@ -738,7 +739,7 @@ P1(2.1절)은 위 합계와 별도로 `tests/p1.rs` 13건(P1-1 4, P1-2 3, P1-3 6
 | 항목 | 내용 | 출처 |
 |---|---|---|
 | 대회 일정 | 온라인 예선 11/25~12/9, 예선 심사 12/10~12/14, 데모데이 12/15 BIFC TWO 22층 | https://solanabusan.com |
-| 제출 요건 | 대회 페이지에 없음, 디스코드 안내 | https://solanabusan.com |
+| 제출 요건 | 대회 페이지에 없음, 디스코드 안내. 디스코드 문의 답변(11/27): devnet 충분, 제출 폼 12/1부터, 팀장 1명이 대표 제출, 주제 제한 없음, Solana 활용 정도는 내부 기준으로 평가 | https://solanabusan.com, Superteam Korea Builders 디스코드 문의 티켓 |
 | Token ACL | 프로그램 `TACLkU6CiCdkQN2MjoyDkVg2yAH9zkxiHDsiztQ52TP`, ABL 게이트 `GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz`, devnet·mainnet 배포, Transfer Hook과 함께 사용 가능 | https://solana.com/developers/guides/advanced/acl |
 | Switchboard | 2026-09-19 종료 발표, 09-25 지원 종료 → 사용하지 않음 | https://solanacompass.com/news/switchboard-oracle-protocol-shuts-down-giving-solana-defi-six-days-to-migrate |
 | 크레이트 버전 | `anchor-lang 1.2.2`·`anchor-cli 1.2.2`(11-14), `cargo-build-sbf 4.6.0`(11-07), `litesvm` 최신 0.18.2(11-04, 이 저장소는 템플릿 호환 0.15.0), `spl-token-2022 12.0.0`(10-28) | https://crates.io |
