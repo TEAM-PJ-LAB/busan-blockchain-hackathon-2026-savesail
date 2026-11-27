@@ -1,7 +1,7 @@
 name: ci
 on:
   push:
-    branches-ignore: [research-results, "research-results-*", devnet-runs]
+    branches-ignore: [research-results, "research-results-*", devnet-runs, "devnet-runs-*"]
   pull_request:
 permissions:
   contents: read
@@ -67,6 +67,9 @@ jobs:
       - name: executor type check
         working-directory: scripts
         run: npx tsc --noEmit -p .
+      - name: devnet rate limiter (public RPC limits)
+        working-directory: scripts
+        run: npx tsx run/test_rpc.ts
       - name: off-chain tests (synth, verifier)
         run: python3 -m pytest -q offchain/tests
       - name: executor quick run + reference check

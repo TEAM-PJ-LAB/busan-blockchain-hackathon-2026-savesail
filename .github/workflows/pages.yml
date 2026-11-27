@@ -1,5 +1,5 @@
 name: pages
-# PRD 7.5: static web on GitHub Pages. Uses the latest devnet record (branch devnet-runs) when there is one,
+# PRD 7.5: static web on GitHub Pages. Uses the latest devnet record (newest devnet-runs-* branch) when there is one,
 # otherwise the committed local-chain record (app/fixtures/run-local.json); the page says which.
 on:
   push:
@@ -21,7 +21,15 @@ jobs:
         with:
           fetch-depth: 0
       - name: devnet record if any
-        run: git show origin/devnet-runs:app/public/run.json > app/public/run.json 2>/dev/null || rm -f app/public/run.json
+        run: |
+          # newest devnet-runs-<workflow run id> branch (one per devnet workflow run, records only)
+          REF=$(git ls-remote origin 'refs/heads/devnet-runs-*' | sed 's#.*refs/heads/##' | sort -t- -k3 -n | tail -1)
+          if [ -n "$REF" ] && git fetch -q origin "$REF" && git show FETCH_HEAD:app/public/run.json > app/public/run.json; then
+            echo "devnet record from $REF"
+          else
+            rm -f app/public/run.json
+            echo "no devnet record: local-chain fixture"
+          fi
       - uses: actions/setup-node@v5
         with:
           node-version: "22"
