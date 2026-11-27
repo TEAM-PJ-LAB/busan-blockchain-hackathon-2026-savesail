@@ -4,6 +4,26 @@
  "failing_below_bound": 59,
  "max_bound_failing": 0.9756976000468593,
  "passing_below_bound": 4,
+ "feasible": 243,
+ "feasible_pass": 243,
+ "by_grid": {
+  "A": {
+   "feasible": 8,
+   "feasible_pass": 8
+  },
+  "B": {
+   "feasible": 23,
+   "feasible_pass": 23
+  },
+  "C": {
+   "feasible": 180,
+   "feasible_pass": 180
+  },
+  "D": {
+   "feasible": 32,
+   "feasible_pass": 32
+  }
+ },
  "failing_list": [
   {
    "grid": "B",
