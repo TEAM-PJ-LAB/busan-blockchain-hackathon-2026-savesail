@@ -1,0 +1,12 @@
+{
+ "r8": {
+  "method": "L3_spline_pcf_ind_shaft",
+  "effect0_runs": 12000,
+  "false_pay": 0.02875,
+  "false_pay_se": 0.0015254353886677732
+ },
+ "v2_0_meter_M9_2": {
+  "of": 306,
+  "fail": 200
+ }
+}
