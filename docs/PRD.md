@@ -2,10 +2,10 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | 0.8.1 (2026-11-27) |
+| 문서 버전 | 0.9.0 (2026-11-27) |
 | 대상 | 부산 블록체인 해커톤 2026 온라인 예선 제출물 (마감 12/9) |
 | 개발 책임 | 박부건 (CTO) |
-| 상태 | (11/27) 온체인 명령 15/15, 오류 코드 31/31(오류 경로 111개), 명령 최대 58,295 CU(K3 ≤ 100,000), 권한 없는 서명자 거부 15/15, 온체인 무작위 흐름 300회 위반 0. 합성 데이터·검증기 테스트 18/18(3 + 15), 로컬 체인 데모 525 트랜잭션 참조 구현 대조 통과, 웹 체인 대조 333/333값, 중단·재개 5회 통과. R1(φ 0.785, F1~F5 통과)·R4(C24)·R7 완료. v2.2 격자(486조건): M9③ 외 전 기준 통과(합산 M3 2.493%, M4 97.512%, C244의 M4는 새 시드 10,000회 97.26%로 우연 판정), M9③은 59개 조건 실패이며 모두 이론 상한 99% 미만(최대 97.6%, `research/results/m9_check.json`). devnet 전체 흐름 3회 연속 성공(G1: 회당 525건, 1,472~1,489초, 서명 확인 525/525, 화면 값 체인 대조 333/333, `docs/deployments.md`) |
+| 상태 | (11/27) 온체인 명령 15/15, 오류 코드 31/31(오류 경로 111개), 명령 최대 58,295 CU(K3 ≤ 100,000), 권한 없는 서명자 거부 15/15, 온체인 무작위 흐름 300회 위반 0. 합성 데이터·검증기 테스트 18/18(3 + 15), 로컬 체인 데모 525 트랜잭션 참조 구현 대조 통과, 웹 체인 대조 333/333값, 중단·재개 5회 통과. R1(φ 0.785, F1~F5 통과)·R4(C24)·R7 완료. v2.2 격자(486조건): M9③ 외 전 기준 통과(합산 M3 2.493%, M4 97.512%, C244의 M4는 새 시드 10,000회 97.26%로 우연 판정), M9③은 59개 조건 실패이며 모두 이론 상한 99% 미만(최대 97.6%, `research/results/m9_check.json`). devnet 전체 흐름 3회 연속 성공(G1: 회당 525건, 1,472~1,489초, 서명 확인 525/525, 화면 값 체인 대조 333/333, `docs/deployments.md`). P1(2.1절) 9항목 전부 통과: LiteSVM 13건(고정 바이너리·devnet 배포본 둘 다), devnet에서 Token ACL MintConfig·ABL 허용 목록 생성과 목록 밖 지갑의 해제·수령 실패 확인, 훅 14,197 CU, 대리 승인 최대 66,923 CU |
 | 근거 문서 | [README.md](../README.md) — 사업 구조·검증 원리·실험 결과 |
 | 참조 구현 | [offchain/reference/savesail_ref.py](../offchain/reference/savesail_ref.py) — 이 문서 6장 규칙의 기준 답. 프로그램 출력은 이 파일과 비트 단위로 같아야 한다 |
 
@@ -42,6 +42,8 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 | C23 | (실험 결과) 위약 보정 구간을 5등분 조각에서 구해 √(조각 그룹 수/캠페인 그룹 수)로 크기 조정 | 학습 데이터에서 **캠페인과 같은 길이의 연속 구간**(최대 5개, 고르게 배치)에 무작위 일정을 적용해 오차 분포를 직접 구한다. 캠페인이 학습보다 길면 전 구간 분포를 분산-시간 지수(반 구간 대비, 0.5~1)로 늘린다. 참값의 정의를 정산과 맞춰 "데이터가 있는 지시상 ON 시간"으로 한다(1.3절 용어) | v2.0 격자: 하한 ≤ 참값 합산 97.25%(목표 97.5% − 2SE 미달), 효과 0 지급 합산 2.63%(목표 2.5% + 2SE 초과). 원인 ① 자기상관이 강하면 그룹 사이 상관 때문에 짧은 조각의 분산을 √로 줄이면 캠페인 분산을 과소평가(시간 상관 0.995에서 실제/추정 표준편차 1.04~1.07) ② 결측 시간의 세일 효과까지 참값에 넣으면 정산되지 않는 시간이 오차로 들어감(저잡음·바람 연동 조건에서 포함률 93.2% → 97.0%) |
 | C24 | (실험 결과) 공개 거부·OFF 위반 그룹과 위반 기간은 추정에서 제외 | 짝(유효 OFF 블록)이 없는 그룹도 **지시상 ON 시간은 추정에 남긴다.** ① 그 쪽이 상한 안이면(검증기관 거부는 항상) 양옆 짝 있는 그룹 각 3개의 OFF 비로 보정해 넣는다(이웃 보정) ② 상한을 넘긴 기간(지급자: 미공개·기상 기준 미달 예외·OFF 위반, 투자자 대표: 미공개)의 그 쪽 미공개 그룹은 **그 쪽 최악값**(지급자 100% 절감, 투자자 대표 0%)으로 넣는다(불리 대입). 위반 기간을 누적 추정에서 통째로 빼던 규칙은 없앤다. 체인의 정산(6.4절 표, C14)은 그대로 | R4(`research/results/r4.json`, 기후 3 × 시드 200, 10년 계약 정산액 대비, 보증금 차감 전 평균 이득의 최댓값): 위반 기간 제외(v0.7) +14.9%, 그룹만 제외 +14.9%, 이웃 보정만 +5.7%, 불리 대입 −0.75%. 지급자는 측정 절감률이 높을 기간만 골라 위반을 일으키면 그 기간이 누적 추정에서 빠져 10년 정산 하한이 내려갔다. 불리 대입이면 거부한 기간이 오히려 그 쪽에 불리하게 누적된다. 상한 안 거부(M6 ①②, 격자 A 효과 있는 8조건 × 1,000회)의 편향 최댓값은 지급자 0.018%p, 투자자 대표 0.012%p, 검증기관 0.012%p |
 | C25 | (실험 결과) 위약 보정 오차 분포는 학습 창에서 얻은 그대로(C23) | 오차 분포를 **캠페인의 잡음 수준에 맞춰 늘이거나 줄인다.** 잡음 수준 q = 연속한 두 그룹의 OFF 블록 로그 비(실제 연료/예측) 차이 제곱 평균의 절반. 학습 창의 q는 무작위 OFF 위치에 대한 기댓값으로 구한다. 각 창의 오차에 √(q캠페인/q창)을 곱하고, q캠페인의 표본 오차(뉴이-웨스트 변동계수의 절반을 로그 척도 표준편차로)만큼 척도를 정규 분위 7점으로 섞는다 | v2.1 격자(`research/results/judgement.json`, 486조건): 효과 0 지급 합산 2.675%(목표 2.5% + 2SE 초과), 하한 ≤ 참값 합산 97.357%(목표 97.5% − 2SE 미달), 실패 조건 M3 8개·M4 7개. 원인: 학습 창 하나에서 얻은 오차 분포의 크기가 캠페인 데이터로 직접 구한 무작위 분포와 실행마다 표준편차 18%(시간 상관 0.995에서 28%) 어긋나, 평균하면 포함률이 떨어진다(기준 조건 1,500회). OFF 블록에는 세일 효과가 없어 바람 연동 효과·ON 블록 조작과 무관하다. 캠페인 ON 블록으로 잰 척도는 바람 연동 효과가 섞여 지급 비율을 약 2%p 낮췄다. 같은 시드 비교: 기준 조건 효과 0 지급 3.00% → 2.70%(3,000회), 시간 상관 0.995 3.88% → 3.04%(2,500회), 효과 5% 하한 ≤ 참값 97.10% → 97.65%·지급 비율 92.53% → 92.49%(2,000회) |
+| C26 | (구현 중 추가) 수익권 토큰은 보유자의 아무 토큰 계정에나 | 트랜치 토큰은 **보유자의 연관 토큰 계정(ATA) 한 개에만** 둔다. 계정 주소를 `Position.token_account`에 한 번 기록하고(`open_position`·`invest_tokenized`), Transfer Hook과 `claim`은 그 주소와 같은지만 비교한다(`NotAssociatedTokenAccount`) | 포지션은 소유자마다 하나라 계정이 여럿이면 "단위 = 잔액"이 계정 합계로만 성립하고 소각 반영(C27)도 할 수 없다. 훅에서 ATA 주소를 매번 계산하면 PDA bump 탐색 때문에 연산량이 주소마다 달라진다(측정: 훅 단독 23,001~41,008 CU, 주소 비교로 바꾼 뒤 14,197 CU 고정, C21과 같은 이유) |
+| C27 | (구현 중 추가) 없음 | **보유자 본인 소각**은 Token-2022가 훅을 부르지 않으므로, 다음 이전·청구에서 단위를 그 시점 잔액으로 줄인 뒤 정산한다. 그 사이 배분은 잔액 기준으로만 계산되어 소각분은 배분을 받지 않는다 | 소각은 Token-2022에서 막을 수 없는 유일한 무훅 경로다. 단위를 그대로 두면 소각한 토큰이 계속 배분을 받는다. 다른 보유자 몫과 금고 한도에는 영향이 없다(배분 단위는 모집액 고정). 그래서 P1-1 ④는 "모든 명령 뒤 단위 = 잔액, 모든 정산은 잔액 기준"으로 판정한다(`p1_1d`) |
 
 ---
 
@@ -135,6 +137,7 @@ README는 "왜, 무엇을"을, 이 문서는 "정확히 무엇을 만들고 언�
 
 | 날짜 | 변경 | 결정 |
 |---|---|---|
+| 2026-11-27 | v0.9.0: P1 구현(2.1절 합격선은 그대로). 명령 5개 추가(6.3b), `Deal.tranche_mints`, `Position.pending`·`token_account`(기존 필드 뒤에 덧붙여 P0 필드 위치 유지), 오류 코드 5개, 수익권 토큰 보유 계정을 ATA로(C26), 소각 반영(C27). Token ACL·ABL 게이트는 공개 소스 커밋을 빌드해 테스트 고정 바이너리로 두고 devnet 배포본으로도 같은 테스트를 돌림 | 박부건 지시로 구현·검증 |
 | 2026-11-27 | v0.8.3: devnet 실행기를 공개 RPC 한도 안에서 보내고, 그룹마다 공개 1건·데이터 커밋 1건으로 묶어 다음 그룹 공개와 함께 보냄(7.4). 첫 devnet 실행은 1,244건 전부 성공했으나 3,514초로 G1의 30분을 넘음 | 박부건 지시로 구현·검증 |
 | 2026-11-27 | v0.8.2 결과: v2.2 격자에서 합산 M3 2.493%·M4 97.512%로 통과, 조건별 실패는 C244 M4 1건(새 시드 재실행 통과)과 M9③ 59건(전부 이론 상한 99% 미만) | `research/results/judgement.json`, `recheck_C244.json`, `m9_check.json` |
 | 2026-11-27 | v0.8.2(v2.1 격자 결과로 방법 수정, 기준은 그대로): 위약 보정 오차를 캠페인 OFF 블록의 잡음 수준으로 다시 맞추고 그 표본 오차만큼 섞음(C25). 결과 수집은 실행마다 결과 파일만 담은 새 브랜치로 | 박부건 지시로 구현·검증. v2.1 결과(M3·M4 실패)는 `research/results/v2.1/`에 보존 |
@@ -172,6 +175,23 @@ P1은 아래 기준을 **모두** 통과하고 10장 P0 테스트가 여전히 �
 | P1-1 | Token-2022 수익권 토큰 + Token ACL | ① 트랜치마다 민트 1개, `DefaultAccountState=Frozen`, 메타데이터에 `token_acl` 필드 ② devnet에서 Token ACL MintConfig·ABL 허용 목록 생성 ③ 허용 목록 지갑은 스스로 동결 해제 후 수령 성공, 목록 밖 지갑은 해제 실패·수령 실패 ④ 모든 시점에 포지션 단위 = 토큰 잔액 (테스트 4건) |
 | P1-2 | Transfer Hook 배분 정산 | ① 이전할 때마다 보내는 쪽·받는 쪽의 미청구 배분이 먼저 확정됨 ② 무작위 이전·배분 순서 1,000회에서 각 보유자의 청구액 = 보유 기간 비례 몫(끝수 제외), 청구 합계 ≤ 금고 ③ 훅 연산량 ≤ 100,000 CU (테스트 3건) |
 | P1-3 | Ed25519 대리 승인 | ① 검증기관 서명 메시지(`sha256(borsh(payload))`)를 Ed25519 사전 컴파일 명령으로 검증해 대리 제출 성공 ② 다른 서명자, 다른 메시지, 사전 컴파일 명령 누락, 다른 기간용 서명은 모두 거부 ③ 연산량 ≤ 100,000 CU (테스트 6건) |
+
+**결과 (2026-11-27): 전부 통과, P0 테스트도 전부 통과 → main에 포함.** 테스트는 `programs/savesail/tests/p1.rs` 13건(LiteSVM). Token ACL·ABL 게이트는 공개 소스 커밋을 빌드한 고정 바이너리(`tests/fixtures/README.md`)와 devnet에서 내려받은 배포본 두 가지로 모두 13/13(워크플로 실행 45976185555). 같은 시점 P0 `tests/program.rs` 25건, 규칙 모듈 19건 통과, 오류 코드 36/36 발생(P0 31 + P1 5).
+
+| ID | 판정 | 근거 |
+|---|---|---|
+| P1-1 ① | 통과 | `p1_1a`: 등록된 두 민트의 확장이 정확히 4종(DefaultAccountState **Frozen**, TransferHook = SaveSail·변경 권한 없음, MetadataPointer, TokenMetadata `token_acl` = 게이트). 규칙을 하나씩 깬 민트 11종 + 다른 민트의 MintConfig + 같은 민트 두 번은 모두 `InvalidTrancheMint`, admin 아닌 서명자는 `Unauthorized`. 훅 검증 계정 바이트 = spl-tlv-account-resolution 출력 |
+| P1-1 ② | 통과 | devnet: 두 민트의 Token ACL MintConfig(게이트 = ABL, 무허가 해제 켜짐, 민트 동결 권한 = MintConfig)와 ABL 허용 목록(모드 allow, 지갑 2) 생성(`docs/deployments.md` P1절). LiteSVM `p1_1b`도 같은 계정 내용을 확인 |
+| P1-1 ③ | 통과 | `p1_1c`·devnet: 새 계정은 동결 상태로 생성, 목록 지갑은 스스로 해제 후 발행·이전 수령 성공. 목록 밖 지갑(KYC 통과)은 스스로 해제·다른 지갑의 대리 해제 모두 게이트 `AccountBlocked`, 발행·이전 수령은 `Account is frozen`. devnet은 실패 4건이 서명과 함께 체인에 남음 |
+| P1-1 ④ | 통과 | `p1_1d`: 투자, 전량·일부·0·자기 자신·위임자 이전, 배분, 청구 뒤마다 모든 보유자의 단위 = 토큰 잔액, 공급 = 모집액. 연관 계정 밖으로의 이전·청구는 `NotAssociatedTokenAccount`(C26). 본인 소각 뒤 청구액은 잔액 기준이고 청구 뒤 단위 = 잔액(C27). P1-2 ② 1,000회 동안 매 단계도 같은 검사 |
+| P1-2 ① | 통과 | `p1_2a`: 배분 뒤 이전 1건에서 보내는 쪽·받는 쪽 `pending`이 각자 `units × Δacc / 10¹²`와 정확히 같고 스냅숏이 현재 `acc`로 바뀐 뒤 단위가 옮겨짐. 보내는 쪽 청구액 = 이전 전 몫, 받는 쪽 = 이전 전 몫 + 늘어난 단위 × 이후 배분. 훅 직접 호출은 `NotTransferring`, 다른 민트는 `InvalidTrancheMint` |
+| P1-2 ② | 통과 | `p1_2b`: 한 계약에서 무작위 1,000단계(이전 808, 청구 187, 배분 4기간 + 종료 정산 5)를 체인 위에서 실행. 보유자 5명 × 2트랜치 모두 청구액 ≤ 정확한 보유 기간 비례 몫, 차이 ≤ 정산 횟수 + 배분 횟수 × (단위수/10¹² + 1) + 1(끝수). 청구 합계 ≤ 금고 유입, 금고 잔액 = 유입 − 청구. 같은 성질을 호스트에서 무작위 수열 1,000개로도 확인 |
+| P1-2 ③ | 통과 | `p1_2c`: 훅 단독 최대 14,197 CU, Token-2022 이전 전체 최대 42,935 CU(첫 이전·배분 4회 뒤·자기 이전·후순위 포함). devnet 배포본 바이너리로는 14,184 / 33,917 CU |
+| P1-3 ① | 통과 | `p1_3a`: 대리 제출자가 검증기관 2곳의 서명을 제출해 확정, 정산액이 직접 투표와 같음(147,360,759,493). 직접 투표 1 + 대리 1 혼합도 확정·정산·배분 |
+| P1-3 ② | 통과 | 다른 서명자: 검증기관이 아닌 키 `Unauthorized`, 검증기관 키에 다른 키의 서명은 사전 컴파일이 거부(`p1_3b`). 다른 메시지: 다른 payload 2종·해시 전 바이트 `InvalidSignature`(`p1_3c`). 누락: 사전 컴파일 없음·사이에 다른 명령·오프셋이 "이 명령"이 아님 `InvalidSignature`, 다른 명령을 가리키는 오프셋·서명 2개는 사전 컴파일이 거부(`p1_3d`). 다른 기간: 1기간 서명을 0기간에 `InvalidSignature`, 같은 서명 재제출 `AlreadyApproved`(`p1_3e`) |
+| P1-3 ③ | 통과 | `p1_3f`: 512그룹 기간의 확정 투표(최악) 최대 66,923 CU, 첫 투표 44,678 CU |
+
+연산량은 실행마다 계정 주소가 달라 PDA bump 탐색 횟수만큼 조금씩 변한다(같은 테스트 다른 실행: 확정 투표 56,423~66,923 CU). 훅은 주소를 계산하지 않아 변하지 않는다(C26).
 
 ## 3. 역할과 키
 
@@ -287,11 +307,12 @@ docs/PRD.md            이 문서
 
 | 계정 | 시드 | 주요 필드 |
 |---|---|---|
-| `Deal` | `["deal", admin, deal_id: u64 LE]` | `admin`, `deal_id`, `payment_mint`, `payer`, `investor_rep`, `verifiers[3]`, `manufacturer`, `opex_token`, `envelope_hash: [u8;32]`, `phi_bps: u16`, `ref_rate_bps: i32`, `comp_min_bps: u16`, `miss_max_bps: u16`, `install_cost`, `caps[2]`, `raised[2]`, `opex_per_period`, `reserve_target`, `n_periods: u16`, `senior_schedule[40]: u64`, `status: u8`(0 Fundraising, 1 Funded, 2 Active, 3 Closed), `vaults_ready`, `w_norm: u128`, `sv_fixed: u128`, `last_lb_bps: Option<i32>`, `entitlement: u64`(E), `paid_cum: u64`, `next_period: u16`, `opex_arrears`, `senior_arrears`, `reserve`, `acc[2]: u128`, `bump`, `vaults[6]: Pubkey`(C21) |
+| `Deal` | `["deal", admin, deal_id: u64 LE]` | `admin`, `deal_id`, `payment_mint`, `payer`, `investor_rep`, `verifiers[3]`, `manufacturer`, `opex_token`, `envelope_hash: [u8;32]`, `phi_bps: u16`, `ref_rate_bps: i32`, `comp_min_bps: u16`, `miss_max_bps: u16`, `install_cost`, `caps[2]`, `raised[2]`, `opex_per_period`, `reserve_target`, `n_periods: u16`, `senior_schedule[40]: u64`, `status: u8`(0 Fundraising, 1 Funded, 2 Active, 3 Closed), `vaults_ready`, `w_norm: u128`, `sv_fixed: u128`, `last_lb_bps: Option<i32>`, `entitlement: u64`(E), `paid_cum: u64`, `next_period: u16`, `opex_arrears`, `senior_arrears`, `reserve`, `acc[2]: u128`, `bump`, `vaults[6]: Pubkey`(C21), `tranche_mints[2]: Pubkey`(P1, 기본 키면 토큰 없는 P0 계약) |
 | `Campaign` | `["campaign", deal, 0u8]` | `n_groups`, `groups_per_period`, `reveal_timeout_slots`, `bond_amount`, `slash_per_miss`, `anchors_set: u8`(비트), `last_hash[3]: [u8;32]`, `last_group[3]: i32`(앵커는 −1), `bond_left[3]: u64`, `current_group: u16`, `group_opened_slot: u64`, `pending: u8`(비트), `pending_val[3]: [u8;32]`, `status[512]: u8`, `data_acc[2]: [u8;32]`, `next_data_group[2]: u16`, `period_snap[4][2]: [u8;32]`, `snap_ready[4]: u8`(기간별 비트 0 운항·비트 1 제어기), `bonds_released`, `deal`, `bump` |
 | `PeriodState` | `["period", deal, p: u16 LE]` | `deal`, `period`, `votes[3]: [u8;32]`, `voted: u8`(비트), `payload`(확정 시 저장), `payload_hash`, `finalized`, `outcome: u8`(6.5절 분기: 0 정상, 1 지급자 위반, 2 투자자 대표 상한 초과, 3 범위 밖·검증기관 상한 초과), `due: u64`, `settled`, `distributed`, `dist[5]: u64`(운영비·선순위·준비금 인출·준비금 적립·후순위), `bump` |
 | `Kyc` | `["kyc", deal, investor]` | `deal`, `investor`, `tier: u8`(0 Retail, 1 Pro), `annual_limit: u64`, `used: u64`, `window_start: i64`, `bump` |
-| `Position` | `["pos", deal, tranche: u8, owner]` | `deal`, `owner`, `tranche: u8`(0 선순위, 1 후순위), `units: u64`, `acc_snapshot: u128`, `claimed: u64`, `bump` |
+| `Position` | `["pos", deal, tranche: u8, owner]` | `deal`, `owner`, `tranche: u8`(0 선순위, 1 후순위), `units: u64`, `acc_snapshot: u128`, `claimed: u64`, `bump`, `pending: u64`(P1, 이전 때 확정된 미청구 배분), `token_account: Pubkey`(P1, C26) |
+| 훅 검증 계정(P1) | `["extra-account-metas", mint]` | Transfer Hook 인터페이스의 추가 계정 목록 3개: `deal`(고정), 보내는 쪽·받는 쪽 `Position`(`["pos", deal, tranche, 토큰 계정 32..64바이트의 소유자]`) |
 | 금고 (토큰 계정, 권한 = `Deal` PDA) | 키쌍 계정, 주소는 `Deal.vaults[kind]`(C21) | kind 0 모집, 1 정산 수납, 2 선순위, 3 후순위, 4 준비금, 5 보증금 |
 
 `Campaign.status[g]` 한 바이트: 비트 0–2 `off_index`(0–4 또는 `NO_OFF`), 비트 3–5 미공개 역할(0 지급자, 1 투자자 대표, 2 검증기관), 비트 7 결정 완료.
@@ -335,6 +356,18 @@ docs/PRD.md            이 문서
 | 12 | `claim(tranche)` | 포지션 보유자 | 받을 몫 > 0 | `units × (acc − acc_snapshot) / ACC`만큼 트랜치 금고에서 이체 |
 | 13 | `release_bonds()` | 누구나 | 캠페인 전 그룹 결정·전 기간 배분 완료 | 남은 보증금 반환 |
 | 14 | `close_deal()` | admin | `Active`, `next_period == n_periods` | 6.5절 종료 정산, `Closed` |
+
+### 6.3b 명령 (P1, 5개, 2.1절)
+
+| # | 명령 | 서명자 | 검사 | 효과 |
+|---|---|---|---|---|
+| P1a | `register_tranche_mints()` | admin | `Fundraising`, `raised == [0,0]`, 미등록, 두 민트가 다름. 민트마다: Token-2022 소유, 공급 0, 결제 토큰과 같은 소수 자릿수, 발행 권한 = `Deal` PDA, 동결 권한 = 그 민트의 Token ACL `MintConfig`(무허가 동결 해제 켜짐), 확장이 정확히 DefaultAccountState(Frozen)·TransferHook(이 프로그램, 변경 권한 없음)·MetadataPointer(자기 자신)·TokenMetadata(`token_acl` = MintConfig의 게이트 프로그램). 어기면 `InvalidTrancheMint` | `tranche_mints` 기록, 민트마다 훅 검증 계정 생성 |
+| P1b | `open_position(tranche, owner)` | 누구나(임대료 부담) | 토큰 계약(`TrancheTokenMode`), `tranche ≤ 1` | 빈 `Position`, `token_account` = 소유자 ATA, `acc_snapshot = acc` |
+| P1c | `invest_tokenized(tranche, amount)` | 투자자 | `invest`와 같음 + 토큰 계약, `tranche_mint` = `tranche_mints[tranche]`, 받는 계정 = 포지션의 ATA | `invest`와 같고 같은 수량을 ATA로 발행. 동결된 계정이면 발행이 실패하므로 Token ACL로 동결을 풀 수 있는 지갑만 투자 가능. P0 `invest`는 토큰 계약을 거부 |
+| P1d | `transfer_hook(amount)` (Execute 판별자) | Token-2022 | 보내는 계정의 `transferring` 표시(`NotTransferring`), 민트 ∈ `tranche_mints`, 두 포지션의 계약·트랜치·소유자 일치, 두 계정 = 포지션의 ATA | 두 포지션을 현재 `acc`로 정산(`pending` 확정)한 뒤 단위를 이전 후 잔액으로. 단위가 잔액보다 크면(소각, C27) 정산 전에 잔액으로 줄임 |
+| P1e | `approve_attestation_signed(payload)` | 누구나(대리 제출) | 바로 앞 명령이 Ed25519 사전 컴파일 명령, 서명 1개, 공개키·서명·메시지 오프셋이 모두 그 명령 자신(`u16::MAX`), 메시지 = `sha256(borsh(payload))`. 어기면 `InvalidSignature` | 서명한 공개키가 `verifiers[i]`이면 명령 9와 똑같이 투표 |
+
+토큰 계약의 `claim`은 소유자의 ATA를 첫 추가 계정으로 받아 단위를 잔액 이하로 맞춘 뒤 청구한다(C27).
 
 ### 6.4 일정 규칙
 
@@ -404,11 +437,11 @@ due = max(0, E − paid_cum)
 
 ### 6.6 이벤트
 
-`DealInitialized`, `VaultsInitialized`, `KycSet`, `Invested`, `FundraisingClosed`, `AnchorRegistered`, `Revealed{role, group, value}`, `GroupResolved{group, off_index, missing_mask}`, `BondSlashed{role, amount}`, `DataCommitted{kind, group, root}`, `AttestationApproved{period, verifier}`, `AttestationFinalized{period, due, entitlement, outcome}`, `Settled{period, amount}`, `Distributed{period, opex, senior, reserve_draw, reserve_in, junior}`, `Claimed{tranche, owner, amount}`, `BondsReleased`, `DealClosed{refund}`. 웹 화면은 이벤트로 시간 순서를 그린다.
+`DealInitialized`, `VaultsInitialized`, `KycSet`, `Invested`, `FundraisingClosed`, `AnchorRegistered`, `Revealed{role, group, value}`, `GroupResolved{group, off_index, missing_mask}`, `BondSlashed{role, amount}`, `DataCommitted{kind, group, root}`, `AttestationApproved{period, verifier}`, `AttestationFinalized{period, due, entitlement, outcome}`, `Settled{period, amount}`, `Distributed{period, opex, senior, reserve_draw, reserve_in, junior}`, `Claimed{tranche, owner, amount}`, `BondsReleased`, `DealClosed{refund}`, P1: `TrancheMintsRegistered{senior, junior}`, `TrancheTransferred{tranche, from, to, amount}`. 웹 화면은 이벤트로 시간 순서를 그린다.
 
 ### 6.7 오류 코드
 
-`Unauthorized`, `InvalidState`, `InvalidParams`, `AlreadyRegistered`, `WrongGroup`, `AlreadyRevealed`, `HashChainMismatch`, `SkipTooLarge`, `WrongRevealOrder`, `TimeoutNotReached`, `AlreadyResolved`, `GroupNotResolved`, `WrongDataOrder`, `PeriodNotReady`, `SnapshotMismatch`, `AlreadyApproved`, `InvalidRateBounds`, `MissingKgInconsistent`, `PreviousPeriodOpen`, `NotFinalized`, `AlreadySettled`, `NotSettled`, `AlreadyDistributed`, `KycRequired`, `TierNotAllowed`, `LimitExceeded`, `CapExceeded`, `NotFullySubscribed`, `NothingToClaim`, `MathOverflow`, `DealNotEnded`.
+`Unauthorized`, `InvalidState`, `InvalidParams`, `AlreadyRegistered`, `WrongGroup`, `AlreadyRevealed`, `HashChainMismatch`, `SkipTooLarge`, `WrongRevealOrder`, `TimeoutNotReached`, `AlreadyResolved`, `GroupNotResolved`, `WrongDataOrder`, `PeriodNotReady`, `SnapshotMismatch`, `AlreadyApproved`, `InvalidRateBounds`, `MissingKgInconsistent`, `PreviousPeriodOpen`, `NotFinalized`, `AlreadySettled`, `NotSettled`, `AlreadyDistributed`, `KycRequired`, `TierNotAllowed`, `LimitExceeded`, `CapExceeded`, `NotFullySubscribed`, `NothingToClaim`, `MathOverflow`, `DealNotEnded`. P1: `TrancheTokenMode`, `InvalidTrancheMint`, `NotTransferring`, `InvalidSignature`, `NotAssociatedTokenAccount`.
 
 ---
 
@@ -553,6 +586,8 @@ due = max(0, E − paid_cum)
 | T10 | 오프체인 인수 | 22 | 합성 데이터 3(7.1), 검증기 15(7.2), 실행기 4(7.4) |
 | | **합계** | **197** | |
 
+P1(2.1절)은 위 합계와 별도로 `tests/p1.rs` 13건(P1-1 4, P1-2 3, P1-3 6)이다. CI는 `cargo test --test program --test p1` 뒤 `scripts/check_k2.py`로 오류 코드 36개 발생과 P1 명령 5개의 연산량을 함께 본다.
+
 실패한 테스트는 지우지 않고 원인을 고쳐 통과시킨다. 기준은 낮추지 않는다(1장).
 
 격자에서 1.3절 기준을 벗어난 조건은 같은 조건을 다른 시드로 10,000회 다시 돌려 우연인지 확인한다. 그래도 벗어나면 방법을 고쳐 격자 전체를 다시 돌린다. 1.2절 요구 범위는 줄이지 않는다. 결과는 실패와 수정 내역까지 모두 기록한다.
@@ -572,7 +607,7 @@ due = max(0, E − paid_cum)
 | 12/3 | README 수치 갱신(S1·G7), 텀시트·DB증권 실증 관계(S2·S3) | 수치 받아 피치덱 |
 | 12/4~5 | 웹·데모 모드, GitHub Pages, Lighthouse(T8) | 영상 대본 확인 |
 | 12/6 | 피치덱·영상 대본 2종·예상 질문 50개 | 리허설 1 |
-| 12/7 | P1 시도. 하루 안에 안 되면 제외 | 내레이션 녹음, 리허설 2 |
+| 12/7 | P1 시도. 하루 안에 안 되면 제외 (11/27 앞당겨 완료, 2.1절) | 내레이션 녹음, 리허설 2 |
 | 12/8 | 영상 편집, R7, 14장 최종 점검 | 리허설 3, 피치덱 최종 |
 | 12/9 | 제출 (버퍼) | 제출 |
 
@@ -587,7 +622,7 @@ due = max(0, E − paid_cum)
 | Q3 | 영상·발표 언어 | 정우진 | 웹 문구 |
 | Q4 | 저장소 공개 필수 여부 | 정우진 | 현재 공개 |
 | Q5 | 심사 기준과 배점 | 정우진 | 공식 배점은 미공개. 우리 트랙 심사 주체·관점은 보도로 확인(부록 B). 배점이 나오면 데모·발표 비중 조정 |
-| Q6 | Token ACL이 우리 민트 구성(Token-2022 + Transfer Hook)과 devnet에서 함께 동작하는지 | 박부건 | P1 |
+| Q6 | Token ACL이 우리 민트 구성(Token-2022 + Transfer Hook)과 devnet에서 함께 동작하는지 | 박부건 | **확인(11/27)**: devnet에서 기본 동결 + SaveSail 훅 민트에 MintConfig·ABL 허용 목록을 걸고 해제·발행·훅 이전까지 동작(`docs/deployments.md` P1절) |
 | Q7 | 데모 연간 한도 값(원화 1억 원 상당을 dUSD로 바꾸는 환율 설정) — **결정: 1 dUSD = 1,430원 고정, 한도 69,930 dUSD**(1억 원 ÷ 1,430원, 소수점 이하 버림) | 박부건 | `demo.json` |
 | Q8 | GitHub Actions에서 devnet 테스트 SOL 자동 발급이 되는지 | 박부건 | 안 되면 발급 사이트에서 수동 발급 |
 | Q9 | 저장소 라이선스 | 박부건 | 12/8까지 정하지 않으면 Apache-2.0 |
@@ -637,7 +672,7 @@ due = max(0, E − paid_cum)
 | 발표 | 제출물 7종 | G8, 13장 | S1~S7 |
 | 수치 | 수치·근거 | G7 | 불일치 0건, 출처 누락 0건 |
 | 저장소 | main·CI·키 | G9 | CI 통과, 키 0건, TODO 0건, `LICENSE` 있음 |
-| 선택 | P1 | 2.1절 | 전부 통과 시 포함, 아니면 제외를 기록 |
+| 선택 | P1 | 2.1절 | 전부 통과 시 포함, 아니면 제외를 기록. **(11/27) 9항목 전부 통과, 포함** |
 
 ---
 
