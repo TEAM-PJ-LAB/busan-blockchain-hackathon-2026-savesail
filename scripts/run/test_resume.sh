@@ -8,8 +8,10 @@ npx tsx run/run.ts local --quick >/dev/null
 cp $OUT/run.json /tmp/savesail_ref_run.json
 rm -f $OUT/svm.bin
 crashes=0
+# crash points spread over the whole run: each attempt stops after a sixth of its transactions
+every=$(python3 -c "import json;print(len(json.load(open('/tmp/savesail_ref_run.json'))['txs']) // 6)")
 for i in 1 2 3 4 5; do
-  out=$(STOP_AFTER=25 RESUME=${i/1/} npx tsx run/run.ts local --quick 2>&1 || true)
+  out=$(STOP_AFTER=$every RESUME=${i/1/} npx tsx run/run.ts local --quick 2>&1 || true)
   if grep -q "simulated crash" <<<"$out"; then crashes=$((crashes+1)); fi
 done
 RESUME=1 npx tsx run/run.ts local --quick >/dev/null

@@ -98,7 +98,7 @@ jobs:
           # and no existing branch rewritten (pages.yml takes the newest devnet-runs-* that holds a run.json)
           ls app/public/run*.json > /dev/null 2>&1 || { echo "no run record to keep"; exit 0; }
           git checkout --orphan records-only
-          git rm -rq --cached .
+          git rm -rqf --cached .
           git add -f app/public/run*.json docs/deployments.md
           git commit -m "devnet runs (${{ github.run_id }})"
           git push origin HEAD:refs/heads/devnet-runs-${{ github.run_id }}

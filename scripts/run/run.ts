@@ -269,39 +269,46 @@ async function main() {
   const commitIx = (kind: number, g: number, root: string) => program.methods.commitGroupData(kind, g, hex32(root)).accountsStrict({
     committer: pk(kind === 0 ? "payer" : "manufacturer"), deal, campaign }).instruction();
   const distributed = async (p: number) => (await decode("PeriodState", periodPda(p)))?.distributed;
-  cam = await decode("Campaign", campaign);
+  // One transaction per group for the three reveals (verifier first, C18: the instructions run in that order) and one
+  // for the two data commits; the next group's reveals go out together with this group's commits. Each group then
+  // costs one confirmation round instead of three, which keeps a devnet run under 30 minutes (G1).
+  const revealGroup = async (g: number) => {
+    const c = await decode("Campaign", campaign);
+    if (g < c.currentGroup) return;
+    const w = withhold[String(g)];
+    const pend = c.currentGroup === g ? c.pending : 0;
+    const ixs: TransactionInstruction[] = [];
+    const signers: Keypair[] = [];
+    if (w !== 2 && !(pend & 4)) { ixs.push(await revealIx(2, g)); signers.push(keys.verifier0); }
+    for (const r of [0, 1]) if (w !== r && w !== 2 && !(pend & (1 << r))) { ixs.push(await revealIx(r, g)); signers.push(keys[roleSigner[r]]); }
+    if (ixs.length) await send(`reveal_${g}`, ixs, signers);
+    if (w !== undefined) {
+      await chain.waitSlots(sc.reveal_timeout_slots + 1);
+      const ix = await program.methods.resolveMissing(g).accountsStrict({ caller: pk("admin"), deal, campaign, paymentMint: mint, bondVault: vault(5),
+        reserveVault: vault(4), tokenProgram: TOKEN_PROGRAM_ID }).instruction();
+      await send(`resolve_missing_${g}`, [ix], [keys.admin]);
+    }
+  };
+  const commitGroup = async (g: number) => {
+    const c = await decode("Campaign", campaign);
+    const roots = await synthGroup(g, c.status[g] & 7, viol.has(g)); // also regenerates local data on resume
+    const ixs: TransactionInstruction[] = [];
+    const signers: Keypair[] = [];
+    if (g >= c.nextDataGroup[0]) { ixs.push(await commitIx(0, g, roots.root_ops)); signers.push(keys.payer); }
+    if (g >= c.nextDataGroup[1]) { ixs.push(await commitIx(1, g, roots.root_ctrl)); signers.push(keys.manufacturer); }
+    if (ixs.length) await send(`commit_${g}`, ixs, signers);
+  };
+  if (nGroups > 0) await revealGroup(0);
   for (let g = 0; g < nGroups; g++) {
     const p = Math.floor(g / gpp);
-    cam = await decode("Campaign", campaign);
-    if (g >= cam.currentGroup) {
-      const w = withhold[String(g)];
-      const pend = cam.currentGroup === g ? cam.pending : 0;
-      if (w !== 2 && !(pend & 4)) await send(`reveal_${g}_verifier`, [await revealIx(2, g)], [keys.verifier0]);
-      const rest: Promise<SentTx>[] = [];
-      for (const r of [0, 1]) if (w !== r && w !== 2 && !(pend & (1 << r))) rest.push(revealIx(r, g).then((ix) => send(`reveal_${g}_${r}`, [ix], [keys[roleSigner[r]]])));
-      await Promise.all(rest);
-      if (w !== undefined) {
-        await chain.waitSlots(sc.reveal_timeout_slots + 1);
-        const ix = await program.methods.resolveMissing(g).accountsStrict({ caller: pk("admin"), deal, campaign, paymentMint: mint, bondVault: vault(5),
-          reserveVault: vault(4), tokenProgram: TOKEN_PROGRAM_ID }).instruction();
-        await send(`resolve_missing_${g}`, [ix], [keys.admin]);
-      }
+    const last = (g + 1) % gpp === 0;
+    await Promise.all([commitGroup(g), !last && g + 1 < nGroups ? revealGroup(g + 1) : null]);
+    if (last) {
+      await settlePeriod(p, gpp, env, !!(await distributed(p)));
+      if (g + 1 < nGroups) await revealGroup(g + 1); // the next period opens after this one is settled
     }
-    cam = await decode("Campaign", campaign);
-    if (g >= cam.nextDataGroup[0] || g >= cam.nextDataGroup[1]) {
-      const st = cam.status[g];
-      const roots = await synthGroup(g, st & 7, viol.has(g));
-      const c2 = await decode("Campaign", campaign);
-      await Promise.all([
-        g >= c2.nextDataGroup[0] ? commitIx(0, g, roots.root_ops).then((ix) => send(`commit_ops_${g}`, [ix], [keys.payer])) : null,
-        g >= c2.nextDataGroup[1] ? commitIx(1, g, roots.root_ctrl).then((ix) => send(`commit_ctrl_${g}`, [ix], [keys.manufacturer])) : null,
-      ]);
-    } else {
-      const st = cam.status[g];
-      await synthGroup(g, st & 7, viol.has(g)); // regenerate local data on resume
-    }
-    if ((g + 1) % gpp === 0) await settlePeriod(p, gpp, env, !!(await distributed(p)));
   }
+  cam = await decode("Campaign", campaign);
 
   // 6. claims and bond release
   const claimIx = (r: Role, t: number) => program.methods.claim(t).accountsStrict({ owner: pk(r), deal, position: posPda(t, pk(r)), paymentMint: mint,
