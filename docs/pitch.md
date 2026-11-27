@@ -31,7 +31,7 @@
 
 ## 3. 지금의 측정으로는 믿을 수 없다
 
-- 설치 전후 비교가 만드는 가짜 효과 2.21%p<!--n:judgement.json:summary.ba_median_abs:.2f-->(모의실험 편향 중앙값, 편향 0.5%p 이상인 조건) 대 재려는 세일 효과 3~8%
+- 설치 전후 비교가 만드는 가짜 효과 2.21%p<!--n:judgement.json:summary.ba_median_abs:.2f-->(모의실험 편향 중앙값, 편향 0.5%p 이상인 조건) 대 재려는 세일 효과 3~8%. 실제 선박의 공개 운항 데이터로 해도 2.04<!--n:fuelcast.json:summary.ba_abs_min:.2f-->~2.93%p<!--n:fuelcast.json:summary.ba_abs_max:.2f-->(README 5.3)
 - 메시지: 성과 연동 금융은 측정을 믿을 수 있어야 성립한다
 
 ## 4. 지급자는 아낀 돈의 일부만 낸다
@@ -44,10 +44,12 @@
 
 - 3시간 블록 5개 중 1개 OFF. 같은 배, 같은 날씨에서 켠 구간과 끈 구간을 비교
 - 일정: 세 참여자의 해시 체인 값으로 결정(검증기관 선공개) · 정산: 95% 신뢰구간 하한만큼만 · 연료: 봉인 토크미터 축동력으로 계산해 유량계 조작이 닿지 않음
+- 출처 줄: 업계도 ON/OFF로 잰다 — DNV 권고안 [README 10], Lloyd's Register Advisory 검증 TR Lady, ON/OFF 시험 167회 이상·순 연료 절감 9.1% [README 35]
 
 ## 6. 486개 조건에서 정산 기준 세 가지를 지켰다
 
 - 최대 편향 0.025%p<!--n:judgement.json:summary.worst_bias:.3f-->(≤ 0.10%p), 하한이 실제 절감 이하 97.51%<!--n:judgement.json:pooled.M4.rate:.2f*100-->(≥ 97.5%), 효과 0에서 잘못 지급 2.49%<!--n:judgement.json:pooled.M3.rate:.2f*100-->(≤ 2.5%)
+- 실선박 데이터로도 통과: 공개 운항 데이터(FuelCast) 9<!--n:fuelcast.json:summary.conditions:.0f-->개 조건, 최대 편향 0.0147%p<!--n:fuelcast.json:summary.max_abs_bias:.4f-->(README 5.3)
 - 한계도 공개: 토크미터는 신뢰 가정. 유량계 1% 조작 99% 탐지 기준은 59<!--n:m9_check.json:failing:.0f-->개 조건에서 미달(이론상 불가능한 조건, 정산은 토크미터 기준이라 지급액 영향 없음)
 - 조작 137가지 · 선종 4 · 항로 4 · 효과 0~12% · 잡음·결측·오염 최악 조합 · 조건마다 2,000~10,000회
 
