@@ -1,0 +1,221 @@
+{
+ "design": {
+  "block_h": 3,
+  "camp_h": 1800,
+  "effects": [
+   0.0,
+   0.03,
+   0.07
+  ],
+  "group": 5,
+  "min_hours": 3000,
+  "min_kn": 6.0,
+  "min_train": 1200,
+  "n_starts": 3,
+  "reps": 2000,
+  "seed": 20261128
+ },
+ "ships": {
+  "CPS_Poseidon": {
+   "hours": 8786,
+   "included": true,
+   "noise": {
+    "r2": 0.9825,
+    "resid_rho1": 0.6806,
+    "resid_sd": 0.0584,
+    "train_h": 1710
+   },
+   "rows": [
+    {
+     "ba_bias": -2.5958,
+     "bias": -0.0048,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M3": true
+     },
+     "groups": 120,
+     "lb_pos": 0.0105,
+     "p95": 0.9783,
+     "reps": 2000,
+     "s": 0.0,
+     "t0": 1200,
+     "train_h": 1200
+    },
+    {
+     "ba_bias": -2.5158,
+     "bias": 0.0084,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M4": true
+     },
+     "cover": 0.988,
+     "groups": 120,
+     "p95": 0.9431,
+     "pay_ratio": 0.6507,
+     "reps": 2000,
+     "s": 0.03,
+     "t0": 1200,
+     "train_h": 1200
+    },
+    {
+     "ba_bias": -2.4103,
+     "bias": 0.0032,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M4": true
+     },
+     "cover": 0.984,
+     "groups": 120,
+     "p95": 0.9091,
+     "pay_ratio": 0.8553,
+     "reps": 2000,
+     "s": 0.07,
+     "t0": 1200,
+     "train_h": 1200
+    },
+    {
+     "ba_bias": -2.9292,
+     "bias": 0.0091,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M3": true
+     },
+     "groups": 120,
+     "lb_pos": 0.0095,
+     "p95": 0.9171,
+     "reps": 2000,
+     "s": 0.0,
+     "t0": 1455,
+     "train_h": 1455
+    },
+    {
+     "ba_bias": -2.8362,
+     "bias": 0.0067,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M4": true
+     },
+     "cover": 0.989,
+     "groups": 120,
+     "p95": 0.883,
+     "pay_ratio": 0.667,
+     "reps": 2000,
+     "s": 0.03,
+     "t0": 1455,
+     "train_h": 1455
+    },
+    {
+     "ba_bias": -2.7133,
+     "bias": -0.0065,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M4": true
+     },
+     "cover": 0.9895,
+     "groups": 120,
+     "p95": 0.8366,
+     "pay_ratio": 0.8612,
+     "reps": 2000,
+     "s": 0.07,
+     "t0": 1455,
+     "train_h": 1455
+    },
+    {
+     "ba_bias": -2.201,
+     "bias": 0.0056,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M3": true
+     },
+     "groups": 120,
+     "lb_pos": 0.0035,
+     "p95": 0.8666,
+     "reps": 2000,
+     "s": 0.0,
+     "t0": 1710,
+     "train_h": 1710
+    },
+    {
+     "ba_bias": -2.1293,
+     "bias": 0.0147,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M4": true
+     },
+     "cover": 0.992,
+     "groups": 120,
+     "p95": 0.8348,
+     "pay_ratio": 0.6615,
+     "reps": 2000,
+     "s": 0.03,
+     "t0": 1710,
+     "train_h": 1710
+    },
+    {
+     "ba_bias": -2.0356,
+     "bias": -0.0111,
+     "camp_h": 1800,
+     "checks": {
+      "M1": true,
+      "M10": true,
+      "M4": true
+     },
+     "cover": 0.996,
+     "groups": 120,
+     "p95": 0.7983,
+     "pay_ratio": 0.8562,
+     "reps": 2000,
+     "s": 0.07,
+     "t0": 1710,
+     "train_h": 1710
+    }
+   ],
+   "sailing_hours": 3521
+  },
+  "CPS_Triton": {
+   "hours": 2113,
+   "included": false,
+   "sailing_hours": 931
+  },
+  "OSS_Ceto": {
+   "hours": 3602,
+   "included": false,
+   "sailing_hours": 80
+  }
+ },
+ "source": "FuelCast, Krohne Digital, huggingface.co/datasets/krohnedigital/FuelCast (CC BY-NC-ND 4.0)",
+ "summary": {
+  "ba_abs_max": 2.9292,
+  "ba_abs_min": 2.0356,
+  "conditions": 9,
+  "failed": [],
+  "max_abs_bias": 0.0147,
+  "max_lb_pos": 0.0105,
+  "min_cover": 0.984,
+  "pay_3": [
+   0.6507,
+   0.667
+  ],
+  "pay_7": [
+   0.8553,
+   0.8612
+  ],
+  "ratio_min": 138.5
+ }
+}

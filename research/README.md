@@ -31,6 +31,7 @@ python3 research/run_all.py --quick 20 --twice  # 축소판을 두 번 돌려 �
 | `recheck.py` | 기준을 못 넘은 조건을 새 시드 10,000회로 다시 돌려 우연인지 판정(PRD 10장) → `results/recheck_<격자><조건>.json` |
 | `run_r4.py` | 선택적 공개 거부의 이득(10년 정산액 대비, 거부 처리 규칙 5가지 비교)과 상한 안 거부의 편향(M6 ①②) → `results/r4.json`, `r4.md` (R4, PRD C24) |
 | `run_all.py` | 위 단계를 한 번에 실행하고 시간·sha256 기록(R7) |
+| `fuelcast_check.py` | 공개 실선박 운항 데이터(FuelCast, CC BY-NC-ND 4.0)에 무작위 ON/OFF와 알려진 세일 효과를 넣어 같은 추정기·하한·판정 규칙을 적용 → `results/fuelcast.json`(README 5.3절). 원자료는 저장소에 없고 `python3 research/fuelcast_check.py <파일 폴더>`로 실행하며 `pandas`·`pyarrow`가 필요하다. `run_all.py`에는 들어 있지 않다 |
 | `legacy/` | v1(6시간 블록·로그선형 모델·그룹 부트스트랩) 실험 E1~E7 재현용. 결과는 `results/v1/` |
 
 ## 측정 방법 (채택안, PRD 7.2절)

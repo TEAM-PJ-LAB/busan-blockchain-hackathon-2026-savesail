@@ -3,7 +3,7 @@
 **선박 풍력 세일을 선사 초기 비용 없이 달고, 검증된 연료 절감액으로만 갚는 실물자산 금융**
 
 > 부산 블록체인 해커톤 2026 · Busan RWA 트랙 · Team PJ
-> 상태(2026-11-27): 솔라나 프로그램 20개 명령(P0 15 + 토큰화 P1 5) 구현·테스트 완료, 오프체인 검증기·실행기·웹 완료, 측정 격자 A~D·경제성 모의실험 완료, devnet 전체 흐름 3회 연속 성공(P1 포함 현재 바이너리, 회당 525건, 1,494~1,524초), devnet에서 Token-2022 수익권 토큰 + Token ACL 허용 목록 동작 확인([`docs/deployments.md`](docs/deployments.md))
+> 상태(2026-11-28): 솔라나 프로그램 20개 명령(P0 15 + 토큰화 P1 5) 구현·테스트 완료, 오프체인 검증기·실행기·웹 완료, 측정 격자 A~D·경제성 모의실험 완료, 공개 실선박 데이터 시험 9개 조건 통과(5.3절), devnet 전체 흐름 3회 연속 성공(P1 포함 현재 바이너리, 회당 525건, 1,494~1,524초), devnet에서 Token-2022 수익권 토큰 + Token ACL 허용 목록 동작 확인([`docs/deployments.md`](docs/deployments.md))
 
 | | |
 |---|---|
@@ -71,6 +71,7 @@
 
 - 2026년 발표된 연구는 풍력 추진이 선종에 따라 연료 소비를 1~12.5%, 바람 조건이 맞는 선박 전체로는 세일 수에 따라 6.3~9.4% 줄일 수 있다고 추정했다. [[1]](#14-참고-자료)
 - 브라질 광산회사 Vale는 자사 전용선의 로터세일이 선박에 따라 연료 소비를 최대 10% 줄인다고 밝혔고, 브라질–아시아 항로가 바람 조건에서 유리하다고 설명했다. [[2]](#14-참고-자료) [[3]](#14-참고-자료)
+- 공개된 실측 결과도 같은 범위다. Maersk Pelican(LR2 유조선)은 1년간 연료를 8.2% 줄였는데, 설치 전에 만든 기준선과 비교한 값이다(Lloyd's Register 검증). [[34]](#14-참고-자료) 캄사르막스 벌크선 TR Lady는 167회가 넘는 ON/OFF 시험에서 순 연료 절감 9.1%(운항일당 1.9톤)가 나왔다(Lloyd's Register Advisory 검증). [[35]](#14-참고-자료) 2010~2025년 로터세일 25척의 공개 자료를 모은 연구는 절감률을 보통 4~15%로 정리했다. [[36]](#14-참고-자료)
 - 국제풍력선박협회(IWSA) 집계로 2026년 9월 기준 400GT 이상 선박 116척이 약 250기의 장치를 달고 운항 중이며, 약 80척이 발주·설치 계약 단계다. 유조선과 벌크선이 설치 대수에서 앞선다. [[4]](#14-참고-자료) [[5]](#14-참고-자료)
 
 ### 2.2 그래도 안 다는 이유 세 가지
@@ -81,7 +82,7 @@
 
 ### 2.3 측정이 왜 어려운가: 전후 비교의 함정
 
-가장 흔한 방법은 "설치 전 연비"와 "설치 후 연비"를 비교하는 것이다. 그런데 선체 오염, 엔진 상태, 항로, 계절, 화물량이 시간에 따라 함께 변한다. 우리 모의실험(5.1절)에서 같은 선박을 설치 전후로 비교하면 **전후 비교 편향의 중앙값이 2.21%p<!--n:judgement.json:summary.ba_median_abs:.2f-->**였다(편향 0.5%p 이상인 조건 기준). 공개된 실선박 운항 기록으로 해 본 사전 탐색에서도 효과가 0인데 세일 효과와 같은 크기의 가짜 효과가 나왔다(원자료 라이선스 미확인으로 저장소에 넣지 않아 수치는 싣지 않는다). 이 오차를 없애지 못하면 투자자도 지급자도 숫자를 믿을 수 없다.
+가장 흔한 방법은 "설치 전 연비"와 "설치 후 연비"를 비교하는 것이다. 그런데 선체 오염, 엔진 상태, 항로, 계절, 화물량이 시간에 따라 함께 변한다. 우리 모의실험(5.1절)에서 같은 선박을 설치 전후로 비교하면 **전후 비교 편향의 중앙값이 2.21%p<!--n:judgement.json:summary.ba_median_abs:.2f-->**였다(편향 0.5%p 이상인 조건 기준). 공개된 실선박 운항 데이터로 같은 비교를 해도 효과가 0인데 2.04<!--n:fuelcast.json:summary.ba_abs_min:.2f-->~2.93%p<!--n:fuelcast.json:summary.ba_abs_max:.2f-->의 가짜 효과가 나왔다(5.3절). 이 오차를 없애지 못하면 투자자도 지급자도 숫자를 믿을 수 없다.
 
 ---
 
@@ -147,7 +148,7 @@ flowchart LR
 
 신약 임상시험이 약과 위약을 무작위로 배정하듯, 세일을 켜는 시간과 끄는 시간을 무작위로 배정한다. 그러면 날씨, 선체 오염, 항로, 화물량 같은 모든 외부 요인이 ON과 OFF에 평균적으로 똑같이 섞인다. 두 구간의 연비 차이는 세일 효과만 남는다.
 
-DNV의 WAPS 성능 평가 권고안(RP)도 비슷한 운항·환경 조건에서 장치를 켜고 끄는 on/off 방법을 제안한다. [[10]](#14-참고-자료) SaveSail은 여기에 두 가지를 더한다.
+DNV의 WAPS 성능 평가 권고안(RP)도 비슷한 운항·환경 조건에서 장치를 켜고 끄는 on/off 방법을 제안한다. [[10]](#14-참고-자료) Lloyd's Register Advisory가 검증한 TR Lady 사례도 ON/OFF 시험으로 절감을 쟀다. [[35]](#14-참고-자료) 다만 이런 실선 ON/OFF 원자료는 공개되지 않는다. 2026년 연구도 풍력 보조 추진 선박의 실선 운항 데이터는 산업 기밀 때문에 공개 데이터가 드물다고 적었다. [[37]](#14-참고-자료) 그래서 세일이 없는 공개 실선박 데이터로 방법을 따로 시험했다(5.3절). SaveSail은 여기에 두 가지를 더한다.
 
 1. **무작위 배정을 미리 체인에 고정한다.** 사람이 "오늘은 바람이 좋으니 켜자"처럼 고르면 편향이 생긴다. 일정이 체인에 먼저 고정되면 누구도 결과를 유리하게 만들 수 없다.
 2. **정산 규칙까지 코드로 고정한다.** 어떤 데이터로, 어떤 식으로, 어떤 신뢰구간으로 정산하는지 사전에 공개되어 있다.
@@ -309,6 +310,28 @@ sequenceDiagram
 
 **한계.** 설치비·절감량은 공개 자료 기반 가정이며 제조사 견적으로 바꿔야 한다. 환율, 선사 부도, 선박 매각은 아직 모델에 없다.
 
+### 5.3 실선박 데이터 시험: 실제 바다의 잡음 위에서도 기준을 지키는가
+
+세일을 켜고 끈 실선 원자료는 공개된 것이 없다(4.1절). 그래서 세일이 없는 실제 선박의 공개 운항 데이터 FuelCast [[41]](#14-참고-자료)를 쓰고, 세일만 넣었다. 축동력·속력·바람·파고는 그 배의 실제 기록 그대로 두고, 무작위 일정의 ON 블록에만 정해진 크기의 세일 효과(바람 연동 0·3·7%)를 넣었다. 그다음 5.1절과 같은 추정기·하한·판정 규칙을 적용했다(`research/fuelcast_check.py` → `research/results/fuelcast.json`). 원자료는 라이선스(CC BY-NC-ND 4.0) 때문에 저장소에 넣지 않았다.
+
+- **대상:** 3척 중 6노트 이상 항해가 3,000시간 이상인 1척(CPS_Poseidon, 3,521<!--n:fuelcast.json:ships.CPS_Poseidon.sailing_hours:.0f--> 항해시간). 나머지 2척은 931<!--n:fuelcast.json:ships.CPS_Triton.sailing_hours:.0f-->시간·80<!--n:fuelcast.json:ships.OSS_Ceto.sailing_hours:.0f-->시간이라 뺐다.
+- **설계:** 캠페인 1,800 항해시간(120그룹)을 시작점 세 곳에 두고, 그 앞의 1,200~1,710시간으로 기준 모델을 학습했다. 요구 범위의 학습 3,600시간보다 짧아 방법에 불리한 조건이다. 조건 9<!--n:fuelcast.json:summary.conditions:.0f-->개마다 무작위 일정 2,000회를 돌렸다.
+
+| 지표 | 결과 | 기준 |
+|---|---|---|
+| 실제 배의 설명되지 않는 변동(1시간 단위) | 표준편차 5.84%<!--n:fuelcast.json:ships.CPS_Poseidon.noise.resid_sd:.2f*100-->, 1시간 자기상관 0.68<!--n:fuelcast.json:ships.CPS_Poseidon.noise.resid_rho1:.2f--> | 모의실험 범위: 표준편차 ≤ 8%, 자기상관 ≤ 0.995 |
+| 최대 편향 | 0.0147%p<!--n:fuelcast.json:summary.max_abs_bias:.4f--> | M1 ≤ 0.10%p |
+| 효과 0에서 잘못 지급(가장 높은 조건) | 1.05%<!--n:fuelcast.json:summary.max_lb_pos:.2f*100--> | M3 ≤ 2.5% |
+| 하한 ≤ 참값(가장 낮은 조건) | 98.4%<!--n:fuelcast.json:summary.min_cover:.1f*100--> | M4 ≥ 97.5% |
+| 같은 데이터로 한 전후 비교의 편향 | 2.04<!--n:fuelcast.json:summary.ba_abs_min:.2f-->~2.93%p<!--n:fuelcast.json:summary.ba_abs_max:.2f--> | M10: 무작위 설계 편향이 그 1/5 이하 |
+| 지급 비율(하한 ÷ 참값) | 효과 3%: 65.1<!--n:fuelcast.json:summary.pay_3.0:.1f*100-->~66.7%<!--n:fuelcast.json:summary.pay_3.1:.1f*100-->, 효과 7%: 85.5<!--n:fuelcast.json:summary.pay_7.0:.1f*100-->~86.1%<!--n:fuelcast.json:summary.pay_7.1:.1f*100--> | — |
+
+**판정.** 9개 조건 모두 M1·M3·M4·M10을 통과했다. 실제 배의 잡음은 모의실험 범위 안이었다. 전후 비교는 실제 데이터에서도 2~3%p의 가짜 효과를 냈는데, 모의실험의 중앙값 2.21%p<!--n:judgement.json:summary.ba_median_abs:.2f-->와 같은 크기다. 무작위 ON/OFF의 편향은 그보다 138<!--n:fuelcast.json:summary.ratio_min:.0f-->배 이상 작았다.
+
+**데이터 결함과 처리.** 원자료의 프로펠러 축동력 합계 열은 우현 계측기가 빠진 시간에 그 값을 0으로 더해, 그 시간대 합계가 절반 정도로 찍혀 있었다. 계측기 결측은 결측(C16)이므로 두 계측기가 모두 있는 시간만 썼다. 결함 데이터로 한 첫 실행은 결과로 쓰지 않았다. 이 처리와 학습 시간 하한(1,800 → 1,200시간)은 고친 데이터의 결과를 보기 전에 정했고, 스크립트 머리말에 남겼다.
+
+**한계.** 1척뿐이고, 이 배는 세일 주 대상(벌크선·유조선)이 아닌 6~12노트 쌍추진 선박이다. 세일 효과는 넣은 것이라 실제 세일의 전환 과도 응답과 선체 상호작용은 없다. 실제 세일 데이터는 섭외 중인 선사 실증 데이터로 다시 확인한다(9.4절).
+
 ---
 
 ## 6. 솔라나 설계
@@ -427,6 +450,8 @@ SaveSail의 수익은 워터폴 1순위인 **운영비**에서 나온다. 운영
 
 수요 증거가 아직 없다는 점이 현재 가장 큰 약점이며, 예선 제출 전까지 최소 1건 확보를 목표로 한다.
 
+**공개된 수요 신호(인터뷰 아님).** 부산 본사 선사 HMM은 2026년 1월 5만톤급 탱커에 국산 윙세일을 달고 2년간 실제 운항 데이터로 효과를 검증한 뒤 벌크선대 전체 도입을 검토한다. [[38]](#14-참고-자료) 같은 해 9월에는 로터세일을 단 21만톤급 벌크선 8척으로 Vale과 25년 운송 계약을 맺었다. [[39]](#14-참고-자료) 팬오션은 2021년 국내 처음 로터세일 5기를 달고 한국선급·포스에스엠과 실제 운항 데이터로 절감을 검증하는 공동연구를 맺었다. [[40]](#14-참고-자료) 국내 선사도 "얼마나 아끼는지 어떻게 재나"를 지금 풀고 있다는 뜻이고, 첫 섭외 대상도 이 두 곳이다.
+
 ---
 
 ## 10. 기존 방식과 비교
@@ -483,6 +508,7 @@ SaveSail이 새로운 점은 두 가지다. ① 절감액 연동 금융의 핵�
 | 웹 | 5화면, Lighthouse 데스크톱 성능·접근성·권장 사항 기준 통과 | `app/` |
 | 측정 모의실험 | 격자 A~D 486개 조건 + 방법 비교 R8 | 5.1절 |
 | 경제성 모의실험 | 정산 3 × 기간 3 × 연료가 5, 경로 20,000개씩 | 5.2절 |
+| 실선박 데이터 시험 | 공개 운항 데이터(FuelCast) 1척, 9개 조건 M1·M3·M4·M10 통과 | 5.3절 |
 | devnet 3회 연속 실행 | 3/3 성공(P1 포함 현재 바이너리), 회당 525건·1,494~1,524초(기준 1,800초), 서명 확인 525/525, 화면 값 체인 대조 333/333 | [`docs/deployments.md`](docs/deployments.md) |
 | devnet 토큰화(P1) | Token ACL MintConfig·ABL 허용 목록 생성, 목록 지갑 해제·수령 성공, 목록 밖 지갑 실패 4건 체인 기록, 점검 11/11 | [`docs/deployments.md`](docs/deployments.md) P1절 |
 | 외부 확인 | 0 / 4 | 9.4절 |
@@ -550,6 +576,14 @@ SaveSail이 새로운 점은 두 가지다. ① 절감액 연동 금융의 핵�
 31. 알리오플러스, 한국해양진흥공사 기관 정보 — https://www.alioplus.go.kr/organization/organByTypeList.do?schApbaId=C1119
 32. 법률신문, 토큰증권 제도 개요('분산원장등록주식등') — https://www.lawtimes.co.kr/news/articleView.html?idxno=226152
 33. 아시아경제, "DB증권, 부산 블록체인 특화사업 우선협상대상자 선정…탄소감축 STO 플랫폼 추진" (2026-05-11) — https://view.asiae.co.kr/article/2026051110152154942
+34. Baird Maritime, "Maersk tanker completes rotor sail propulsion tests" (2019-10-28) — https://www.bairdmaritime.com/amp/story/shipping/tankers/maersk-tanker-completes-rotor-sail-propulsion-tests
+35. PortNews, Anemoi·Lloyd's Register Advisory TR Lady 검증 결과 — https://en.portnews.ru/news/379427 · 백서 "Performance Verification of Wind-Assisted Ship Propulsion Systems by On-Off Testing" — https://anemoimarine.com/wp-content/uploads/2025/07/Anemoi-LR-Performance-Verification-Paper.pdf
+36. Carjova, Hilmola, Tapaninen, "Economic Feasibility and Operational Performance of Rotor Sails in Maritime Transport", Sustainability 17(13) 5909 (2025-06-26) — https://www.mdpi.com/2071-1050/17/13/5909
+37. "AI-based SADA prediction of propulsion performance and energy savings for wind-assisted propulsion vessels", Ships and Offshore Structures (2026) — https://www.tandfonline.com/doi/full/10.1080/17445302.2026.2679696
+38. 한국경제, HMM·HD한국조선해양 윙세일 실증 (2026-01-12) — https://www.hankyung.com/article/2026011259741
+39. Seatrade Maritime, "HMM inks mega $3.5bn iron ore shipping deal with Vale" (2026-09-08) — https://seatrade-maritime.com/dry-bulk/hmm-inks-mega-3-5bn-iron-ore-shipping-deal-with-vale
+40. Cyprus Shipping News, Pan Ocean rotor sail and KR·POS SM joint research (2021-05-28) — https://cyprusshippingnews.com/?p=35058
+41. Krohne Digital, FuelCast 데이터셋(선박 3척 운항·환경 데이터, CC BY-NC-ND 4.0) — https://huggingface.co/datasets/krohnedigital/FuelCast · 논문 "FuelCast: Benchmarking Tabular and Temporal Models for Ship Fuel Consumption" — https://arxiv.org/abs/2510.08217
 
 ---
 
