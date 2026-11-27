@@ -249,7 +249,7 @@ sequenceDiagram
 - 전후 비교 편향의 중앙값은 2.21<!--n:judgement.json:summary.ba_median_abs:.2f-->%p였고, 무작위 설계의 편향은 어느 조건에서도 그 0.024<!--n:judgement.json:summary.ba_worst_ratio:.3f-->배를 넘지 않았다.
 - 조작이 만든 편향(탐지되지 않은 몫)의 최댓값: 보고값 조작 0.041<!--n:judgement.json:summary.worst_attack.rep:.3f-->%p, 유량계 조작 0.033<!--n:judgement.json:summary.worst_attack.meter:.3f-->%p, 강풍 안전 예외 0.037<!--n:judgement.json:summary.worst_attack.storm:.3f-->%p.
 - **재확인.** 격자에서 M4를 넘지 못한 C244(효과 1.6%, 모델 오차 5.3%, 자기상관 0.976)는 새 시드 10,000회에서 97.26<!--n:recheck_C244.json:M4.rate:.2f*100-->%로, 97.5%보다 낮다고 볼 근거가 없었다(유의수준 0.1%, [`recheck_C244.json`](research/results/recheck_C244.json)). PRD 10장 절차대로 우연으로 판정했다.
-- **한계.** M9-3은 이론상 불가능한 조건에서만 통과하지 못한다(표 아래 ¹, 가능한 최대 탐지율의 계산은 [`m9_bound.json`](research/results/m9_bound.json)). 축동력계(토크미터) 조작은 신뢰 가정이다(11장 20번). 실제 세일 선박 데이터로 다시 확인해야 한다.
+- **한계(기준 미달 공개).** 유량계 조작 탐지 기준(M9-3, 99%)은 486개 조건 중 59<!--n:m9_check.json:failing:.0f-->개에서 미달이다. 기준과 요구 운영 범위는 바꾸지 않고 실패로 공개한다. 미달 조건은 모두 이론상 99%에 닿을 수 없는 조건이고(표 아래 ¹, 가능한 최대 탐지율의 계산은 [`m9_bound.json`](research/results/m9_bound.json)), 정산은 축동력 기준이라 이 조작이 지급액을 바꾸지 않는다. 축동력계(토크미터) 조작은 신뢰 가정이다(11장 20번). 실제 세일 선박 데이터로 다시 확인해야 한다.
 
 **방법 비교(R8, 6개 조건 × 효과 0·5%, 2,000회).** 어려운 조건(자기상관 0.995, 모델 오차 8% 등)만 모은 작은 비교라 효과 0 표본은 방법마다 12,000<!--n:method_note.json:r8.effect0_runs:,.0f-->회이고, 잘못 지급 비율의 표준오차는 약 ±0.15<!--n:method_note.json:r8.false_pay_se:.2f*100-->%p다. 채택한 축동력 기준(마지막 줄)은 이 표에서 잘못 지급이 가장 높지만, 유량계 조작이 추정에 닿지 않는 유일한 방법이라 골랐다. 유량계 기준으로 추정한 첫 전체 격자(v2.0)에서는 유량계 조작 편향 기준(M9②)을 306<!--n:method_note.json:v2_0_meter_M9_2.of:.0f-->개 조건 중 200<!--n:method_note.json:v2_0_meter_M9_2.fail:.0f-->개에서 넘었다. 같은 방법이 본 격자 486개 조건 합산에서는 잘못 지급 2.49<!--n:judgement.json:pooled.M3.rate:.2f*100-->%로 기준을 통과했다.
 
