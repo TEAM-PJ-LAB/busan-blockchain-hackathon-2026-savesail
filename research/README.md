@@ -26,6 +26,8 @@ python3 research/run_all.py --quick 20 --twice  # 축소판을 두 번 돌려 �
 | `payout_table.py` | 데모 조건(벌크선·무역풍·바람 연동 7%)에서 누적 항해시간별 지급 비율 h(H) → `results/payout_table.json` |
 | `econ.py`, `run_econ.py` | 경제성 모형(정산 방식 3 × 계약 기간 3 × 연료가 경로 5, 경로 20,000개)과 F1~F5 판정 → `results/econ.json`, `econ.md` |
 | `m9_bound.py` | 유량계 잡음·캠페인 길이별로 M9-3 탐지율의 정보 이론적 상한 계산 → `results/m9_bound.json` |
+| `m9_check.py` | M9-3을 못 넘은 격자 조건마다 그 조건의 이론 상한(`m9_bound.best_power`) → `results/m9_check.json` |
+| `recheck.py` | 기준을 못 넘은 조건을 새 시드 10,000회로 다시 돌려 우연인지 판정(PRD 10장) → `results/recheck_<격자><조건>.json` |
 | `run_r4.py` | 선택적 공개 거부의 이득(10년 정산액 대비, 거부 처리 규칙 5가지 비교)과 상한 안 거부의 편향(M6 ①②) → `results/r4.json`, `r4.md` (R4, PRD C24) |
 | `run_all.py` | 위 단계를 한 번에 실행하고 시간·sha256 기록(R7) |
 | `legacy/` | v1(6시간 블록·로그선형 모델·그룹 부트스트랩) 실험 E1~E7 재현용. 결과는 `results/v1/` |

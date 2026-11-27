@@ -1,0 +1,26 @@
+{
+ "grid": "C",
+ "cond": 244,
+ "cfg": {
+  "ship": "gas",
+  "clim": "n_atlantic",
+  "s": 0.0158,
+  "hetero": false,
+  "sd_e": 0.0529,
+  "rho_e": 0.9763,
+  "sd_m": 0.0404,
+  "foul": 0.0431,
+  "drydock": false,
+  "miss": 0.0774,
+  "camp_h": 2880
+ },
+ "reps": 10000,
+ "seed_base": 979440000,
+ "M4": {
+  "rate": 0.9726,
+  "hits": 9726,
+  "grid_rate": 0.963,
+  "passes": true
+ },
+ "payout_mean": 0.6860529105060598
+}
