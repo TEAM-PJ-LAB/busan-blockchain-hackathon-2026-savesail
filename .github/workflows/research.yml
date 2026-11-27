@@ -8,8 +8,12 @@ on:
       shards:
         description: parallel jobs
         default: "20"
+      prior_run:
+        description: run id whose raw artifacts are judged together with this run's (re-run of missing shards)
+        default: ""
 permissions:
   contents: write
+  actions: read
 jobs:
   plan:
     runs-on: ubuntu-24.04
@@ -38,6 +42,7 @@ jobs:
           nproc
           for g in ${{ inputs.grids }}; do python3 run_grid.py "$g" ${{ matrix.shard }} ${{ inputs.shards }} | tail -1; done
       - uses: actions/upload-artifact@v5
+        if: always()  # a timed-out shard still keeps the chunks it finished (run_grid.py resumes from them)
         with:
           name: raw-${{ matrix.shard }}
           path: research/results/raw/
@@ -55,6 +60,14 @@ jobs:
           path: research/results/raw
           pattern: raw-*
           merge-multiple: true
+      - uses: actions/download-artifact@v6
+        if: inputs.prior_run != ''
+        with:
+          path: research/results/raw
+          pattern: raw-*
+          merge-multiple: true
+          run-id: ${{ inputs.prior_run }}
+          github-token: ${{ github.token }}
       - name: judge
         working-directory: research
         run: python3 judge.py || true

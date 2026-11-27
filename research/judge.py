@@ -22,7 +22,11 @@ def load(paths):
     agg = {}
     lines = [json.loads(line) for p in paths for line in open(p)]
     lines.sort(key=lambda d: (d["grid"], d["cond"], d["rep0"]))  # float sums independent of completion order
+    seen = set()
     for d in lines:
+        if (d["grid"], d["cond"], d["rep0"]) in seen:  # a re-run shard (run_grid.py GRID@S/N) repeats the same seeds
+            continue
+        seen.add((d["grid"], d["cond"], d["rep0"]))
         key = (d["grid"], d["cond"])
         a = agg.setdefault(key, dict(cfg=d["cfg"], err=[], lb_pos=0, cover=0, pay=[], det=0, ba=[], n=0,
                                      flags=defaultdict(int), attacks=defaultdict(lambda: defaultdict(float))))

@@ -1,7 +1,8 @@
 """Run grid conditions (honest runs + manipulation panel). Sharded for parallel jobs; resumable.
 
-Usage: python3 run_grid.py GRID SHARD NSHARDS [--quick N]
-Writes results/raw/<GRID>_<SHARD>.jsonl, one line per (condition, chunk of seeds).
+Usage: python3 run_grid.py GRID[@S/N] SHARD NSHARDS [--quick N]
+Writes results/raw/<GRID>_<SHARD>.jsonl (with @S/N: <GRID>_SofN_<SHARD>.jsonl), one line per (condition, chunk of seeds).
+GRID@S/N re-runs only the chunks of shard S of an N-shard run, split over NSHARDS jobs (same seeds).
 """
 import json
 import os
@@ -66,16 +67,22 @@ def jobs_for(grid, quick=None):
 
 
 def main():
-    grid, shard, nshards = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+    spec, shard, nshards = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+    grid, _, outer = spec.partition("@")  # "NC@0/40": only shard 0 of a 40-shard run, split again over NSHARDS
     quick = int(sys.argv[5]) if len(sys.argv) > 5 and sys.argv[4] == "--quick" else None
     os.makedirs(f"{RESULTS}/raw", exist_ok=True)
-    path = f"{RESULTS}/raw/{grid}_{shard}.jsonl"
+    tag = f"{outer.replace('/', 'of')}_{shard}" if outer else f"{shard}"
+    path = f"{RESULTS}/raw/{grid}_{tag}.jsonl"
     done = set()
     if os.path.exists(path):
         for line in open(path):
             d = json.loads(line)
             done.add((d["cond"], d["rep0"]))
-    jobs = [j for k, j in enumerate(jobs_for(grid, quick)) if k % nshards == shard and (j[1], j[3]) not in done]
+    jobs = list(enumerate(jobs_for(grid, quick)))
+    if outer:
+        o, on = map(int, outer.split("/"))
+        jobs = [(k, j) for k, j in jobs if k % on == o]
+    jobs = [j for i, (k, j) in enumerate(jobs) if i % nshards == shard and (j[1], j[3]) not in done]
     t = time.time()
     with Pool(os.cpu_count() or 1) as pool, open(path, "a") as f:
         for i, res in enumerate(pool.imap_unordered(chunk_job, jobs)):
