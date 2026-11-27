@@ -65,7 +65,7 @@ jobs:
           # results only, on an orphan commit pushed as a new branch per run: the tree holds no workflow files and
           # no existing branch is rewritten, so the token needs no workflows permission and nothing is overwritten
           git checkout --orphan results-only
-          git rm -rq --cached .
+          git rm -rqf --cached .
           git add -f research/results/raw research/results/judgement.json research/results/judgement.md
           git commit -m "research results: ${{ inputs.grids }} (run ${{ github.run_id }})"
           git push origin HEAD:refs/heads/research-results-${{ github.run_id }}

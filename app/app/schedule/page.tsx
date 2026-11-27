@@ -38,7 +38,7 @@ export default function Schedule() {
       <h2>앵커와 공개 거래</h2>
       <ul>
         {[0, 1, 2].map((r) => <li key={r}>{["지급자", "투자자 대표", "검증기관"][r]} 앵커 등록: <TxLink run={run} sig={findTx(run, `register_anchor_${r}`)?.sig} /></li>)}
-        <li>0번 그룹 검증기관 공개: <TxLink run={run} sig={findTx(run, "reveal_0_verifier")?.sig} /></li>
+        <li>0번 그룹 공개(검증기관 → 지급자 → 투자자 대표): <TxLink run={run} sig={findTx(run, "reveal_0")?.sig} /></li>
       </ul>
     </>
   );

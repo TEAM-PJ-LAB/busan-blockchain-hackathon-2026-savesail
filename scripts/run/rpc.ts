@@ -1,6 +1,6 @@
 // Rate-limited JSON-RPC fetch for the public devnet endpoint (PRD 12.1, G1). The public endpoint allows 100 requests
 // per 10 s per IP, 40 per 10 s for a single method and 40 connections per 10 s (solana.com/docs/references/clusters);
-// a 1,240-transaction run must stay under them instead of failing on 429. Requests wait for a slot in a sliding
+// a full run (about 525 transactions) must stay under them instead of failing on 429. Requests wait for a slot in a sliding
 // 10-second window (total and per method, with headroom), and a 429 that still comes back is retried with backoff.
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
