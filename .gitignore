@@ -6,3 +6,11 @@ keys/
 __pycache__/
 .DS_Store
 research/results/raw/
+scripts/node_modules/
+app/.next/
+app/out/
+app/next-env.d.ts
+app/tsconfig.tsbuildinfo
+app/web_check.json
+app/AGENTS.md
+app/CLAUDE.md

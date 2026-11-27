@@ -83,23 +83,20 @@ pub struct InitVaults<'info> {
     #[account(mut, has_one = admin @ E::Unauthorized, has_one = payment_mint)]
     pub deal: Box<Account<'info, Deal>>,
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
-    #[account(init, payer = admin, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_RAISE]], bump,
-        token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
+    // Vaults are fresh keypair accounts (each signs its own creation) owned by the token program with the
+    // deal PDA as authority. Their addresses are stored in `Deal::vaults`, so no command pays a PDA bump
+    // search for them and the compute cost of every command is fixed (K3).
+    #[account(init, payer = admin, token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
     pub raise_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(init, payer = admin, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_COLLECT]], bump,
-        token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
+    #[account(init, payer = admin, token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
     pub collection_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(init, payer = admin, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_SENIOR]], bump,
-        token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
+    #[account(init, payer = admin, token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
     pub senior_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(init, payer = admin, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_JUNIOR]], bump,
-        token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
+    #[account(init, payer = admin, token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
     pub junior_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(init, payer = admin, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_RESERVE]], bump,
-        token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
+    #[account(init, payer = admin, token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
     pub reserve_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(init, payer = admin, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_BOND]], bump,
-        token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
+    #[account(init, payer = admin, token::mint = payment_mint, token::authority = deal, token::token_program = token_program)]
     pub bond_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
@@ -108,6 +105,17 @@ pub struct InitVaults<'info> {
 pub fn init_vaults_handler(ctx: Context<InitVaults>) -> Result<()> {
     let d = &mut ctx.accounts.deal;
     require!(d.status == ST_FUNDRAISING && !d.vaults_ready, E::InvalidState);
+    let a = &ctx.accounts;
+    let vaults = [
+        a.raise_vault.key(),
+        a.collection_vault.key(),
+        a.senior_vault.key(),
+        a.junior_vault.key(),
+        a.reserve_vault.key(),
+        a.bond_vault.key(),
+    ];
+    let d = &mut ctx.accounts.deal;
+    d.vaults = vaults;
     d.vaults_ready = true;
     emit!(VaultsInitialized { deal: d.key() });
     Ok(())
@@ -157,7 +165,7 @@ pub struct Invest<'info> {
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
     #[account(mut, token::mint = payment_mint, token::authority = investor)]
     pub investor_token: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_RAISE]], bump)]
+    #[account(mut, address = deal.vault(V_RAISE))]
     pub raise_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
@@ -217,7 +225,7 @@ pub struct CloseFundraising<'info> {
     #[account(mut, has_one = admin @ E::Unauthorized, has_one = payment_mint)]
     pub deal: Box<Account<'info, Deal>>,
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_RAISE]], bump)]
+    #[account(mut, address = deal.vault(V_RAISE))]
     pub raise_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(mut, token::mint = payment_mint, token::authority = deal.manufacturer)]
     pub manufacturer_token: Box<InterfaceAccount<'info, TokenAccount>>,

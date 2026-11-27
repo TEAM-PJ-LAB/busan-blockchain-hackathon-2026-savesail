@@ -1,0 +1,2472 @@
+{
+  "address": "9yjBhvjDC31vYuhc84ajpB9aMtfoYHvoU8GtAoicQaV5",
+  "metadata": {
+    "name": "savesail",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "SaveSail: performance-linked wind-sail financing with pre-committed randomized ON/OFF verification"
+  },
+  "instructions": [
+    {
+      "name": "approve_attestation",
+      "discriminator": [
+        164,
+        8,
+        113,
+        205,
+        196,
+        52,
+        40,
+        168
+      ],
+      "accounts": [
+        {
+          "name": "verifier",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "campaign"
+        },
+        {
+          "name": "period_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  105,
+                  111,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "arg",
+                "path": "payload.period"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "payload",
+          "type": {
+            "defined": {
+              "name": "AttestationPayload"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "claim",
+      "discriminator": [
+        62,
+        198,
+        214,
+        193,
+        213,
+        159,
+        108,
+        210
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true
+        },
+        {
+          "name": "deal"
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "tranche_vault",
+          "writable": true
+        },
+        {
+          "name": "owner_token",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "tranche",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "close_deal",
+      "discriminator": [
+        157,
+        173,
+        33,
+        216,
+        146,
+        16,
+        65,
+        82
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "reserve_vault",
+          "writable": true
+        },
+        {
+          "name": "senior_vault",
+          "writable": true
+        },
+        {
+          "name": "junior_vault",
+          "writable": true
+        },
+        {
+          "name": "opex_token",
+          "writable": true
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_fundraising",
+      "discriminator": [
+        147,
+        168,
+        131,
+        149,
+        197,
+        18,
+        230,
+        5
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "raise_vault",
+          "writable": true
+        },
+        {
+          "name": "manufacturer_token",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "commit_group_data",
+      "discriminator": [
+        216,
+        46,
+        144,
+        46,
+        180,
+        83,
+        90,
+        123
+      ],
+      "accounts": [
+        {
+          "name": "committer",
+          "signer": true
+        },
+        {
+          "name": "deal"
+        },
+        {
+          "name": "campaign",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "kind",
+          "type": "u8"
+        },
+        {
+          "name": "group",
+          "type": "u16"
+        },
+        {
+          "name": "root",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "distribute",
+      "discriminator": [
+        191,
+        44,
+        223,
+        207,
+        164,
+        236,
+        126,
+        61
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "period_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  105,
+                  111,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "arg",
+                "path": "period"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "collection_vault",
+          "writable": true
+        },
+        {
+          "name": "senior_vault",
+          "writable": true
+        },
+        {
+          "name": "junior_vault",
+          "writable": true
+        },
+        {
+          "name": "reserve_vault",
+          "writable": true
+        },
+        {
+          "name": "opex_token",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "period",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "init_vaults",
+      "discriminator": [
+        250,
+        62,
+        242,
+        50,
+        163,
+        133,
+        108,
+        93
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "raise_vault",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "collection_vault",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "senior_vault",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "junior_vault",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "reserve_vault",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bond_vault",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize_deal",
+      "discriminator": [
+        100,
+        154,
+        180,
+        148,
+        120,
+        1,
+        196,
+        122
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "admin"
+              },
+              {
+                "kind": "arg",
+                "path": "params.deal_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "campaign",
+          "writable": true
+        },
+        {
+          "name": "payment_mint"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "DealParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "invest",
+      "discriminator": [
+        13,
+        245,
+        180,
+        103,
+        254,
+        182,
+        121,
+        4
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "kyc",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  107,
+                  121,
+                  99
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "investor_token",
+          "writable": true
+        },
+        {
+          "name": "raise_vault",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tranche",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "register_anchor",
+      "discriminator": [
+        181,
+        172,
+        40,
+        184,
+        225,
+        42,
+        45,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "party",
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "campaign",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "party_token",
+          "writable": true
+        },
+        {
+          "name": "bond_vault",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "role",
+          "type": "u8"
+        },
+        {
+          "name": "anchor",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "release_bonds",
+      "discriminator": [
+        249,
+        154,
+        73,
+        243,
+        210,
+        227,
+        17,
+        171
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "deal"
+        },
+        {
+          "name": "campaign",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "bond_vault",
+          "writable": true
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "investor_rep_token",
+          "writable": true
+        },
+        {
+          "name": "verifier_token",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "resolve_missing",
+      "discriminator": [
+        106,
+        24,
+        218,
+        128,
+        44,
+        197,
+        94,
+        10
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "campaign",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "bond_vault",
+          "writable": true
+        },
+        {
+          "name": "reserve_vault",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "group",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "reveal",
+      "discriminator": [
+        9,
+        35,
+        59,
+        190,
+        167,
+        249,
+        76,
+        115
+      ],
+      "accounts": [
+        {
+          "name": "party",
+          "signer": true
+        },
+        {
+          "name": "deal"
+        },
+        {
+          "name": "campaign",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "role",
+          "type": "u8"
+        },
+        {
+          "name": "group",
+          "type": "u16"
+        },
+        {
+          "name": "value",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "set_kyc",
+      "discriminator": [
+        143,
+        253,
+        67,
+        18,
+        64,
+        198,
+        83,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal"
+        },
+        {
+          "name": "kyc",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  107,
+                  121,
+                  99
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "arg",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "investor",
+          "type": "pubkey"
+        },
+        {
+          "name": "tier",
+          "type": "u8"
+        },
+        {
+          "name": "annual_limit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "settle",
+      "discriminator": [
+        175,
+        42,
+        185,
+        87,
+        144,
+        131,
+        102,
+        212
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "period_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  105,
+                  111,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "arg",
+                "path": "period"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "payer_token",
+          "writable": true
+        },
+        {
+          "name": "collection_vault",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "period",
+          "type": "u16"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Campaign",
+      "discriminator": [
+        50,
+        40,
+        49,
+        11,
+        157,
+        220,
+        229,
+        192
+      ]
+    },
+    {
+      "name": "Deal",
+      "discriminator": [
+        125,
+        223,
+        160,
+        234,
+        71,
+        162,
+        182,
+        219
+      ]
+    },
+    {
+      "name": "Kyc",
+      "discriminator": [
+        27,
+        3,
+        5,
+        223,
+        163,
+        21,
+        37,
+        201
+      ]
+    },
+    {
+      "name": "PeriodState",
+      "discriminator": [
+        78,
+        101,
+        179,
+        174,
+        153,
+        68,
+        44,
+        127
+      ]
+    },
+    {
+      "name": "Position",
+      "discriminator": [
+        170,
+        188,
+        143,
+        228,
+        122,
+        64,
+        247,
+        208
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AnchorRegistered",
+      "discriminator": [
+        186,
+        181,
+        240,
+        14,
+        185,
+        137,
+        99,
+        116
+      ]
+    },
+    {
+      "name": "AttestationApproved",
+      "discriminator": [
+        255,
+        78,
+        5,
+        7,
+        48,
+        95,
+        217,
+        2
+      ]
+    },
+    {
+      "name": "AttestationFinalized",
+      "discriminator": [
+        232,
+        134,
+        176,
+        61,
+        100,
+        38,
+        143,
+        54
+      ]
+    },
+    {
+      "name": "BondSlashed",
+      "discriminator": [
+        59,
+        7,
+        252,
+        195,
+        234,
+        156,
+        42,
+        54
+      ]
+    },
+    {
+      "name": "BondsReleased",
+      "discriminator": [
+        89,
+        64,
+        2,
+        183,
+        136,
+        236,
+        115,
+        107
+      ]
+    },
+    {
+      "name": "Claimed",
+      "discriminator": [
+        217,
+        192,
+        123,
+        72,
+        108,
+        150,
+        248,
+        33
+      ]
+    },
+    {
+      "name": "DataCommitted",
+      "discriminator": [
+        215,
+        61,
+        175,
+        149,
+        195,
+        94,
+        30,
+        34
+      ]
+    },
+    {
+      "name": "DealClosed",
+      "discriminator": [
+        38,
+        112,
+        214,
+        184,
+        107,
+        76,
+        191,
+        175
+      ]
+    },
+    {
+      "name": "DealInitialized",
+      "discriminator": [
+        169,
+        84,
+        21,
+        98,
+        184,
+        104,
+        52,
+        60
+      ]
+    },
+    {
+      "name": "Distributed",
+      "discriminator": [
+        10,
+        212,
+        24,
+        78,
+        35,
+        202,
+        182,
+        134
+      ]
+    },
+    {
+      "name": "FundraisingClosed",
+      "discriminator": [
+        142,
+        140,
+        78,
+        190,
+        71,
+        20,
+        190,
+        85
+      ]
+    },
+    {
+      "name": "GroupResolved",
+      "discriminator": [
+        90,
+        0,
+        131,
+        91,
+        10,
+        236,
+        3,
+        88
+      ]
+    },
+    {
+      "name": "Invested",
+      "discriminator": [
+        178,
+        41,
+        156,
+        68,
+        189,
+        44,
+        235,
+        152
+      ]
+    },
+    {
+      "name": "KycSet",
+      "discriminator": [
+        18,
+        13,
+        141,
+        164,
+        48,
+        16,
+        164,
+        93
+      ]
+    },
+    {
+      "name": "Revealed",
+      "discriminator": [
+        180,
+        7,
+        199,
+        88,
+        154,
+        19,
+        181,
+        154
+      ]
+    },
+    {
+      "name": "Settled",
+      "discriminator": [
+        232,
+        210,
+        40,
+        17,
+        142,
+        124,
+        145,
+        238
+      ]
+    },
+    {
+      "name": "VaultsInitialized",
+      "discriminator": [
+        249,
+        38,
+        181,
+        202,
+        246,
+        173,
+        175,
+        90
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "Unauthorized",
+      "msg": "Signer is not allowed for this action"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidState",
+      "msg": "Deal or campaign is in the wrong state"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidParams",
+      "msg": "Invalid parameters"
+    },
+    {
+      "code": 6003,
+      "name": "AlreadyRegistered",
+      "msg": "Anchor already registered for this role"
+    },
+    {
+      "code": 6004,
+      "name": "WrongGroup",
+      "msg": "Group is not the current group"
+    },
+    {
+      "code": 6005,
+      "name": "AlreadyRevealed",
+      "msg": "Role already revealed for this group"
+    },
+    {
+      "code": 6006,
+      "name": "HashChainMismatch",
+      "msg": "Revealed value does not match the hash chain"
+    },
+    {
+      "code": 6007,
+      "name": "SkipTooLarge",
+      "msg": "Hash chain skip exceeds the limit"
+    },
+    {
+      "code": 6008,
+      "name": "WrongRevealOrder",
+      "msg": "Verifier must reveal first in each group"
+    },
+    {
+      "code": 6009,
+      "name": "TimeoutNotReached",
+      "msg": "Reveal timeout not reached"
+    },
+    {
+      "code": 6010,
+      "name": "AlreadyResolved",
+      "msg": "Group already resolved"
+    },
+    {
+      "code": 6011,
+      "name": "GroupNotResolved",
+      "msg": "Group not resolved"
+    },
+    {
+      "code": 6012,
+      "name": "WrongDataOrder",
+      "msg": "Data must be committed in group order"
+    },
+    {
+      "code": 6013,
+      "name": "PeriodNotReady",
+      "msg": "Period data is not complete"
+    },
+    {
+      "code": 6014,
+      "name": "SnapshotMismatch",
+      "msg": "Payload data roots do not match on-chain snapshots"
+    },
+    {
+      "code": 6015,
+      "name": "AlreadyApproved",
+      "msg": "Verifier already approved"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidRateBounds",
+      "msg": "Rate bounds are invalid"
+    },
+    {
+      "code": 6017,
+      "name": "MissingKgInconsistent",
+      "msg": "Missing-group fuel is inconsistent with the schedule"
+    },
+    {
+      "code": 6018,
+      "name": "PreviousPeriodOpen",
+      "msg": "Previous period is still open"
+    },
+    {
+      "code": 6019,
+      "name": "NotFinalized",
+      "msg": "Period not finalized"
+    },
+    {
+      "code": 6020,
+      "name": "AlreadySettled",
+      "msg": "Period already settled"
+    },
+    {
+      "code": 6021,
+      "name": "NotSettled",
+      "msg": "Period not settled"
+    },
+    {
+      "code": 6022,
+      "name": "AlreadyDistributed",
+      "msg": "Period already distributed"
+    },
+    {
+      "code": 6023,
+      "name": "KycRequired",
+      "msg": "KYC record required"
+    },
+    {
+      "code": 6024,
+      "name": "TierNotAllowed",
+      "msg": "Investor tier not allowed for this tranche"
+    },
+    {
+      "code": 6025,
+      "name": "LimitExceeded",
+      "msg": "Annual investment limit exceeded"
+    },
+    {
+      "code": 6026,
+      "name": "CapExceeded",
+      "msg": "Tranche cap exceeded"
+    },
+    {
+      "code": 6027,
+      "name": "NotFullySubscribed",
+      "msg": "Tranches not fully subscribed"
+    },
+    {
+      "code": 6028,
+      "name": "NothingToClaim",
+      "msg": "Nothing to claim"
+    },
+    {
+      "code": 6029,
+      "name": "MathOverflow",
+      "msg": "Math overflow"
+    },
+    {
+      "code": 6030,
+      "name": "DealNotEnded",
+      "msg": "Deal has not reached its last period"
+    }
+  ],
+  "types": [
+    {
+      "name": "AnchorRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": "u8"
+          },
+          {
+            "name": "anchor",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AttestationApproved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "period",
+            "type": "u16"
+          },
+          {
+            "name": "verifier",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AttestationFinalized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "period",
+            "type": "u16"
+          },
+          {
+            "name": "due",
+            "type": "u64"
+          },
+          {
+            "name": "entitlement",
+            "type": "u64"
+          },
+          {
+            "name": "outcome",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AttestationPayload",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "period",
+            "type": "u16"
+          },
+          {
+            "name": "data_root_ops",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "data_root_ctrl",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "kg_on",
+            "type": "u64"
+          },
+          {
+            "name": "kg_miss_payer",
+            "type": "u64"
+          },
+          {
+            "name": "kg_miss_inv",
+            "type": "u64"
+          },
+          {
+            "name": "override_groups",
+            "docs": [
+              "Safety overrides below the weather threshold (C17); counted as payer-missing groups."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "price_micro_per_t",
+            "type": "u64"
+          },
+          {
+            "name": "lb_bps",
+            "type": "i32"
+          },
+          {
+            "name": "est_bps",
+            "type": "i32"
+          },
+          {
+            "name": "ub_bps",
+            "type": "i32"
+          },
+          {
+            "name": "compliance_bps",
+            "type": "u16"
+          },
+          {
+            "name": "flags",
+            "docs": [
+              "bit 0 covariate imbalance, 1 meter check, 2 too few groups, 3 data quality; bits 4-7 zero."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "envelope_hash",
+            "docs": [
+              "sha256 of the verifier envelope; must equal `Deal.envelope_hash`."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "report_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "BondSlashed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BondsReleased",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Campaign",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "n_groups",
+            "type": "u16"
+          },
+          {
+            "name": "groups_per_period",
+            "type": "u16"
+          },
+          {
+            "name": "reveal_timeout_slots",
+            "type": "u64"
+          },
+          {
+            "name": "bond_amount",
+            "type": "u64"
+          },
+          {
+            "name": "slash_per_miss",
+            "type": "u64"
+          },
+          {
+            "name": "anchors_set",
+            "type": "u8"
+          },
+          {
+            "name": "last_hash",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                3
+              ]
+            }
+          },
+          {
+            "name": "last_group",
+            "type": {
+              "array": [
+                "i32",
+                3
+              ]
+            }
+          },
+          {
+            "name": "bond_left",
+            "type": {
+              "array": [
+                "u64",
+                3
+              ]
+            }
+          },
+          {
+            "name": "current_group",
+            "type": "u16"
+          },
+          {
+            "name": "group_opened_slot",
+            "type": "u64"
+          },
+          {
+            "name": "pending",
+            "type": "u8"
+          },
+          {
+            "name": "pending_val",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                3
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "array": [
+                "u8",
+                512
+              ]
+            }
+          },
+          {
+            "name": "data_acc",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                2
+              ]
+            }
+          },
+          {
+            "name": "next_data_group",
+            "type": {
+              "array": [
+                "u16",
+                2
+              ]
+            }
+          },
+          {
+            "name": "period_snap",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    {
+                      "array": [
+                        "u8",
+                        32
+                      ]
+                    },
+                    2
+                  ]
+                },
+                4
+              ]
+            }
+          },
+          {
+            "name": "snap_ready",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          },
+          {
+            "name": "bonds_released",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Claimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "tranche",
+            "type": "u8"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DataCommitted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "kind",
+            "type": "u8"
+          },
+          {
+            "name": "group",
+            "type": "u16"
+          },
+          {
+            "name": "root",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "deal_id",
+            "type": "u64"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor_rep",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifiers",
+            "type": {
+              "array": [
+                "pubkey",
+                3
+              ]
+            }
+          },
+          {
+            "name": "manufacturer",
+            "type": "pubkey"
+          },
+          {
+            "name": "opex_token",
+            "type": "pubkey"
+          },
+          {
+            "name": "envelope_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "phi_bps",
+            "type": "u16"
+          },
+          {
+            "name": "ref_rate_bps",
+            "type": "i32"
+          },
+          {
+            "name": "comp_min_bps",
+            "type": "u16"
+          },
+          {
+            "name": "miss_max_bps",
+            "type": "u16"
+          },
+          {
+            "name": "install_cost",
+            "type": "u64"
+          },
+          {
+            "name": "caps",
+            "type": {
+              "array": [
+                "u64",
+                2
+              ]
+            }
+          },
+          {
+            "name": "raised",
+            "type": {
+              "array": [
+                "u64",
+                2
+              ]
+            }
+          },
+          {
+            "name": "opex_per_period",
+            "type": "u64"
+          },
+          {
+            "name": "reserve_target",
+            "type": "u64"
+          },
+          {
+            "name": "n_periods",
+            "type": "u16"
+          },
+          {
+            "name": "senior_schedule",
+            "type": {
+              "array": [
+                "u64",
+                40
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "vaults_ready",
+            "type": "bool"
+          },
+          {
+            "name": "w_norm",
+            "type": "u128"
+          },
+          {
+            "name": "sv_fixed",
+            "type": "u128"
+          },
+          {
+            "name": "last_lb_bps",
+            "type": {
+              "option": "i32"
+            }
+          },
+          {
+            "name": "entitlement",
+            "type": "u64"
+          },
+          {
+            "name": "paid_cum",
+            "type": "u64"
+          },
+          {
+            "name": "next_period",
+            "type": "u16"
+          },
+          {
+            "name": "opex_arrears",
+            "type": "u64"
+          },
+          {
+            "name": "senior_arrears",
+            "type": "u64"
+          },
+          {
+            "name": "reserve",
+            "type": "u64"
+          },
+          {
+            "name": "acc",
+            "type": {
+              "array": [
+                "u128",
+                2
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vaults",
+            "docs": [
+              "Token accounts created by `init_vaults` (index = `V_*`); later commands accept only these addresses."
+            ],
+            "type": {
+              "array": [
+                "pubkey",
+                6
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "refund",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "campaign",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal_id",
+            "type": "u64"
+          },
+          {
+            "name": "payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor_rep",
+            "type": "pubkey"
+          },
+          {
+            "name": "verifiers",
+            "type": {
+              "array": [
+                "pubkey",
+                3
+              ]
+            }
+          },
+          {
+            "name": "manufacturer",
+            "type": "pubkey"
+          },
+          {
+            "name": "opex_token",
+            "type": "pubkey"
+          },
+          {
+            "name": "envelope_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "phi_bps",
+            "type": "u16"
+          },
+          {
+            "name": "ref_rate_bps",
+            "type": "i32"
+          },
+          {
+            "name": "comp_min_bps",
+            "type": "u16"
+          },
+          {
+            "name": "miss_max_bps",
+            "type": "u16"
+          },
+          {
+            "name": "install_cost",
+            "type": "u64"
+          },
+          {
+            "name": "caps",
+            "type": {
+              "array": [
+                "u64",
+                2
+              ]
+            }
+          },
+          {
+            "name": "opex_per_period",
+            "type": "u64"
+          },
+          {
+            "name": "reserve_target",
+            "type": "u64"
+          },
+          {
+            "name": "senior_schedule",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "n_groups",
+            "type": "u16"
+          },
+          {
+            "name": "groups_per_period",
+            "type": "u16"
+          },
+          {
+            "name": "reveal_timeout_slots",
+            "type": "u64"
+          },
+          {
+            "name": "bond_amount",
+            "type": "u64"
+          },
+          {
+            "name": "slash_per_miss",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Distributed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "period",
+            "type": "u16"
+          },
+          {
+            "name": "opex",
+            "type": "u64"
+          },
+          {
+            "name": "senior",
+            "type": "u64"
+          },
+          {
+            "name": "reserve_draw",
+            "type": "u64"
+          },
+          {
+            "name": "reserve_in",
+            "type": "u64"
+          },
+          {
+            "name": "junior",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FundraisingClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "install_cost",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GroupResolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "group",
+            "type": "u16"
+          },
+          {
+            "name": "off_index",
+            "type": "u8"
+          },
+          {
+            "name": "missing_mask",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Invested",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "tranche",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Kyc",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "tier",
+            "type": "u8"
+          },
+          {
+            "name": "annual_limit",
+            "type": "u64"
+          },
+          {
+            "name": "used",
+            "type": "u64"
+          },
+          {
+            "name": "window_start",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "KycSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "tier",
+            "type": "u8"
+          },
+          {
+            "name": "annual_limit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PeriodState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "period",
+            "type": "u16"
+          },
+          {
+            "name": "votes",
+            "docs": [
+              "sha256(borsh(payload)) voted by each verifier; zero = not voted."
+            ],
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                3
+              ]
+            }
+          },
+          {
+            "name": "voted",
+            "type": "u8"
+          },
+          {
+            "name": "payload",
+            "docs": [
+              "Set when two votes match."
+            ],
+            "type": {
+              "defined": {
+                "name": "AttestationPayload"
+              }
+            }
+          },
+          {
+            "name": "payload_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "finalized",
+            "type": "bool"
+          },
+          {
+            "name": "outcome",
+            "docs": [
+              "logic::settle::OUT_* (0 normal, 1 payer violation, 2 investor over-cap, 3 no bound)."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "due",
+            "type": "u64"
+          },
+          {
+            "name": "settled",
+            "type": "bool"
+          },
+          {
+            "name": "distributed",
+            "type": "bool"
+          },
+          {
+            "name": "dist",
+            "docs": [
+              "opex, senior, reserve_draw, reserve_in, junior"
+            ],
+            "type": {
+              "array": [
+                "u64",
+                5
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Position",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "tranche",
+            "type": "u8"
+          },
+          {
+            "name": "units",
+            "type": "u64"
+          },
+          {
+            "name": "acc_snapshot",
+            "type": "u128"
+          },
+          {
+            "name": "claimed",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Revealed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": "u8"
+          },
+          {
+            "name": "group",
+            "type": "u16"
+          },
+          {
+            "name": "value",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Settled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "period",
+            "type": "u16"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VaultsInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          }
+        ]
+      }
+    }
+  ]
+}

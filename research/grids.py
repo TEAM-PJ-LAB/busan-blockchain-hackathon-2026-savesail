@@ -65,11 +65,12 @@ def grid_D():
     return out
 
 
-METHODS = {  # R8 comparison: design and estimator choices (PRD C19)
-    "v1_L6_loglin_group": dict(L=6, model="full", ci="group", speed_src="log", wx_src="ship"),
-    "L6_spline_pcf": dict(L=6, model="spline", ci="pcf", speed_src="log", wx_src="ship"),
-    "L3_spline_pcf": dict(L=3, model="spline", ci="pcf", speed_src="log", wx_src="ship"),
-    "L3_spline_pcf_ind": dict(L=3, model="spline", ci="pcf", speed_src="ind", wx_src="ind"),
+METHODS = {  # R8 comparison: design and estimator choices (PRD C19, C20, C22); the last one is adopted
+    "v1_L6_loglin_group": dict(L=6, model="full", ci="group", speed_src="log", wx_src="ship", fuel_src="meter"),
+    "L6_spline_pcf": dict(L=6, model="spline", ci="pcf", speed_src="log", wx_src="ship", fuel_src="meter"),
+    "L3_spline_pcf": dict(L=3, model="spline", ci="pcf", speed_src="log", wx_src="ship", fuel_src="meter"),
+    "L3_spline_pcf_ind_meter": dict(L=3, model="spline", ci="pcf", speed_src="ind", wx_src="ind", fuel_src="meter"),
+    "L3_spline_pcf_ind_shaft": dict(L=3, model="spline", ci="pcf", speed_src="ind", wx_src="ind", fuel_src="shaft"),
 }
 
 

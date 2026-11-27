@@ -35,7 +35,7 @@ pub struct RegisterAnchor<'info> {
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
     #[account(mut, token::mint = payment_mint, token::authority = party)]
     pub party_token: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_BOND]], bump)]
+    #[account(mut, address = deal.vault(V_BOND))]
     pub bond_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     pub token_program: Interface<'info, TokenInterface>,
 }
@@ -117,9 +117,9 @@ pub struct ResolveMissing<'info> {
     #[account(mut, seeds = [SEED_CAMPAIGN, deal.key().as_ref(), &[0u8]], bump = campaign.bump)]
     pub campaign: Box<Account<'info, Campaign>>,
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_BOND]], bump)]
+    #[account(mut, address = deal.vault(V_BOND))]
     pub bond_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_RESERVE]], bump)]
+    #[account(mut, address = deal.vault(V_RESERVE))]
     pub reserve_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     pub token_program: Interface<'info, TokenInterface>,
 }
@@ -204,7 +204,7 @@ pub struct ReleaseBonds<'info> {
     #[account(mut, seeds = [SEED_CAMPAIGN, deal.key().as_ref(), &[0u8]], bump = campaign.bump)]
     pub campaign: Box<Account<'info, Campaign>>,
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_BOND]], bump)]
+    #[account(mut, address = deal.vault(V_BOND))]
     pub bond_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(mut, token::mint = payment_mint, token::authority = deal.payer)]
     pub payer_token: Box<InterfaceAccount<'info, TokenAccount>>,

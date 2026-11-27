@@ -4,6 +4,9 @@ settle: "ideal"  -> verified = actual (README 5.2 implicit assumption)
         "period" -> each year settled at its own lower bound (haircut h(hours of that year's data))
         "trueup" -> cumulative lower bound re-rates all past years (PRD C1); overpayment refunded at end from reserve
 """
+import json
+import os
+
 import numpy as np
 
 BASE = dict(
@@ -12,8 +15,12 @@ BASE = dict(
     camp1_h=3600, campN_h=900, reserve_years=1.0, n=20_000, seed=11,
 )
 
-# payout ratio h(H) = E[LB/true] and its sd vs randomized hours H; filled from measurement results
-H_TABLE = {"H": [900, 1800, 3600, 7200], "mean": [0.60, 0.72, 0.83, 0.88], "sd": [0.12, 0.08, 0.05, 0.03]}
+# payout ratio h(H) = E[max(LB,0)/true] and its sd vs cumulative randomized hours H, measured with the
+# adopted method at the demo condition (payout_table.py -> results/payout_table.json, PRD F1)
+_T = os.path.join(os.environ.get("SAVESAIL_RESULTS", os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")),
+                  "payout_table.json")
+H_TABLE = json.load(open(_T)) if os.path.exists(_T) else {"H": [900, 1800, 3600, 7200],
+                                                         "mean": [0.60, 0.72, 0.83, 0.88], "sd": [0.12, 0.08, 0.05, 0.03]}
 
 
 def h_of(H):
@@ -56,7 +63,7 @@ def annuity_factor(r, T):
     return (1 - (1 + r) ** -T) / r
 
 
-def simulate(cfg, phi=None):
+def simulate(cfg, phi=None, detail=False):
     c = dict(BASE, **cfg)
     phi = c["phi"] if phi is None else phi
     rng = np.random.default_rng(c["seed"])
@@ -76,9 +83,14 @@ def simulate(cfg, phi=None):
     else:
         Hcum = c["camp1_h"] + c["campN_h"] * np.arange(T)
         Hy = np.where(np.arange(T) == 0, c["camp1_h"], c["campN_h"])
-        H = Hcum if c["settle"] == "trueup" else Hy
-        m, s = h_of(H)
-        z = rng.standard_normal((n, 1)) * 0.5 + rng.standard_normal((n, T)) * np.sqrt(0.75)
+        if c["settle"] == "trueup":
+            # cumulative estimates share data: z(H) = W(H)/sqrt(H) for a Brownian W over randomized hours
+            inc = rng.standard_normal((n, T)) * np.sqrt(np.diff(np.concatenate([[0], Hcum])))
+            z = np.cumsum(inc, 1) / np.sqrt(Hcum)
+            m, s = h_of(Hcum)
+        else:
+            z = rng.standard_normal((n, T))
+            m, s = h_of(Hy)
         hy = np.clip(m + s * z, 0, 1.05)
     if c["settle"] == "trueup":
         cumv = np.cumsum(val[:, :T], 1)
@@ -124,7 +136,10 @@ def simulate(cfg, phi=None):
     j_irr = irr(jun)
 
     d = (1 + c["disc"]) ** -np.arange(1, Y + 1)
-    payer = ((val[:, :T] - pay_net) * d[:T]).sum(1) + (val[:, T:] * d[T:]).sum(1)
+    # after the term the payer owns the sail and bears its O&M (2% of installation cost a year)
+    payer = ((val[:, :T] - pay_net) * d[:T]).sum(1) + ((val[:, T:] - c["opex"] * c["C"]) * d[T:]).sum(1)
+    if detail:
+        return dict(overpaid_sum=float(np.maximum(overpaid, 0).sum()), refund_sum=float(refund.sum()))
     return dict(
         phi=phi, senior_share=senior / c["C"] * 100, senior_loss=float((arr > 1e-6).mean() * 100),
         junior_irr_med=float(np.median(j_irr) * 100), junior_irr_p10=float(np.percentile(j_irr, 10) * 100),

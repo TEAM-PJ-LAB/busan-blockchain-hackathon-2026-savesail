@@ -1,0 +1,100 @@
+name: devnet
+# PRD G1 / T7: deploy to devnet and run the full demo flow, N times in a row, each on a fresh deployment and deal.
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: consecutive full runs
+        default: "3"
+permissions:
+  contents: write
+concurrency: devnet
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      ROLE_SEED: ${{ secrets.ROLE_SEED }}
+      RPC_URL: https://api.devnet.solana.com
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@1.97.0
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin
+            ~/.cargo/registry
+            ~/.cache/solana
+            target
+          key: ${{ runner.os }}-sbf-4.6.0-${{ hashFiles('Cargo.lock') }}
+      - run: command -v cargo-build-sbf || cargo install cargo-build-sbf --version 4.6.0 --locked
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: pip install numpy==2.5.3 scipy==1.18.1 cryptography==50.0.1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: npm ci
+        working-directory: scripts
+      - name: Solana CLI
+        run: |
+          sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+      - name: Keys (never printed) and program id
+        working-directory: scripts
+        run: |
+          test -n "$ROLE_SEED" || { echo "::error::set the ROLE_SEED repository secret (any random string, PRD §3)"; exit 1; }
+          umask 077
+          ADMIN=$(npx tsx run/admin_key.ts "$RUNNER_TEMP/admin.json")
+          PROGRAM_ID=$(npx tsx run/program_key.ts "$RUNNER_TEMP/program.json")
+          echo "ADMIN=$ADMIN" >> "$GITHUB_ENV"
+          echo "PROGRAM_ID=$PROGRAM_ID" >> "$GITHUB_ENV"
+          echo "admin (deployer) $ADMIN, program $PROGRAM_ID"
+      - name: Build program with the devnet id
+        run: |
+          OLD=$(python3 -c "import json;print(json.load(open('idl/savesail.json'))['address'])")
+          sed -i "s/$OLD/$PROGRAM_ID/g" programs/savesail/src/lib.rs Anchor.toml idl/savesail.json
+          cargo build-sbf && sha256sum target/deploy/savesail.so
+      - name: Fund the deployer
+        run: |
+          solana config set --url "$RPC_URL" --keypair "$RUNNER_TEMP/admin.json"
+          for i in 1 2 3 4 5; do
+            bal=$(solana balance --lamports | cut -d' ' -f1)
+            [ "$bal" -ge 7000000000 ] && break
+            solana airdrop 2 || sleep 20
+          done
+          solana balance
+          bal=$(solana balance --lamports | cut -d' ' -f1)
+          if [ "$bal" -lt 4000000000 ]; then
+            echo "::error::deployer $ADMIN has $bal lamports; fund it with devnet SOL (https://faucet.solana.com) and re-run (PRD Q8)"
+            exit 1
+          fi
+      - name: Deploy and run
+        run: |
+          SIZE=$(stat -c %s target/deploy/savesail.so)
+          for i in $(seq 1 ${{ inputs.runs }}); do
+            solana program deploy target/deploy/savesail.so --program-id "$RUNNER_TEMP/program.json" --max-len "$SIZE" \
+              --keypair "$RUNNER_TEMP/admin.json" --url "$RPC_URL" | tee deploy.log
+            SLOT=$(solana slot)
+            echo "| $(date -u +%FT%TZ) | ${GITHUB_SHA::7} | $SLOT | $(sha256sum target/deploy/savesail.so | cut -c1-16) | run $i |" >> docs/deployments.md
+            export DEAL_ID=$(( ${{ github.run_number }} * 10 + i ))
+            start=$(date +%s)
+            (cd scripts && npx tsx run/run.ts devnet)
+            dur=$(( $(date +%s) - start ))
+            echo "run $i: ${dur}s"
+            [ "$dur" -le 1800 ] || { echo "::error::run $i took ${dur}s, over 30 minutes (G1)"; exit 1; }
+            python3 scripts/check_run.py app/public/run.json scenario
+            (cd scripts && npx tsx run/check_sigs.ts ../app/public/run.json)
+            (cd scripts && npx tsx run/check_web_chain.ts ../app/public/run.json)
+            cp app/public/run.json "app/public/run-$i.json"
+          done
+      - name: Commit run records
+        if: always()
+        run: |
+          git config user.name "Bugeon Park"
+          git config user.email "bugeon.pk@gmail.com"
+          git checkout -B devnet-runs
+          git add -f app/public/run*.json docs/deployments.md || true
+          git commit -m "devnet runs (${{ github.run_id }})" || exit 0
+          git push -f origin devnet-runs

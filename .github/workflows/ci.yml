@@ -1,10 +1,13 @@
 name: ci
 on:
   push:
-    branches-ignore: [research-results]
+    branches-ignore: [research-results, "research-results-*", devnet-runs]
   pull_request:
 permissions:
   contents: read
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   program:
     runs-on: ubuntu-24.04
@@ -36,6 +39,72 @@ jobs:
         run: rm -f target/tmp/k2_hits.txt && cargo test --test program
       - name: K2/K3/K6 check
         run: python3 scripts/check_k2.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: savesail-so
+          path: target/deploy/savesail.so
+  pipeline:
+    # PRD 7.3/7.4: off-chain tests, executor on a local chain with the built binary, reference recomputation,
+    # crash/resume, and the web page's chain comparison against the resulting accounts.
+    needs: program
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: savesail-so
+          path: target/deploy
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: pip install numpy==2.5.3 scipy==1.18.1 cryptography==50.0.1 pytest==9.1.1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: npm ci
+        working-directory: scripts
+      - name: executor type check
+        working-directory: scripts
+        run: npx tsc --noEmit -p .
+      - name: off-chain tests (synth, verifier)
+        run: python3 -m pytest -q offchain/tests
+      - name: executor quick run + reference check
+        working-directory: scripts
+        run: npx tsx run/run.ts local --quick && python3 check_run.py ../target/run-local/run.json quick
+      - name: executor demo scenario + reference check + web chain comparison
+        working-directory: scripts
+        run: |
+          npx tsx run/run.ts local
+          python3 check_run.py ../target/run-local/run.json
+          npx tsx run/check_web_chain.ts ../target/run-local/run.json ../target/run-local/svm.bin
+      - name: crash and resume
+        run: bash scripts/run/test_resume.sh
+  web:
+    # PRD G2 / 7.5: static build, Lighthouse desktop on 5 pages, console errors, 390px layout, WebKit.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - run: npm ci
+        working-directory: app
+      - run: npx tsc --noEmit -p .
+        working-directory: app
+      - run: npx next build
+        working-directory: app
+      - run: node scripts/web_check.mjs out "" web_check.json
+        working-directory: app
+      - name: WebKit (Safari engine), desktop and 390px (PRD 7.5 4)
+        working-directory: app
+        run: npx playwright install --with-deps webkit && node scripts/webkit_check.mjs out ""
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-check
+          path: app/web_check.json
   reference:
     runs-on: ubuntu-24.04
     steps:
@@ -46,3 +115,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - run: python3 -I scripts/check_secrets.py
+  numbers:
+    # PRD G7 / S1: document numbers match research/results, outside facts carry a source
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - run: python3 -I scripts/check_numbers.py
+      - name: video scripts fit their time limits (PRD S5 3:00, S6 2:30)
+        run: python3 -I scripts/check_script_time.py

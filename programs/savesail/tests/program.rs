@@ -256,8 +256,12 @@ impl Env {
     fn bal(&self, a: Pubkey) -> u64 {
         TokAcc::unpack(&self.svm.get_account(&a).unwrap().data).unwrap().amount
     }
+    /// Vault keypairs are derived from the deal address, so a test can name another deal's vaults.
+    fn vault_kp(&self, k: u8) -> Keypair {
+        Keypair::new_from_array(sch::h(&[b"vault", self.deal.as_ref(), &[k]]))
+    }
     fn vault(&self, k: u8) -> Pubkey {
-        pda(&[SEED_VAULT, self.deal.as_ref(), &[k]])
+        self.vault_kp(k).pubkey()
     }
     fn deal_state(&self) -> Deal {
         Deal::try_deserialize(&mut &self.svm.get_account(&self.deal).unwrap().data[..]).unwrap()
@@ -354,7 +358,12 @@ impl Env {
             },
         );
         let a = self.admin.insecure_clone();
-        self.send("init_vaults", i, &[&a])
+        self.send_with_vaults("init_vaults", i, &a)
+    }
+    /// init_vaults needs the six new vault accounts to sign their creation.
+    fn send_with_vaults(&mut self, name: &'static str, i: Instruction, signer: &Keypair) -> Res {
+        let v: Vec<Keypair> = (V_RAISE..=V_BOND).map(|k| self.vault_kp(k)).collect();
+        self.send(name, i, &[signer, &v[0], &v[1], &v[2], &v[3], &v[4], &v[5]])
     }
     fn set_kyc_as(&mut self, signer: &Keypair, investor: Pubkey, tier: u8, limit: u64) -> Res {
         let kyc = pda(&[SEED_KYC, self.deal.as_ref(), investor.as_ref()]);
@@ -997,10 +1006,38 @@ fn t1_initialize_and_vaults() {
             system_program: system_program::ID,
         },
     );
-    expect_e(e.send("x", i, &[&x]), E::Unauthorized);
+    expect_e(e.send_with_vaults("x", i, &x), E::Unauthorized);
     ok(e.init_vaults());
     expect_fail(e.init_vaults(), "vaults created twice");
-    assert!(e.deal_state().vaults_ready);
+    let d = e.deal_state();
+    assert!(d.vaults_ready);
+    for k in V_RAISE..=V_BOND {
+        assert_eq!(d.vault(k), e.vault(k));
+        let t = TokAcc::unpack(&e.svm.get_account(&e.vault(k)).unwrap().data).unwrap();
+        assert_eq!((t.mint, t.owner, t.amount), (e.mint, e.deal, 0));
+    }
+    assert_eq!(d.vault(6), Pubkey::default());
+    // a second set of fresh vault accounts is refused by the handler (vaults_ready)
+    let fresh: Vec<Keypair> = (0..6).map(|_| Keypair::new()).collect();
+    let i = e.ix(
+        ix::InitVaults {},
+        ac::InitVaults {
+            admin: e.admin.pubkey(),
+            deal: e.deal,
+            payment_mint: e.mint,
+            raise_vault: fresh[0].pubkey(),
+            collection_vault: fresh[1].pubkey(),
+            senior_vault: fresh[2].pubkey(),
+            junior_vault: fresh[3].pubkey(),
+            reserve_vault: fresh[4].pubkey(),
+            bond_vault: fresh[5].pubkey(),
+            token_program: spl_token::ID,
+            system_program: system_program::ID,
+        },
+    );
+    let a = e.admin.insecure_clone();
+    expect_e(e.send("x", i, &[&a, &fresh[0], &fresh[1], &fresh[2], &fresh[3], &fresh[4], &fresh[5]]), E::InvalidState);
+    assert_eq!(e.deal_state().vaults, d.vaults);
 }
 
 #[test]
@@ -1244,9 +1281,9 @@ fn t1_attestation_settle_distribute_close() {
     e.deal = d1;
     e.campaign = c1;
     e.cfg.deal_id = 1;
-    expect_ae(e.distribute_with(0, foreign), AE::ConstraintSeeds);
+    expect_ae(e.distribute_with(0, foreign), AE::ConstraintAddress);
     let own_token = e.t(&e.inv[0]);
-    expect_ae(e.distribute_with(0, own_token), AE::ConstraintSeeds);
+    expect_ae(e.distribute_with(0, own_token), AE::ConstraintAddress);
     ok(e.distribute(0));
     expect_e(e.distribute(0), E::AlreadyDistributed);
     expect_ae(e.claim(0, 1), AE::AccountNotInitialized); // no junior position for investor A
@@ -1391,7 +1428,7 @@ fn t4_unauthorized_per_command() {
             system_program: system_program::ID,
         },
     );
-    expect_e(e.send("x", i, &[&x]), E::Unauthorized);
+    expect_e(e.send_with_vaults("x", i, &x), E::Unauthorized);
     un("init_vaults");
     ok(e.init_vaults());
     // 3 set_kyc
@@ -1458,7 +1495,7 @@ fn t4_unauthorized_per_command() {
             token_program: spl_token::ID,
         },
     );
-    expect_ae(e.send("x", i, &[&x]), AE::ConstraintSeeds);
+    expect_ae(e.send("x", i, &[&x]), AE::ConstraintAddress);
     un("resolve_missing");
     e.resolve_all(0);
     // 9 commit_group_data

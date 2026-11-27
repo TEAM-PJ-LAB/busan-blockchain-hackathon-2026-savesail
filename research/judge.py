@@ -5,11 +5,14 @@ Ratio criteria: one-sided binomial test per condition at alpha = 0.1% plus the p
 """
 import glob
 import json
+import os
 import math
 import sys
 from collections import defaultdict
 
 from scipy.stats import binom
+
+RESULTS = os.environ.get("SAVESAIL_RESULTS", "results")  # run_all.py --quick uses a separate directory
 
 ALPHA = 0.001
 LOW_NOISE = lambda c: c.get("sd_e", 0.03) <= 0.03 + 1e-12 and c.get("sd_m", 0.02) <= 0.02 + 1e-12
@@ -17,25 +20,25 @@ LOW_NOISE = lambda c: c.get("sd_e", 0.03) <= 0.03 + 1e-12 and c.get("sd_m", 0.02
 
 def load(paths):
     agg = {}
-    for p in paths:
-        for line in open(p):
-            d = json.loads(line)
-            key = (d["grid"], d["cond"])
-            a = agg.setdefault(key, dict(cfg=d["cfg"], err=[], lb_pos=0, cover=0, pay=[], det=0, ba=[], n=0,
-                                         flags=defaultdict(int), attacks=defaultdict(lambda: defaultdict(float))))
-            h = d["honest"]
-            a["n"] += d["n"]
-            a["err"] += h["err"]
-            a["lb_pos"] += sum(h["lb_pos"])
-            a["cover"] += sum(h["cover"])
-            a["pay"] += [x for x in h["pay"] if x is not None]
-            a["det"] += sum(h["det"])
-            a["ba"] += h["ba"]
-            for k, v in h["flags"].items():
-                a["flags"][k] += v
-            for k, v in d["attacks"].items():
-                for kk, vv in v.items():
-                    a["attacks"][k][kk] += vv
+    lines = [json.loads(line) for p in paths for line in open(p)]
+    lines.sort(key=lambda d: (d["grid"], d["cond"], d["rep0"]))  # float sums independent of completion order
+    for d in lines:
+        key = (d["grid"], d["cond"])
+        a = agg.setdefault(key, dict(cfg=d["cfg"], err=[], lb_pos=0, cover=0, pay=[], det=0, ba=[], n=0,
+                                     flags=defaultdict(int), attacks=defaultdict(lambda: defaultdict(float))))
+        h = d["honest"]
+        a["n"] += d["n"]
+        a["err"] += h["err"]
+        a["lb_pos"] += sum(h["lb_pos"])
+        a["cover"] += sum(h["cover"])
+        a["pay"] += [x for x in h["pay"] if x is not None]
+        a["det"] += sum(h["det"])
+        a["ba"] += h["ba"]
+        for k, v in h["flags"].items():
+            a["flags"][k] += v
+        for k, v in d["attacks"].items():
+            for kk, vv in v.items():
+                a["attacks"][k][kk] += vv
     return agg
 
 
@@ -56,6 +59,8 @@ def judge(agg):
     rows, fails = [], []
     pool = defaultdict(lambda: [0, 0])  # name -> [hits, n]
     for (g, ci), a in sorted(agg.items()):
+        if g == "R8":  # method comparison, reported separately (r8_table); criteria apply to grids A-D
+            continue
         c, n = a["cfg"], a["n"]
         h = c.get("camp_h", 3600)
         s = c["s"]
@@ -139,8 +144,54 @@ def judge(agg):
     return rows, pooled, fails
 
 
+def r8_table(agg):
+    """R8: per method, pooled zero-effect false-pay rate, coverage, payout, worst bias and 95th-percentile error."""
+    by = defaultdict(lambda: dict(fp=[0, 0], cov=[0, 0], pay=[], bias=0.0, p95=0.0))
+    for (g, ci), a in sorted(agg.items()):
+        if g != "R8":
+            continue
+        k = a["cfg"]["method"]
+        b, n = by[k], a["n"]
+        if a["cfg"]["s"] == 0:
+            b["fp"][0] += a["lb_pos"]
+            b["fp"][1] += n
+        else:
+            b["cov"][0] += a["cover"]
+            b["cov"][1] += n
+            b["pay"].append(100 * sum(a["pay"]) / max(len(a["pay"]), 1))
+        b["bias"] = max(b["bias"], abs(sum(a["err"]) / n))
+        b["p95"] = max(b["p95"], p95(a["err"]))
+    return {k: dict(false_pay=v["fp"][0] / max(v["fp"][1], 1), coverage=v["cov"][0] / max(v["cov"][1], 1),
+                    payout_mean=sum(v["pay"]) / max(len(v["pay"]), 1), worst_bias=v["bias"], worst_p95=v["p95"])
+            for k, v in by.items()}
+
+
+def summarize_rows(rows, by):
+    """Stable named figures for the documents (README, deck, Q&A cite these keys via scripts/check_numbers.py)."""
+    out = {"pass": {g: {k: v[0] for k, v in d.items()} for g, d in by.items()},
+           "of": {g: {k: v[1] for k, v in d.items()} for g, d in by.items()},
+           "conditions": {g: sum(1 for r in rows if r["grid"] == g) for g in by}}
+    allr = [r for r in rows]
+    out["worst_bias"] = max(abs(r["bias"]) for r in allr)
+    low = [r for r in allr if LOW_NOISE(r["cfg"])]
+    out["worst_p95_3600"] = max(r["p95"] for r in low if r["cfg"].get("camp_h", 3600) >= 3600)
+    out["worst_p95_1800"] = max([r["p95"] for r in low if r["cfg"].get("camp_h", 3600) < 3600] or [0.0])
+    m5 = [r for r in allr if "M5" in r["checks"]]
+    out["min_payout_3600"] = min(r["payout"] for r in m5 if r["cfg"].get("camp_h", 3600) >= 3600)
+    out["min_payout_1800"] = min([r["payout"] for r in m5 if r["cfg"].get("camp_h", 3600) < 3600] or [100.0])
+    out["worst_attack"] = {k: max(abs(r["worst_attack"].get(k, 0.0)) for r in allr) for k in ("storm", "rep", "meter")}
+    ba = [r for r in allr if "M10" in r["checks"]]
+    out["ba_conditions"] = len(ba)
+    out["ba_median_abs"] = float(sorted(abs(r["ba_bias"]) for r in ba)[len(ba) // 2]) if ba else 0.0
+    out["ba_worst_ratio"] = max((abs(r["bias"]) / abs(r["ba_bias"]) for r in ba), default=0.0)
+    a = {f"s{int(round(1000 * r['cfg']['s']))}_{'w' if r['cfg'].get('hetero') else 'c'}": r for r in allr if r["grid"] == "A"}
+    out["A"] = {k: dict(bias=r["bias"], p95=r["p95"], fp=r.get("fp"), cover=r.get("cover"), payout=r.get("payout"),
+                        ba_bias=r["ba_bias"]) for k, r in a.items()}
+    return out
+
+
 def main():
-    paths = sys.argv[1:] or glob.glob("results/raw/*.jsonl")
+    paths = sys.argv[1:] or glob.glob(f"{RESULTS}/raw/*.jsonl")
     agg = load(paths)
     rows, pooled, fails = judge(agg)
     by = defaultdict(lambda: defaultdict(lambda: [0, 0]))
@@ -148,7 +199,10 @@ def main():
         for k, ok in r["checks"].items():
             by[r["grid"]][k][0] += ok
             by[r["grid"]][k][1] += 1
-    json.dump(dict(rows=rows, pooled=pooled, fails=fails), open("results/judgement.json", "w"), indent=1, default=str)
+    r8 = r8_table(agg)
+    summary = summarize_rows(rows, by)
+    json.dump(dict(rows=rows, pooled=pooled, fails=fails, r8=r8, summary=summary), open(f"{RESULTS}/judgement.json", "w"),
+              indent=1, default=str)
     crit = ["M1", "M2", "M3", "M4", "M5", "M6-3", "M7", "M8-1", "M8-2", "M8-3", "M8-4", "M9-2", "M9-3", "M10"]
     lines = ["| 격자 | 조건 | " + " | ".join(crit) + " |", "|---|---|" + "---|" * len(crit)]
     for g in sorted(by):
@@ -161,7 +215,13 @@ def main():
         lines.append(f"| {k} | {100 * v['rate']:.3f}% (n={v['n']:,}) | {100 * v['target']:.1f}% | {100 * 2 * v['se']:.3f}%p | {'통과' if v['ok'] else '실패'} |")
     lines.append("")
     lines.append(f"실패 {len(fails)}건" + ("" if not fails else ": " + ", ".join(f"{g}{c}:{k}" for g, c, k in fails[:60])))
-    open("results/judgement.md", "w").write("\n".join(lines) + "\n")
+    if r8:
+        lines += ["", "R8 방법 비교(정직 실행, 6개 조건 × 효과 0·5%)", "",
+                  "| 방법 | 효과 0 지급 | 하한 ≤ 참값 | 지급 비율 평균 | 최대 편향 | 최대 오차 95백분위 |", "|---|---|---|---|---|---|"]
+        for k, v in r8.items():
+            lines.append(f"| {k} | {100 * v['false_pay']:.2f}% | {100 * v['coverage']:.2f}% | {v['payout_mean']:.1f}% | "
+                         f"{v['worst_bias']:.3f}%p | {v['worst_p95']:.3f}%p |")
+    open(f"{RESULTS}/judgement.md", "w").write("\n".join(lines) + "\n")
     print("\n".join(lines))
     return 1 if fails else 0
 

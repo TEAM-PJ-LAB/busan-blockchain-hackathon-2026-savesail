@@ -1,0 +1,23 @@
+{
+  "name": "savesail-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "run:devnet": "tsx run/run.ts devnet",
+    "run:local": "tsx run/run.ts local",
+    "test": "tsx run/run.ts local --quick"
+  },
+  "dependencies": {
+    "@anchor-lang/core": "1.2.2",
+    "@solana/spl-token": "0.4.15",
+    "@solana/web3.js": "1.98.4",
+    "bn.js": "5.2.3"
+  },
+  "devDependencies": {
+    "@types/bn.js": "5.2.0",
+    "@types/node": "22.19.3",
+    "litesvm": "1.6.2",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}

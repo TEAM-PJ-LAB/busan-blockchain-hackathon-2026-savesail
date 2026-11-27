@@ -120,7 +120,7 @@ pub struct Settle<'info> {
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
     #[account(mut, token::mint = payment_mint, token::authority = payer)]
     pub payer_token: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_COLLECT]], bump)]
+    #[account(mut, address = deal.vault(V_COLLECT))]
     pub collection_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     pub token_program: Interface<'info, TokenInterface>,
 }
@@ -155,13 +155,13 @@ pub struct Distribute<'info> {
     #[account(mut, seeds = [SEED_PERIOD, deal.key().as_ref(), &period.to_le_bytes()], bump = period_state.bump)]
     pub period_state: Box<Account<'info, PeriodState>>,
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_COLLECT]], bump)]
+    #[account(mut, address = deal.vault(V_COLLECT))]
     pub collection_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_SENIOR]], bump)]
+    #[account(mut, address = deal.vault(V_SENIOR))]
     pub senior_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_JUNIOR]], bump)]
+    #[account(mut, address = deal.vault(V_JUNIOR))]
     pub junior_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_RESERVE]], bump)]
+    #[account(mut, address = deal.vault(V_RESERVE))]
     pub reserve_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(mut, address = deal.opex_token @ E::Unauthorized, token::mint = payment_mint)]
     pub opex_token: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -226,7 +226,7 @@ pub struct Claim<'info> {
     #[account(mut, seeds = [SEED_POS, deal.key().as_ref(), &[tranche], owner.key().as_ref()], bump = position.bump)]
     pub position: Box<Account<'info, Position>>,
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_SENIOR.wrapping_add(tranche)]], bump)]
+    #[account(mut, address = deal.vault(V_SENIOR.wrapping_add(tranche)))]
     pub tranche_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(mut, token::mint = payment_mint, token::authority = owner)]
     pub owner_token: Box<InterfaceAccount<'info, TokenAccount>>,
@@ -264,11 +264,11 @@ pub struct CloseDeal<'info> {
     #[account(mut, has_one = admin @ E::Unauthorized, has_one = payment_mint)]
     pub deal: Box<Account<'info, Deal>>,
     pub payment_mint: Box<InterfaceAccount<'info, Mint>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_RESERVE]], bump)]
+    #[account(mut, address = deal.vault(V_RESERVE))]
     pub reserve_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_SENIOR]], bump)]
+    #[account(mut, address = deal.vault(V_SENIOR))]
     pub senior_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-    #[account(mut, seeds = [SEED_VAULT, deal.key().as_ref(), &[V_JUNIOR]], bump)]
+    #[account(mut, address = deal.vault(V_JUNIOR))]
     pub junior_vault: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(mut, address = deal.opex_token @ E::Unauthorized, token::mint = payment_mint)]
     pub opex_token: Box<InterfaceAccount<'info, TokenAccount>>,
