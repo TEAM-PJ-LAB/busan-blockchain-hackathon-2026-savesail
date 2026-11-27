@@ -1,0 +1,9 @@
+
+Program Id: TACLkU6CiCdkQN2MjoyDkVg2yAH9zkxiHDsiztQ52TP
+Owner: BPFLoaderUpgradeab1e11111111111111111111111
+ProgramData Address: GEC5tu9eaZQrNS7ohERwZRqyvLvV8k2iVZqqt6VuwvJu
+Authority: FC2HWzdiw8U5mLu9trXWPDknuhwaVnaeCQu6pQySVSt3
+Last Deployed In Slot: 502030236
+Data Length: 155992 (0x26158) bytes
+Balance: 0.7933182 SOL
+

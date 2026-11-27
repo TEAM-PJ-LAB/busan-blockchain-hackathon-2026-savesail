@@ -1,0 +1,21 @@
+[1m[92m   Compiling[0m savesail v0.1.0 (/home/runner/work/busan-blockchain-hackathon-2026-savesail/busan-blockchain-hackathon-2026-savesail/programs/savesail)
+[1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 2.43s
+[1m[92m     Running[0m tests/p1.rs (target/debug/deps/p1-e8c727579084496b)
+
+running 13 tests
+test p1_1b_token_acl_mint_config_and_allow_list ... ok
+test p1_1c_listed_thaw_and_receive_unlisted_fail ... ok
+test p1_1a_mints_frozen_default_with_token_acl_metadata ... ok
+test p1_1d_units_equal_token_balance ... ok
+test p1_2a_transfer_settles_both_sides_first ... ok
+test p1_3a_proxy_submission_finalizes ... ok
+test p1_3b_other_signer_rejected ... ok
+test p1_2c_hook_compute_units ... ok
+test p1_3c_other_message_rejected ... ok
+test p1_3d_missing_precompile_rejected ... ok
+test p1_3e_other_period_rejected ... ok
+test p1_2b_random_transfers_and_distributions_1000 ... ok
+test p1_3f_proxy_compute_units ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.39s
+

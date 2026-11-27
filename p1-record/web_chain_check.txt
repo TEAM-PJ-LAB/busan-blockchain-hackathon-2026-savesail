@@ -1,0 +1,7 @@
+P1 chain check: 21/21 values match
+  changed supply -> caught (p1.senior.supply)
+  changed default state -> caught (p1.junior.default_state)
+  changed token_acl -> caught (p1.senior.token_acl)
+  changed allow list -> caught (p1.allow_list.wallets)
+  changed holder state -> caught (p1.outsider.state)
+  changed units -> caught (p1.investorA.units)

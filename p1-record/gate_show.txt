@@ -1,0 +1,9 @@
+
+Program Id: GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz
+Owner: BPFLoaderUpgradeab1e11111111111111111111111
+ProgramData Address: D2GUvBwbnkFu3R5s1rz5dcBJ81UsqY3nvHbLdeJLtSx5
+Authority: FC2HWzdiw8U5mLu9trXWPDknuhwaVnaeCQu6pQySVSt3
+Last Deployed In Slot: 485094008
+Data Length: 72160 (0x119e0) bytes
+Balance: 0.50343768 SOL
+
