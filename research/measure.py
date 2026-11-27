@@ -265,11 +265,14 @@ def balance(xg_on, xg_off, scale, floor, z):
 def cross_fit_off(F, V, D, Uh, Hs, train, fold_h, model, K):
     """Newbuild mode (no pre-installation data): log-fuel baseline fitted on the campaign's own OFF hours, cross-fitted
     by contiguous folds of groups. A group's prediction uses only OFF blocks of the other folds, so it does not depend
-    on that group's own random OFF position."""
+    on that group's own random OFF position. Hours without data (obs) are left out by the caller's `train` mask."""
+    # knots from each fit's own training hours, so the natural spline is linear (not cubic) outside the data it was
+    # fitted on; a shared knot set let a fit extrapolate cubically where it had no OFF hours (OFF speed attacks)
     y = np.log(np.where(F > 0, F, np.nan))
     P = np.empty(len(F))
     for k in range(K):
-        kn, beta = fit(model, V, D, Uh, Hs, y, np.flatnonzero(train & (fold_h != k)))
+        fi = np.flatnonzero(train & (fold_h != k))
+        kn, beta = fit(model, V, D, Uh, Hs, y, fi)
         ev = fold_h == k
         P[ev] = predict(model, kn, beta, V[ev], D[ev], Uh[ev], Hs[ev])
     return P

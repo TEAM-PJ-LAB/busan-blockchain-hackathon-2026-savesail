@@ -28,6 +28,10 @@ Design (fixed before the first run):
 - Criteria as PRD 1.3: M1 |bias| <= 0.10%p; M3 (effect 0, lower bound > 0) and M4 (effect > 0, lower bound <=
   truth) by the one-sided binomial test at 0.1%; M10 when before/after bias >= 0.5%p.
 
+Newbuild mode (PRD C28, added 11/28 before its first run on this data): the same campaigns and schedules are also
+settled without the training hours, the baseline cross-fitted on the campaign's own OFF hours and the bound from the
+design variance with the OFF-block noise share (measure.evaluate, newbuild=True). Its numbers sit under "nb".
+
 Usage: python3 research/fuelcast_check.py <folder with the .parquet files> [--reps N]
 """
 import json
@@ -35,6 +39,7 @@ import os
 import sys
 
 import numpy as np
+from scipy.stats import t as student_t
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import measure as M  # noqa: E402
@@ -111,12 +116,15 @@ def run_ship(a, reps, seed):
         grp = np.repeat(np.arange(ng), G * L)
         blk = np.tile(np.repeat(np.arange(G), L), ng)
         tw = np.where(np.tile(np.arange(L), ng * G) == 0, 1.0 - TRANS, 1.0)
+        first = np.tile(np.arange(L), ng * G) == 0
+        fold_h = ((np.arange(ng) * 5) // ng)[grp]
         raw = raw_all[camp]
         Yc = Y[camp]
         pre = np.arange(int(t0 * 0.75), t0)
         for s in EFFECTS:
             s_h = np.minimum(s * raw / max(raw.mean(), 1e-9), 0.45)
             err, lb_pos, cover, pay = [], 0, 0, []
+            nb_err, nb_pos, nb_cover, nb_pay = [], 0, 0, []
             for _ in range(reps):
                 off = blk == rng.integers(0, G, size=ng)[grp]
                 F = Yc * (1 - s_h * ~off)
@@ -132,6 +140,24 @@ def run_ship(a, reps, seed):
                 cover += int(lb <= truth)
                 if s > 0:
                     pay.append(max(lb, 0.0) / truth)
+                # newbuild mode on the same campaign and schedule: no training hours at all
+                train = off & ~first
+                Pn = M.cross_fit_off(F, V[camp], D[camp], Uh[camp], Hs[camp], train, fold_h, "spline", 5)
+                Sn = np.column_stack([np.bincount(grp, F * w_on, ng), np.bincount(grp, Pn * w_on, ng),
+                                      np.bincount(grp, F * w_off, ng), np.bincount(grp, Pn * w_off, ng)])
+                rn = float(M.ratio(Sn.sum(0)))
+                cell = grp * G + blk
+                Ab = np.bincount(cell, F * tw, ng * G).reshape(ng, G)
+                Pb = np.bincount(cell, Pn * tw, ng * G).reshape(ng, G)
+                oc = np.argmax(off.reshape(ng, G * L), axis=1) // L
+                se, df = M.design_se(Ab, Pb, oc)
+                se *= np.sqrt(M.off_noise_share(Ab, Pb, oc, np.arange(ng), G))
+                lbn = 1 - (1 - rn) * np.exp(student_t.ppf(0.975, df) * se)
+                nb_err.append((rn - truth) * 100)
+                nb_pos += int(lbn > 0)
+                nb_cover += int(lbn <= truth)
+                if s > 0:
+                    nb_pay.append(max(lbn, 0.0) / truth)
             # before/after comparator: the sail ON in every campaign hour, compared with the last quarter of training
             r_ba = 1 - ((Yc * (1 - s_h)).sum() / P.sum()) / (Y[pre].sum() / pred_tr[pre - 0].sum())
             truth_ba = float((Yc * s_h).sum() / Yc.sum())
@@ -148,6 +174,17 @@ def run_ship(a, reps, seed):
                 ck["M4"] = bool(not too_low(cover, reps, 0.975))
             if abs(row["ba_bias"]) >= 0.5:
                 ck["M10"] = bool(abs(bias) <= abs(row["ba_bias"]) / 5)
+            nbr = dict(bias=round(float(np.mean(nb_err)), 4), p95=round(float(np.percentile(np.abs(nb_err), 95)), 4))
+            nck = dict(M1=bool(abs(nbr["bias"]) <= 0.10))
+            if s == 0:
+                nbr["lb_pos"] = round(nb_pos / reps, 4)
+                nck["M3"] = bool(not too_high(nb_pos, reps, 0.025))
+            else:
+                nbr["cover"] = round(nb_cover / reps, 4)
+                nbr["pay_ratio"] = round(float(np.mean(nb_pay)), 4)
+                nck["M4"] = bool(not too_low(nb_cover, reps, 0.975))
+            nbr["checks"] = nck
+            row["nb"] = nbr
             row["checks"] = ck
             out.append(row)
         if t0 == starts[-1]:
@@ -182,6 +219,13 @@ def main():
             ratio_min=round(min(ba) / max(abs(r["bias"]) for r in rows), 1),
             pay_3=[min(r["pay_ratio"] for r in rows if r["s"] == 0.03), max(r["pay_ratio"] for r in rows if r["s"] == 0.03)],
             pay_7=[min(r["pay_ratio"] for r in rows if r["s"] == 0.07), max(r["pay_ratio"] for r in rows if r["s"] == 0.07)])
+        nbs = [r["nb"] for r in rows]
+        result["summary"]["nb"] = dict(
+            failed=[f"{r['t0']}/{r['s']}:{k}" for r in rows for k, v in r["nb"]["checks"].items() if not v],
+            max_abs_bias=max(abs(x["bias"]) for x in nbs), max_lb_pos=max(x["lb_pos"] for x in nbs if "lb_pos" in x),
+            min_cover=min(x["cover"] for x in nbs if "cover" in x),
+            pay_3=[min(r["nb"]["pay_ratio"] for r in rows if r["s"] == 0.03), max(r["nb"]["pay_ratio"] for r in rows if r["s"] == 0.03)],
+            pay_7=[min(r["nb"]["pay_ratio"] for r in rows if r["s"] == 0.07), max(r["nb"]["pay_ratio"] for r in rows if r["s"] == 0.07)])
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results", "fuelcast.json")
     with open(path, "w") as f:
         json.dump(result, f, indent=1, sort_keys=True)

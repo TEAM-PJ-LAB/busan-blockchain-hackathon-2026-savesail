@@ -89,7 +89,9 @@ def newbuild(grid):
 GRIDS = {"A": grid_A, "B": grid_B, "C": grid_C, "D": grid_D, "R8": grid_R8,
          "NA": newbuild(grid_A), "NB": newbuild(grid_B), "NC": newbuild(grid_C), "ND": newbuild(grid_D)}
 REPS = {"A": 10_000, "B": 2_000, "C": 2_000, "D": 2_000, "R8": 2_000, "NA": 10_000, "NB": 2_000, "NC": 2_000, "ND": 2_000}
-ATTACK_REPS = {"A": 2_000, "B": 2_000, "C": 500, "D": 2_000, "R8": 0, "NA": 2_000, "NB": 2_000, "NC": 500, "ND": 2_000}
+# newbuild grids: manipulation panel at 500 runs per condition (as grid C) to fit the job time limit; the slower
+# cross-fitted baseline makes each evaluation about 2.5x the adopted method's
+ATTACK_REPS = {"A": 2_000, "B": 2_000, "C": 500, "D": 2_000, "R8": 0, "NA": 500, "NB": 500, "NC": 500, "ND": 500}
 
 
 def attack_panel():
