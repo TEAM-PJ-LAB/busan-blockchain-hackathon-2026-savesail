@@ -76,6 +76,78 @@
       ]
     },
     {
+      "name": "approve_attestation_signed",
+      "discriminator": [
+        207,
+        114,
+        44,
+        225,
+        10,
+        37,
+        86,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "submitter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "campaign"
+        },
+        {
+          "name": "period_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  105,
+                  111,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "arg",
+                "path": "payload.period"
+              }
+            ]
+          }
+        },
+        {
+          "name": "instructions",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "payload",
+          "type": {
+            "defined": {
+              "name": "AttestationPayload"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "claim",
       "discriminator": [
         62,
@@ -575,6 +647,142 @@
       ]
     },
     {
+      "name": "invest_tokenized",
+      "discriminator": [
+        69,
+        119,
+        144,
+        209,
+        245,
+        73,
+        140,
+        139
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "kyc",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  107,
+                  121,
+                  99
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "investor_token",
+          "writable": true
+        },
+        {
+          "name": "raise_vault",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "tranche_mint",
+          "writable": true
+        },
+        {
+          "name": "investor_tranche_token",
+          "writable": true
+        },
+        {
+          "name": "tranche_token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tranche",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "open_position",
+      "discriminator": [
+        135,
+        128,
+        47,
+        77,
+        15,
+        152,
+        240,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal"
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "tranche",
+          "type": "u8"
+        },
+        {
+          "name": "owner",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "register_anchor",
       "discriminator": [
         181,
@@ -632,6 +840,128 @@
           }
         }
       ]
+    },
+    {
+      "name": "register_tranche_mints",
+      "discriminator": [
+        181,
+        120,
+        232,
+        249,
+        57,
+        38,
+        195,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true
+        },
+        {
+          "name": "payment_mint",
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "senior_mint"
+        },
+        {
+          "name": "junior_mint"
+        },
+        {
+          "name": "senior_config"
+        },
+        {
+          "name": "junior_config"
+        },
+        {
+          "name": "senior_metas",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  45,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "senior_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "junior_metas",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  120,
+                  116,
+                  114,
+                  97,
+                  45,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "junior_mint"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     },
     {
       "name": "release_bonds",
@@ -923,6 +1253,56 @@
           "type": "u16"
         }
       ]
+    },
+    {
+      "name": "transfer_hook",
+      "docs": [
+        "Token-2022 Transfer Hook `Execute` (spl-transfer-hook-interface discriminator)."
+      ],
+      "discriminator": [
+        105,
+        37,
+        101,
+        197,
+        75,
+        251,
+        102,
+        26
+      ],
+      "accounts": [
+        {
+          "name": "source_token"
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "destination_token"
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "extra_metas"
+        },
+        {
+          "name": "deal"
+        },
+        {
+          "name": "source_position",
+          "writable": true
+        },
+        {
+          "name": "destination_position",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -1202,6 +1582,32 @@
       ]
     },
     {
+      "name": "TrancheMintsRegistered",
+      "discriminator": [
+        89,
+        123,
+        240,
+        240,
+        102,
+        8,
+        7,
+        179
+      ]
+    },
+    {
+      "name": "TrancheTransferred",
+      "discriminator": [
+        242,
+        130,
+        16,
+        234,
+        178,
+        203,
+        224,
+        179
+      ]
+    },
+    {
       "name": "VaultsInitialized",
       "discriminator": [
         249,
@@ -1370,6 +1776,31 @@
       "code": 6030,
       "name": "DealNotEnded",
       "msg": "Deal has not reached its last period"
+    },
+    {
+      "code": 6031,
+      "name": "TrancheTokenMode",
+      "msg": "Command does not match the deal's tranche token mode"
+    },
+    {
+      "code": 6032,
+      "name": "InvalidTrancheMint",
+      "msg": "Tranche mint does not meet the P1 requirements"
+    },
+    {
+      "code": 6033,
+      "name": "NotTransferring",
+      "msg": "Transfer hook called outside a Token-2022 transfer"
+    },
+    {
+      "code": 6034,
+      "name": "InvalidSignature",
+      "msg": "Ed25519 signature instruction missing or not for this payload"
+    },
+    {
+      "code": 6035,
+      "name": "NotAssociatedTokenAccount",
+      "msg": "Tranche tokens may only be held in the owner's associated token account"
     }
   ],
   "types": [
@@ -1970,6 +2401,18 @@
                 6
               ]
             }
+          },
+          {
+            "name": "tranche_mints",
+            "docs": [
+              "P1: Token-2022 tranche mints set by `register_tranche_mints` (default key = P0 deal without tokens)."
+            ],
+            "type": {
+              "array": [
+                "pubkey",
+                2
+              ]
+            }
           }
         ]
       }
@@ -2403,6 +2846,13 @@
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "pending",
+            "docs": [
+              "P1: distributions settled by a transfer and not yet claimed."
+            ],
+            "type": "u64"
           }
         ]
       }
@@ -2448,6 +2898,54 @@
           {
             "name": "period",
             "type": "u16"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TrancheMintsRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "senior",
+            "type": "pubkey"
+          },
+          {
+            "name": "junior",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TrancheTransferred",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "tranche",
+            "type": "u8"
+          },
+          {
+            "name": "from",
+            "type": "pubkey"
+          },
+          {
+            "name": "to",
+            "type": "pubkey"
           },
           {
             "name": "amount",

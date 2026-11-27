@@ -26,13 +26,23 @@ pub struct ApproveAttestation<'info> {
 }
 
 /// Each verifier votes for sha256(borsh(payload)); two equal votes finalize (2-of-3).
-pub fn approve_attestation_handler(ctx: Context<ApproveAttestation>, payload: AttestationPayload) -> Result<()> {
+pub fn approve_attestation_handler(mut ctx: Context<ApproveAttestation>, payload: AttestationPayload) -> Result<()> {
     let vkey = ctx.accounts.verifier.key();
-    let vi = ctx.accounts.deal.verifier_index(&vkey).ok_or(E::Unauthorized)?;
-    let deal_key = ctx.accounts.deal.key();
-    let d = &mut ctx.accounts.deal;
-    let c = &ctx.accounts.campaign;
-    let ps = &mut ctx.accounts.period_state;
+    let a = &mut ctx.accounts;
+    vote(vkey, &mut a.deal, &a.campaign, &mut a.period_state, ctx.bumps.period_state, payload)
+}
+
+/// One verifier vote for `payload`; shared by `approve_attestation` and the Ed25519 proxy path (P1-3).
+pub(crate) fn vote(
+    vkey: Pubkey,
+    d: &mut Account<Deal>,
+    c: &Account<Campaign>,
+    ps: &mut Account<PeriodState>,
+    ps_bump: u8,
+    payload: AttestationPayload,
+) -> Result<()> {
+    let vi = d.verifier_index(&vkey).ok_or(E::Unauthorized)?;
+    let deal_key = d.key();
     require!(d.status == ST_ACTIVE, E::InvalidState);
     require!(payload.period >= d.next_period, E::InvalidState);
     require!(payload.period == d.next_period, E::PreviousPeriodOpen);
@@ -44,7 +54,7 @@ pub fn approve_attestation_handler(ctx: Context<ApproveAttestation>, payload: At
     if ps.deal == Pubkey::default() {
         ps.deal = deal_key;
         ps.period = payload.period;
-        ps.bump = ctx.bumps.period_state;
+        ps.bump = ps_bump;
     }
     require!(!ps.finalized, E::InvalidState);
     let bit = 1u8 << vi;
@@ -237,7 +247,12 @@ pub fn claim_handler(ctx: Context<Claim>, tranche: u8) -> Result<()> {
     let a = &ctx.accounts;
     require!(tranche <= 1, E::InvalidParams);
     let acc = a.deal.acc[tranche as usize];
-    let amount = wf::claimable(a.position.units, acc, a.position.acc_snapshot).map_err(E::from)?;
+    let mut pos = (**a.position).clone();
+    if a.deal.tokenized() {
+        pos.units = crate::ix_p1::tokenized_units(&pos, ctx.remaining_accounts)?;
+    }
+    pos.settle(acc).map_err(E::from)?;
+    let amount = pos.pending;
     require!(amount > 0, E::NothingToClaim);
     let ds = DealSeeds::of(&a.deal);
     let s = ds.seeds();
@@ -251,9 +266,9 @@ pub fn claim_handler(ctx: Context<Claim>, tranche: u8) -> Result<()> {
         Some(&[&s]),
     )?;
     let (deal_key, owner) = (a.deal.key(), a.owner.key());
-    let pos = &mut ctx.accounts.position;
-    pos.acc_snapshot = acc;
+    pos.pending = 0;
     pos.claimed = pos.claimed.checked_add(amount).ok_or(E::MathOverflow)?;
+    **ctx.accounts.position = pos;
     emit!(Claimed { deal: deal_key, tranche, owner, amount });
     Ok(())
 }

@@ -18,9 +18,18 @@ export interface SentTx {
   cu?: number;
 }
 
+/** A transaction that was meant to fail: on devnet it is sent without preflight so the failure is on chain. */
+export interface FailedTx {
+  label: string;
+  signature: string | null;
+  err: string;
+  logs: string[];
+}
+
 export interface Chain {
   readonly kind: "local" | "devnet";
   send(label: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<SentTx>;
+  sendFail(label: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<FailedTx>;
   account(pk: PublicKey): Promise<Buffer | null>;
   lamports(pk: PublicKey): Promise<number>;
   slot(): Promise<number>;
@@ -38,7 +47,7 @@ export class TxError extends Error {
 export class LocalChain implements Chain {
   readonly kind = "local";
   private svm: any;
-  constructor(programId: PublicKey, soPath: string, resumeFrom?: string) {
+  constructor(programId: PublicKey, soPath: string, resumeFrom?: string, extra: [PublicKey, string][] = []) {
     const require = createRequire(import.meta.url);
     const { LiteSvm } = require("litesvm/dist/internal");
     const { existsSync } = require("node:fs");
@@ -49,6 +58,7 @@ export class LocalChain implements Chain {
       this.svm.setDefaultPrograms();
       this.svm.setTransactionHistory(0n);
       this.svm.addProgramFromFile(programId.toBytes(), soPath);
+      for (const [id, path] of extra) this.svm.addProgramFromFile(id.toBytes(), path);
     }
   }
   save(path: string) {
@@ -64,6 +74,15 @@ export class LocalChain implements Chain {
     const logs: string[] = meta.logs ? meta.logs() : [];
     if (typeof r.err === "function") throw new TxError(label, logs, JSON.stringify(r.err(), (_, v) => (typeof v === "bigint" ? v.toString() : v)));
     return { label, signature: Buffer.from(meta.signature()).toString("hex"), slot: Number(this.svm.getClock().slot), cu: Number(meta.computeUnitsConsumed()) };
+  }
+  async sendFail(label: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<FailedTx> {
+    try {
+      await this.send(label, ixs, signers);
+    } catch (e) {
+      if (e instanceof TxError) return { label, signature: null, err: e.message.split("\n")[0], logs: e.logs };
+      throw e;
+    }
+    throw new Error(`${label}: expected a failure, the transaction succeeded`);
   }
   async account(pk: PublicKey): Promise<Buffer | null> {
     const a = this.svm.getAccount(pk.toBytes());
@@ -149,6 +168,22 @@ export class DevnetChain implements Chain {
       }
     }
     throw last;
+  }
+  async sendFail(label: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<FailedTx> {
+    const { blockhash, lastValidBlockHeight } = await this.blockhash();
+    const tx = new Transaction({ feePayer: signers[0].publicKey, blockhash, lastValidBlockHeight });
+    tx.add(...ixs);
+    tx.sign(...signers);
+    const sig = await this.conn.sendRawTransaction(tx.serialize(), { skipPreflight: true, maxRetries: 5 });
+    for (let i = 0; i < 120; i++) {
+      await sleep(700);
+      const st = (await this.conn.getSignatureStatuses([sig]).catch(() => ({ value: [null] }))).value[0];
+      if (!st || (st.confirmationStatus !== "confirmed" && st.confirmationStatus !== "finalized")) continue;
+      if (!st.err) throw new Error(`${label}: expected a failure, the transaction succeeded (${sig})`);
+      const t = await this.conn.getTransaction(sig, { commitment: "confirmed", maxSupportedTransactionVersion: 0 }).catch(() => null);
+      return { label, signature: sig, err: JSON.stringify(st.err), logs: t?.meta?.logMessages ?? [] };
+    }
+    throw new Error(`${label}: ${sig} did not land`);
   }
   async account(pk: PublicKey): Promise<Buffer | null> {
     const a = await this.conn.getAccountInfo(pk, this.commitment);

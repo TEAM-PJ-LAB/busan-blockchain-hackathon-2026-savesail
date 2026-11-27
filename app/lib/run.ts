@@ -40,3 +40,21 @@ export const OUTCOME = ["정상", "지급자 위반", "투자자 대표 상한 �
 export const explorer = (run: Run, sig: string) =>
   run.cluster === "devnet" ? `https://explorer.solana.com/tx/${sig}?cluster=devnet` : null;
 export const findTx = (run: Run, prefix: string) => run.txs.find((t) => t.step.startsWith(prefix));
+
+/** P1 record (scripts/run/p1.ts): Token-2022 tranche tokens gated by Token ACL. */
+export type P1Run = {
+  cluster: string; program: string; token_acl: string; gate: string; deal: string;
+  mints: { tranche: string; address: string; default_account_state: string; token_acl: string | null; supply: string;
+    mint_config: { address: string; gating_program: string; permissionless_thaw: boolean } }[];
+  allow_list: { address: string; mode: string; wallets: number };
+  holders: { name: string; listed: boolean; account: string; position: string; frozen_at_creation: boolean; state: string; balance: string; units: string }[];
+  steps: { step: string; signature: string }[];
+  rejected: { label: string; signature: string | null; err: string; expect: string }[];
+  checks: Record<string, boolean>;
+};
+export function loadP1(): P1Run | null {
+  const p = join(process.cwd(), "public/p1-run.json");
+  return existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : null;
+}
+export const explorerOf = (cluster: string, kind: "tx" | "address", id: string) =>
+  cluster === "devnet" ? `https://explorer.solana.com/${kind}/${id}?cluster=devnet` : null;

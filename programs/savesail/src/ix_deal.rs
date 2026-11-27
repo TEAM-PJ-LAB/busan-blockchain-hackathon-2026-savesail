@@ -171,13 +171,44 @@ pub struct Invest<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn invest_handler(ctx: Context<Invest>, tranche: u8, amount: u64) -> Result<()> {
-    let a = &ctx.accounts;
-    require!(a.deal.status == ST_FUNDRAISING && a.deal.vaults_ready, E::InvalidState);
+pub fn invest_handler(mut ctx: Context<Invest>, tranche: u8, amount: u64) -> Result<()> {
+    require!(!ctx.accounts.deal.tokenized(), E::TrancheTokenMode);
+    let a = &mut ctx.accounts;
+    invest_core(
+        &mut a.deal,
+        &a.kyc,
+        &mut a.position,
+        ctx.bumps.position,
+        &a.investor,
+        &a.payment_mint,
+        &a.investor_token,
+        &a.raise_vault,
+        &a.token_program,
+        tranche,
+        amount,
+    )
+}
+
+/// Shared by `invest` (P0) and `invest_tokenized` (P1): KYC limit, cap, payment and position units.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn invest_core<'info>(
+    deal: &mut Account<'info, Deal>,
+    kyc_acc: &UncheckedAccount<'info>,
+    position: &mut Account<'info, Position>,
+    pos_bump: u8,
+    investor: &Signer<'info>,
+    payment_mint: &InterfaceAccount<'info, Mint>,
+    investor_token: &InterfaceAccount<'info, TokenAccount>,
+    raise_vault: &InterfaceAccount<'info, TokenAccount>,
+    token_program: &Interface<'info, TokenInterface>,
+    tranche: u8,
+    amount: u64,
+) -> Result<()> {
+    require!(deal.status == ST_FUNDRAISING && deal.vaults_ready, E::InvalidState);
     require!(tranche <= 1 && amount > 0, E::InvalidParams);
     let t = tranche as usize;
 
-    let ki = a.kyc.to_account_info();
+    let ki = kyc_acc.to_account_info();
     require!(!ki.data_is_empty() && ki.owner == &crate::ID, E::KycRequired);
     let mut kyc = Kyc::try_deserialize(&mut &ki.data.borrow()[..])?;
     require!(tranche == 0 || kyc.tier == TIER_PRO, E::TierNotAllowed);
@@ -188,33 +219,31 @@ pub fn invest_handler(ctx: Context<Invest>, tranche: u8, amount: u64) -> Result<
     }
     let used = kyc.used.checked_add(amount).ok_or(E::MathOverflow)?;
     require!(used <= kyc.annual_limit, E::LimitExceeded);
-    let raised = a.deal.raised[t].checked_add(amount).ok_or(E::MathOverflow)?;
-    require!(raised <= a.deal.caps[t], E::CapExceeded);
+    let raised = deal.raised[t].checked_add(amount).ok_or(E::MathOverflow)?;
+    require!(raised <= deal.caps[t], E::CapExceeded);
 
     xfer(
-        &a.token_program,
-        &a.payment_mint,
-        a.investor_token.to_account_info(),
-        a.raise_vault.to_account_info(),
-        a.investor.to_account_info(),
+        token_program,
+        payment_mint,
+        investor_token.to_account_info(),
+        raise_vault.to_account_info(),
+        investor.to_account_info(),
         amount,
         None,
     )?;
     kyc.used = used;
     kyc.try_serialize(&mut &mut ki.data.borrow_mut()[..])?;
 
-    let (deal_key, owner, acc_t, bump) = (a.deal.key(), a.investor.key(), a.deal.acc[t], ctx.bumps.position);
-    let d = &mut ctx.accounts.deal;
-    d.raised[t] = raised;
-    let pos = &mut ctx.accounts.position;
-    if pos.deal == Pubkey::default() {
-        pos.deal = deal_key;
-        pos.owner = owner;
-        pos.tranche = tranche;
-        pos.bump = bump;
+    let (deal_key, owner, acc_t) = (deal.key(), investor.key(), deal.acc[t]);
+    deal.raised[t] = raised;
+    if position.deal == Pubkey::default() {
+        position.deal = deal_key;
+        position.owner = owner;
+        position.tranche = tranche;
+        position.bump = pos_bump;
     }
-    pos.units = pos.units.checked_add(amount).ok_or(E::MathOverflow)?;
-    pos.acc_snapshot = acc_t;
+    position.settle(acc_t).map_err(E::from)?;
+    position.units = position.units.checked_add(amount).ok_or(E::MathOverflow)?;
     emit!(Invested { deal: deal_key, investor: owner, tranche, amount });
     Ok(())
 }

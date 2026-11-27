@@ -107,3 +107,17 @@ pub struct DealClosed {
     pub deal: Pubkey,
     pub refund: u64,
 }
+#[event]
+pub struct TrancheMintsRegistered {
+    pub deal: Pubkey,
+    pub senior: Pubkey,
+    pub junior: Pubkey,
+}
+#[event]
+pub struct TrancheTransferred {
+    pub deal: Pubkey,
+    pub tranche: u8,
+    pub from: Pubkey,
+    pub to: Pubkey,
+    pub amount: u64,
+}

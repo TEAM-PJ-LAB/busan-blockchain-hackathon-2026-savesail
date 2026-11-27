@@ -6,6 +6,7 @@ use anchor_lang::prelude::*;
 pub mod error;
 pub mod events;
 pub mod ix_deal;
+pub mod ix_p1;
 pub mod ix_schedule;
 pub mod ix_settle;
 pub mod logic;
@@ -13,6 +14,7 @@ pub mod state;
 pub mod util;
 
 pub use ix_deal::*;
+pub use ix_p1::*;
 pub use ix_schedule::*;
 pub use ix_settle::*;
 use state::{AttestationPayload, DealParams};
@@ -67,5 +69,27 @@ pub mod savesail {
     }
     pub fn close_deal(ctx: Context<CloseDeal>) -> Result<()> {
         ix_settle::close_deal_handler(ctx)
+    }
+
+    // ---- P1 (PRD §2.1) ----
+    pub fn register_tranche_mints(ctx: Context<RegisterTrancheMints>) -> Result<()> {
+        ix_p1::register_tranche_mints_handler(ctx)
+    }
+    pub fn open_position(ctx: Context<OpenPosition>, tranche: u8, owner: Pubkey) -> Result<()> {
+        ix_p1::open_position_handler(ctx, tranche, owner)
+    }
+    pub fn invest_tokenized(ctx: Context<InvestTokenized>, tranche: u8, amount: u64) -> Result<()> {
+        ix_p1::invest_tokenized_handler(ctx, tranche, amount)
+    }
+    /// Token-2022 Transfer Hook `Execute` (spl-transfer-hook-interface discriminator).
+    #[instruction(discriminator = &ix_p1::EXECUTE_DISCRIMINATOR)]
+    pub fn transfer_hook(ctx: Context<TransferHookExecute>, amount: u64) -> Result<()> {
+        ix_p1::transfer_hook_handler(ctx, amount)
+    }
+    pub fn approve_attestation_signed(
+        ctx: Context<ApproveAttestationSigned>,
+        payload: AttestationPayload,
+    ) -> Result<()> {
+        ix_p1::approve_attestation_signed_handler(ctx, payload)
     }
 }

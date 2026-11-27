@@ -3,14 +3,14 @@
 **선박 풍력 세일을 선사 초기 비용 없이 달고, 검증된 연료 절감액으로만 갚는 실물자산 금융**
 
 > 부산 블록체인 해커톤 2026 · Busan RWA 트랙 · Team PJ
-> 상태(2026-11-27): 솔라나 프로그램 15개 명령 구현·테스트 완료, 오프체인 검증기·실행기·웹 완료, 측정 격자 A~D·경제성 모의실험 완료, devnet 전체 흐름 3회 연속 성공(회당 525건, 1,472~1,489초, [`docs/deployments.md`](docs/deployments.md))
+> 상태(2026-11-27): 솔라나 프로그램 20개 명령(P0 15 + 토큰화 P1 5) 구현·테스트 완료, 오프체인 검증기·실행기·웹 완료, 측정 격자 A~D·경제성 모의실험 완료, devnet 전체 흐름 3회 연속 성공(회당 525건, 1,472~1,489초), devnet에서 Token-2022 수익권 토큰 + Token ACL 허용 목록 동작 확인([`docs/deployments.md`](docs/deployments.md))
 
 | | |
 |---|---|
 | 데모 | https://team-pj-lab.github.io/busan-blockchain-hackathon-2026-savesail/ (GitHub Pages, devnet 실행 기록과 체인 계정을 자동 대조) |
 | 빌드 | `cargo build-sbf` |
-| 테스트 | `cargo test && python3 scripts/check_k2.py && python3 -m pytest offchain/tests` |
-| 데모 흐름 실행 | `cd scripts && npm ci && npx tsx run/run.ts local` (devnet: `.github/workflows/devnet.yml`) |
+| 테스트 | `cargo build-sbf && cargo test && python3 scripts/check_k2.py && python3 -m pytest offchain/tests` |
+| 데모 흐름 실행 | `cd scripts && npm ci && npx tsx run/run.ts local` (devnet: `.github/workflows/devnet.yml`), 토큰화: `npx tsx run/p1.ts local` (devnet: `devnet-p1.yml`) |
 | 실험 재현 | `python3 research/run_all.py` (같은 시드면 결과 파일 sha256이 같음) |
 | 문서 | [개발 PRD](docs/PRD.md) · [텀시트](docs/termsheet.md) · [DB증권 실증 비교](docs/db-comparison.md) · [예상 질문](docs/qna.md) · [실험](research/README.md) |
 
@@ -309,16 +309,17 @@ sequenceDiagram
 | 계약·모집 | `initialize_deal`, `init_vaults`, `set_kyc`, `invest`, `close_fundraising` | 계약 매개변수와 판정 설정 해시 고정, 금고 6개, KYC 등급·연간 한도 검사, 모집 마감 시 설치비를 제조사로 |
 | 일정 | `register_anchor`, `reveal`, `resolve_missing`, `commit_group_data`, `release_bonds` | 해시 체인 앵커, 검증기관 선공개, OFF 블록 결정, 공개 거부 처리·보증금 차감, 운항·제어기 데이터 해시 누적 |
 | 검증·정산 | `approve_attestation`, `settle`, `distribute`, `claim`, `close_deal` | 검증기관 3곳 중 2곳 투표로 확정, 누적 재정산, 운영비 → 선순위 → 준비금 → 후순위 워터폴, 단위당 누적 배분 청구, 종료 정산 |
+| 토큰화(P1) | `register_tranche_mints`, `open_position`, `invest_tokenized`, `transfer_hook`, `approve_attestation_signed` | 트랜치마다 Token-2022 민트(기본 동결, `token_acl` 메타데이터), Token ACL 허용 목록 지갑만 스스로 동결을 풀고 수령, 이전 때 Transfer Hook이 양쪽 미청구 배분을 먼저 확정, 검증기관이 서명만 하면 누구나 대리 제출(Ed25519) |
 
 | 품질 기준(PRD 1.5) | 결과 |
 |---|---|
-| 명령별 정상·오류 경로 | 명령 15개 정상, 오류 경로 111건, 오류 코드 31개 전부 실제 발생 |
-| 연산량 | 명령마다 최대 58,295 CU(한도 100,000). 금고를 키쌍 계정으로 만들어 PDA bump 탐색의 무작위 꼬리를 없앴다(PRD C21) |
+| 명령별 정상·오류 경로 | 명령 20개 정상, 오류 경로 155건, 오류 코드 36개 전부 실제 발생 |
+| 연산량 | P0 명령마다 최대 58,728 CU, P1 최대 66,923 CU(대리 승인), Transfer Hook 14,197 CU(한도 100,000). 금고를 키쌍 계정으로, 훅은 저장된 계정 주소 비교로 만들어 PDA bump 탐색의 무작위 꼬리를 없앴다(PRD C21·C26) |
 | 권한 | 명령마다 권한 없는 서명자 거부 15건 |
 | 불변식 | 규칙 모듈 무작위 100,000회, 온체인 무작위 전체 흐름 300회에서 금고 잔액 = 장부 |
 | 실행기 | 로컬 체인에서 525건 전체 흐름(그룹마다 공개 1건·데이터 커밋 1건), 모의 중단 5회 후 이어서 실행해도 같은 결과, 체인 상태를 참조 구현으로 다시 계산해 1 기본 단위까지 일치 |
 
-토큰화 계층(Token-2022의 Token ACL로 KYC 지갑만 보유, Transfer Hook으로 연간 한도 보조 통제)은 본선 이후 과제다. [[13]](#14-참고-자료) 예선판은 보유 단위를 프로그램 계정(`Position`)으로 기록하고 KYC·한도를 `invest`에서 검사한다.
+**토큰화 계층(P1, PRD 2.1절 9항목 전부 통과).** 선·후순위를 각각 Token-2022 민트로 발행한다. 민트는 새 계정을 동결 상태로 만들고(DefaultAccountState), 메타데이터의 `token_acl` 필드가 Token ACL(sRFC 37)의 허용 목록 게이트를 가리킨다. [[13]](#14-참고-자료) 허용 목록에 오른 지갑만 Token ACL로 스스로 동결을 풀 수 있으므로, 목록 밖 지갑은 KYC를 통과했어도 발행도 이전도 받지 못한다. 이전할 때마다 Transfer Hook이 보내는 쪽·받는 쪽의 미청구 배분을 먼저 확정하고 단위를 옮겨, 언제 사고팔아도 각자 보유 기간만큼 받는다(체인 위 무작위 이전·배분 1,000회에서 끝수 외 차이 0). 검증기관은 결과에 서명만 하고 제출은 누구나 할 수 있다(Ed25519 사전 컴파일 검증). devnet에서 MintConfig·허용 목록을 만들고 목록 밖 지갑의 해제·수령 실패까지 체인에 남겼다([`docs/deployments.md`](docs/deployments.md) P1절). KYC 등급·연간 한도는 투자 때 프로그램이 검사하고, 2차 거래의 연간 한도 통제는 본선 이후 과제(P2)다.
 
 ### 6.2 체인에 올리는 것과 올리지 않는 것
 
@@ -460,12 +461,13 @@ SaveSail이 새로운 점은 두 가지다. ① 절감액 연동 금융의 핵�
 | 영역 | 진행 | 비고 |
 |---|---|---|
 | 금융 구조·검증 방법 설계 | 완료 | 3·4장, [PRD](docs/PRD.md) |
-| 솔라나 프로그램 | 명령 15/15, 테스트 통과 | 6.1절 |
+| 솔라나 프로그램 | 명령 20/20(P0 15 + 토큰화 P1 5), 테스트 통과 | 6.1절 |
 | 오프체인(합성 데이터·검증기·실행기) | 완료, 인수 테스트 17건 통과 | `offchain/`, `scripts/run` |
 | 웹 | 5화면, Lighthouse 데스크톱 성능·접근성·권장 사항 기준 통과 | `app/` |
 | 측정 모의실험 | 격자 A~D 486개 조건 + 방법 비교 R8 | 5.1절 |
 | 경제성 모의실험 | 정산 3 × 기간 3 × 연료가 5, 경로 20,000개씩 | 5.2절 |
 | devnet 3회 연속 실행 | 3/3 성공, 회당 525건·1,472~1,489초(기준 1,800초), 서명 확인 525/525, 화면 값 체인 대조 333/333 | [`docs/deployments.md`](docs/deployments.md) |
+| devnet 토큰화(P1) | Token ACL MintConfig·ABL 허용 목록 생성, 목록 지갑 해제·수령 성공, 목록 밖 지갑 실패 4건 체인 기록, 점검 11/11 | [`docs/deployments.md`](docs/deployments.md) P1절 |
 | 외부 확인 | 0 / 4 | 9.4절 |
 
 ### 12.2 일정

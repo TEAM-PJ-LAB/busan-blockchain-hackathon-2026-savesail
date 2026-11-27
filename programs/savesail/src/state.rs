@@ -10,6 +10,11 @@ pub const SEED_CAMPAIGN: &[u8] = b"campaign";
 pub const SEED_KYC: &[u8] = b"kyc";
 pub const SEED_POS: &[u8] = b"pos";
 pub const SEED_PERIOD: &[u8] = b"period";
+/// Transfer Hook interface: validation account `["extra-account-metas", mint]` (P1-2).
+pub const SEED_HOOK_METAS: &[u8] = b"extra-account-metas";
+/// Token ACL (sRFC 37) program and its MintConfig seed (P1-1, PRD appendix B).
+pub const TOKEN_ACL_ID: Pubkey = pubkey!("TACLkU6CiCdkQN2MjoyDkVg2yAH9zkxiHDsiztQ52TP");
+pub const SEED_TACL_MINT_CONFIG: &[u8] = b"MINT_CONFIG";
 
 /// Vault kinds (PRD §6.2).
 pub const V_RAISE: u8 = 0;
@@ -96,9 +101,18 @@ pub struct Deal {
     pub bump: u8,
     /// Token accounts created by `init_vaults` (index = `V_*`); later commands accept only these addresses.
     pub vaults: [Pubkey; 6],
+    /// P1: Token-2022 tranche mints set by `register_tranche_mints` (default key = P0 deal without tokens).
+    pub tranche_mints: [Pubkey; 2],
 }
 
 impl Deal {
+    /// Tranche mint by index; an out-of-range tranche yields the default key, which no mint has.
+    pub fn tranche_mint(&self, tranche: u8) -> Pubkey {
+        self.tranche_mints.get(tranche as usize).copied().unwrap_or_default()
+    }
+    pub fn tokenized(&self) -> bool {
+        self.tranche_mints[0] != Pubkey::default()
+    }
     /// Vault address by kind; an out-of-range kind yields the default key, which no vault has.
     pub fn vault(&self, kind: u8) -> Pubkey {
         self.vaults.get(kind as usize).copied().unwrap_or_default()
@@ -200,6 +214,21 @@ pub struct Position {
     pub acc_snapshot: u128,
     pub claimed: u64,
     pub bump: u8,
+    /// P1: distributions settled by a transfer and not yet claimed.
+    pub pending: u64,
+    /// P1: the owner's associated token account of the tranche mint, the only account that may
+    /// hold the tranche tokens (set once; derived here so the hook compares keys instead).
+    pub token_account: Pubkey,
+}
+
+impl Position {
+    /// Moves the distribution accrued since the snapshot into `pending` (P1-2 ①).
+    pub fn settle(&mut self, acc: u128) -> std::result::Result<(), crate::logic::settle::MathError> {
+        let c = crate::logic::waterfall::claimable(self.units, acc, self.acc_snapshot)?;
+        self.pending = self.pending.checked_add(c).ok_or(crate::logic::settle::MathError)?;
+        self.acc_snapshot = acc;
+        Ok(())
+    }
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, Default, PartialEq, Eq, InitSpace)]

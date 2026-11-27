@@ -64,6 +64,16 @@ pub enum SaveSailError {
     MathOverflow,
     #[msg("Deal has not reached its last period")]
     DealNotEnded,
+    #[msg("Command does not match the deal's tranche token mode")]
+    TrancheTokenMode,
+    #[msg("Tranche mint does not meet the P1 requirements")]
+    InvalidTrancheMint,
+    #[msg("Transfer hook called outside a Token-2022 transfer")]
+    NotTransferring,
+    #[msg("Ed25519 signature instruction missing or not for this payload")]
+    InvalidSignature,
+    #[msg("Tranche tokens may only be held in the owner's associated token account")]
+    NotAssociatedTokenAccount,
 }
 
 impl From<crate::logic::settle::MathError> for SaveSailError {
