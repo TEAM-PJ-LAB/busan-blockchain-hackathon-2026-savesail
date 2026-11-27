@@ -93,7 +93,9 @@ jobs:
           echo "| $(date -u +%FT%TZ) | ${GITHUB_SHA::7} | $(solana slot) | $(sha256sum target/deploy/savesail.so | cut -c1-16) | P1 |" >> docs/deployments.md
       - name: P1 run
         working-directory: scripts
-        run: DEAL_ID=$(( 900000 + ${{ github.run_number }} )) npx tsx run/p1.ts devnet
+        run: |
+          DEAL_ID=$(( 900000 + ${{ github.run_number }} )) npx tsx run/p1.ts devnet
+          npx tsx run/check_p1_chain.ts ../app/public/p1-run.json | tee ../p1-record/web_chain_check.txt
       - name: Commit the record
         if: always()
         run: |

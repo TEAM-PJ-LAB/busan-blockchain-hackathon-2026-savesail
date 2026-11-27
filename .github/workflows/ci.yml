@@ -75,9 +75,9 @@ jobs:
       - name: executor quick run + reference check
         working-directory: scripts
         run: npx tsx run/run.ts local --quick && python3 check_run.py ../target/run-local/run.json quick
-      - name: P1 run on a local chain (Token-2022 tranches, Token ACL, transfer hook)
+      - name: P1 run on a local chain (Token-2022 tranches, Token ACL, transfer hook) + web chain comparison
         working-directory: scripts
-        run: npx tsx run/p1.ts local
+        run: npx tsx run/p1.ts local && npx tsx run/check_p1_chain.ts ../target/p1-local.json ../target/p1-local-svm.bin
       - name: executor demo scenario + reference check + web chain comparison
         working-directory: scripts
         run: |

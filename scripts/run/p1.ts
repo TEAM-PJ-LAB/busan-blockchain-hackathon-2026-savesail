@@ -294,7 +294,7 @@ async function main() {
   for (const [name, w, listed] of [["investorA", A.publicKey, true], ["investorB", B.publicKey, true], ["outsider", U.publicKey, false]] as const) {
     const s = await tokenState(w, 0);
     const p = await decode("Position", posPda(0, w));
-    record.holders.push({ name, address: w.toBase58(), listed, account: tAta(w, 0).toBase58(), frozen_at_creation: (frozenAtStart as any)[name === "investorA" ? "A" : name === "investorB" ? "B" : "outsider"],
+    record.holders.push({ name, address: w.toBase58(), listed, account: tAta(w, 0).toBase58(), position: posPda(0, w).toBase58(), frozen_at_creation: (frozenAtStart as any)[name === "investorA" ? "A" : name === "investorB" ? "B" : "outsider"],
       state: s?.isFrozen ? "frozen" : "initialized", balance: s?.amount.toString() ?? "0", units: p?.units.toString() ?? "0" });
   }
   const senior = mints[0];
@@ -316,6 +316,7 @@ async function main() {
   record.duration_s = Math.round((Date.now() - t0) / 1000);
   record.finished = new Date().toISOString();
   const out = join(ROOT, mode === "local" ? "target/p1-local.json" : "app/public/p1-run.json");
+  if (chain instanceof LocalChain) chain.save(join(ROOT, "target/p1-local-svm.bin")); // for check_p1_chain.ts
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify(record, null, 1));
   const bad = Object.entries(checks).filter(([, v]) => !v).map(([k]) => k);

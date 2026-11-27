@@ -1,6 +1,9 @@
 // PRD 7.5 acceptance 1: every number the pages show is compared with the chain accounts it came from.
-import { decodeCampaignStatus, decodeDeal, decodePeriod, decodePosition, decodeTokenAmount } from "./decode";
-import type { Run } from "./run";
+import {
+  base58, decodeCampaignStatus, decodeDeal, decodeMetadataField, decodeMintSupply, decodePeriod, decodePosition, decodeTokenAmount,
+  decodeTokenState, t22Extension, T22_DEFAULT_ACCOUNT_STATE, T22_TOKEN_METADATA,
+} from "./decode";
+import type { P1Run, Run } from "./run";
 
 /** The part of run.json the comparison needs (keeps the transaction list out of the client bundle). */
 export type ChainView = Pick<Run, "cluster" | "accounts" | "deal" | "schedule" | "periods" | "balances" | "token_accounts" | "positions">;
@@ -76,6 +79,54 @@ export async function compareChain(run: ChainView, fetch: Fetch): Promise<Result
     const q = decodePosition(b);
     put(`${k}.units`, p.units, q.units);
     put(`${k}.claimed`, p.claimed, q.claimed);
+  });
+  const keys = Object.keys(want);
+  return { total: keys.length, bad: keys.filter((k) => want[k] !== got[k]) };
+}
+
+/** P1 values shown on the invest page: mints, Token ACL configs, allow list, holder accounts and positions. */
+export type P1View = Pick<P1Run, "cluster" | "gate" | "mints" | "allow_list" | "holders">;
+export const p1View = (p: P1Run): P1View => ({ cluster: p.cluster, gate: p.gate, mints: p.mints, allow_list: p.allow_list, holders: p.holders });
+
+export async function compareP1(p: P1View, fetch: Fetch): Promise<Result> {
+  const addrs = [...p.mints.flatMap((m) => [m.address, m.mint_config.address]), p.allow_list.address,
+    ...p.holders.flatMap((h) => [h.account, h.position])];
+  const raw = await fetch(addrs);
+  const want: Record<string, string> = {};
+  const got: Record<string, string> = {};
+  const put = (k: string, w: unknown, g: unknown) => { want[k] = String(w); got[k] = String(g); };
+  p.mints.forEach((m, i) => {
+    const b = raw[2 * i], c = raw[2 * i + 1], k = `p1.${m.tranche}`;
+    if (!b) want[`${k}.mint`] = "account";
+    else {
+      put(`${k}.supply`, m.supply, decodeMintSupply(b));
+      const das = t22Extension(b, T22_DEFAULT_ACCOUNT_STATE);
+      put(`${k}.default_state`, m.default_account_state, das ? ["Uninitialized", "Initialized", "Frozen"][das[0]] : "none");
+      const md = t22Extension(b, T22_TOKEN_METADATA);
+      put(`${k}.token_acl`, m.token_acl, md ? decodeMetadataField(md, "token_acl") : "none");
+    }
+    if (!c) want[`${k}.mint_config`] = "account";
+    else {
+      put(`${k}.gate`, m.mint_config.gating_program, base58(c.subarray(68, 100)));
+      put(`${k}.thaw`, m.mint_config.permissionless_thaw, c[2] === 1);
+    }
+  });
+  const l = raw[2 * p.mints.length];
+  if (!l) want["p1.allow_list"] = "account";
+  else {
+    put("p1.allow_list.mode", p.allow_list.mode, l[65] === 0 ? "allow" : l[65] === 2 ? "block" : "unused");
+    put("p1.allow_list.wallets", p.allow_list.wallets, new DataView(l.buffer, l.byteOffset + 66, 8).getBigUint64(0, true));
+  }
+  const hb = 2 * p.mints.length + 1;
+  p.holders.forEach((h, i) => {
+    const a = raw[hb + 2 * i], q = raw[hb + 2 * i + 1], k = `p1.${h.name}`;
+    if (!a) want[`${k}.account`] = "account";
+    else {
+      put(`${k}.balance`, h.balance, decodeTokenAmount(a));
+      put(`${k}.state`, h.state, decodeTokenState(a) === 2 ? "frozen" : "initialized");
+    }
+    if (!q) want[`${k}.position`] = "account";
+    else put(`${k}.units`, h.units, decodePosition(q).units);
   });
   const keys = Object.keys(want);
   return { total: keys.length, bad: keys.filter((k) => want[k] !== got[k]) };

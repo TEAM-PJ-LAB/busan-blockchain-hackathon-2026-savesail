@@ -55,3 +55,37 @@ export function decodePosition(b: Uint8Array) {
   r.skip(64); const tranche = r.u8(); const units = r.u64(); r.u128(); const claimed = r.u64();
   return { tranche, units, claimed };
 }
+
+// Token-2022 (P1): base mint 82 bytes / account 165 bytes, account-type byte at 165, then TLV (type u16, length u16).
+export function t22Extension(b: Uint8Array, type: number): Uint8Array | null {
+  for (let o = 166; o + 4 <= b.length; ) {
+    const t = b[o] | (b[o + 1] << 8), l = b[o + 2] | (b[o + 3] << 8);
+    if (t === type) return b.subarray(o + 4, o + 4 + l);
+    if (t === 0) return null;
+    o += 4 + l;
+  }
+  return null;
+}
+export const T22_DEFAULT_ACCOUNT_STATE = 6, T22_TOKEN_METADATA = 19;
+export const decodeMintSupply = (b: Uint8Array) => new DataView(b.buffer, b.byteOffset + 36, 8).getBigUint64(0, true);
+/** token account state byte: 1 initialized, 2 frozen */
+export const decodeTokenState = (b: Uint8Array) => b[108];
+/** TokenMetadata additional field `key` (borsh: authority 32, mint 32, name, symbol, uri, vec<(key, value)>) */
+export function decodeMetadataField(v: Uint8Array, key: string): string | null {
+  const dv = new DataView(v.buffer, v.byteOffset, v.length), td = new TextDecoder();
+  let o = 64;
+  const str = () => { const n = dv.getUint32(o, true); o += 4; const s = td.decode(v.subarray(o, o + n)); o += n; return s; };
+  str(); str(); str();
+  const n = dv.getUint32(o, true); o += 4;
+  for (let i = 0; i < n; i++) { const k = str(), val = str(); if (k === key) return val; }
+  return null;
+}
+const B58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+export function base58(bytes: Uint8Array): string {
+  let x = 0n;
+  for (const c of bytes) x = (x << 8n) | BigInt(c);
+  let s = "";
+  while (x > 0n) { s = B58[Number(x % 58n)] + s; x /= 58n; }
+  for (const c of bytes) { if (c !== 0) break; s = "1" + s; }
+  return s;
+}
