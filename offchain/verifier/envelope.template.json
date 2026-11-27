@@ -9,6 +9,7 @@
   "ci": "pcf",
   "pcf_k": 5,
   "B": 1000,
+  "stud": true,
   "cov_floor": 0.005,
   "cov_z": 4.0,
   "speed_floor": 0.0,

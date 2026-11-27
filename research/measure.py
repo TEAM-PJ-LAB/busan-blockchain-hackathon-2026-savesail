@@ -14,6 +14,7 @@ reproduce E1-E7.
 """
 import numpy as np
 from scipy.signal import lfilter
+from scipy.stats import norm
 
 VERSION = 2
 # ship: (mean speed kn, laden no-sail fuel at mean speed kg/h, engine load at mean speed)
@@ -30,7 +31,7 @@ BASE = dict(
     ship="gas", clim="n_atlantic", s=0.06, hetero=True, rho_e=0.9, sd_e=0.03, sd_m=0.02,
     sd_q=0.005, sd_eta=0.005, sfoc_err=0.05, bdn_sd=0.001,
     foul=0.03, drydock=False, model="spline", camp_h=3600, train_h=3600, L=3, G=5, trans=0.25, miss=0.0,
-    ci="pcf", pcf_k=5, B=1000, mbb=4, ba=True, speed_src="ind", wx_src="ind", draft_sd=0.005, fuel_src="shaft",
+    ci="pcf", pcf_k=5, B=1000, stud=True, mbb=4, ba=True, speed_src="ind", wx_src="ind", draft_sd=0.005, fuel_src="shaft",
     refusal="neighbor",
     # detection thresholds (R9): floor on |D| and z = |D|/SE per test
     det=True, cov_floor=0.005, cov_z=4.0, speed_floor=0.0, speed_z=4.0, q_floor=0.002, q_z=3.0,
@@ -171,6 +172,37 @@ def neighbor_rows(S_all, paired, unpaired, m_side=3):
     return np.array(out)
 
 
+MIX_XI = norm.ppf((np.arange(7) + 0.5) / 7)  # standard normal quantiles for the scale-uncertainty mixture (C25)
+
+
+def off_pair_q(x):
+    """Short-lag noise level of a dataset from its OFF blocks (C25): q = mean over consecutive groups of
+    (x_g - x_{g+1})^2 / 2, x = log(OFF fuel / OFF prediction) of each group's OFF block, NaN where a group has none.
+    OFF blocks carry no sail effect, so the campaign's value is free of effect variation and of anything done in ON
+    blocks. Returns (q, cv): cv is q's coefficient of variation (Newey-West over the pair terms), the sampling error
+    of the campaign's level that interval_from_eps mixes over. None without two consecutive OFF blocks."""
+    d = x[1:] - x[:-1]
+    t = d[np.isfinite(d)] ** 2 / 2
+    n = t.size
+    if n < 3:
+        return None
+    u = t - t.mean()
+    lag = int(np.ceil(n ** (1 / 3)))
+    v = (u @ u) / n + 2 * sum((1 - j / (lag + 1)) * (u[j:] @ u[:-j]) / n for j in range(1, lag + 1))
+    return float(t.mean()), float(np.sqrt(max(v, 0.0) / n) / t.mean())
+
+
+def window_q(Ag, Pg):
+    """Expected off_pair_q of a training window over uniform OFF positions: for each consecutive pair of groups the
+    mean of (x[g, b1] - x[g+1, b2])^2 / 2 over all block pairs, averaged over the pairs (C25)."""
+    with np.errstate(divide="ignore", invalid="ignore"):
+        x = np.where((Ag > 0) & (Pg > 0), np.log(Ag / Pg), np.nan)
+    d = (x[:-1, :, None] - x[1:, None, :]) ** 2 / 2
+    v = np.nanmean(d.reshape(len(d), -1), axis=1) if len(d) else np.zeros(0)
+    v = v[np.isfinite(v)]
+    return float(v.mean()) if v.size else None
+
+
 def placebo_eps(rng, A, P, wt, L, G, B, n_target, windows=5):
     """Counterfactual calibration error under the same random design on pre-installation data.
 
@@ -179,7 +211,8 @@ def placebo_eps(rng, A, P, wt, L, G, B, n_target, windows=5):
     same as in the campaign and no 1/sqrt(n) extrapolation is needed. A campaign longer than the training
     data uses the whole training span and extrapolates with the variance-time exponent measured on it
     (alpha = log2(var of half span / var of full span), clipped to [0.5, 1]; 1 means independent groups).
-    Returns [(eps, groups, alpha)]; interval_from_eps scales each by (groups / campaign groups) ** (alpha / 2)."""
+    Each window also carries its noise level (window_q, C25), so interval_from_eps can rescale it to the campaign's.
+    Returns [(eps, groups, alpha, q)]; interval_from_eps scales each by (groups / campaign groups) ** (alpha / 2)."""
     ngt = (len(A) // L) // G
     n = ngt * G * L
     cell = np.arange(n) // L  # (group, block) cell index
@@ -187,18 +220,25 @@ def placebo_eps(rng, A, P, wt, L, G, B, n_target, windows=5):
     Pg = np.bincount(cell, P[:n] * wt[:n], ngt * G).reshape(ngt, G)
     if n_target <= ngt:
         starts = np.unique(np.linspace(0, ngt - n_target, min(windows, ngt - n_target + 1)).round().astype(int))
-        return [(_eps_window(rng, Ag[s0:s0 + n_target], Pg[s0:s0 + n_target], G, B), n_target, 1.0) for s0 in starts]
+        return [(_eps_window(rng, Ag[s0:s0 + n_target], Pg[s0:s0 + n_target], G, B), n_target, 1.0,
+                 window_q(Ag[s0:s0 + n_target], Pg[s0:s0 + n_target])) for s0 in starts]
     full = _eps_window(rng, Ag, Pg, G, B)
     h = ngt // 2
     half = np.var(np.concatenate([_eps_window(rng, Ag[:h], Pg[:h], G, B), _eps_window(rng, Ag[h:2 * h], Pg[h:2 * h], G, B)]))
     alpha = float(np.clip(np.log2(half / max(np.var(full), 1e-30)), 0.5, 1.0))
-    return [(full, ngt, alpha)]
+    return [(full, ngt, alpha, window_q(Ag, Pg))]
 
 
-def interval_from_eps(S, eps_windows, n_groups=None):
-    """S: per-group [ON fuel, ON pred, OFF fuel, OFF pred]; n_groups: groups that carry an OFF block (default len(S))."""
+def interval_from_eps(S, eps_windows, n_groups=None, q=None):
+    """S: per-group [ON fuel, ON pred, OFF fuel, OFF pred]; n_groups: groups that carry an OFF block (default len(S));
+    q: the campaign's (level, cv) from off_pair_q over its groups' OFF blocks (C25). A single training window's
+    realised noise level differs from the campaign's by 10-30% from run to run, which made the interval too narrow
+    on average: each window is rescaled by sqrt(level / its own level), and the errors are mixed over the level's
+    sampling error (log-scale spread cv / 2 at the MIX_XI quantiles)."""
     n = n_groups or len(S)
-    eps = np.concatenate([e * (m / n) ** (al / 2) for e, m, al in eps_windows])
+    eps = np.concatenate([e * (m / n) ** (al / 2) * (np.sqrt(q[0] / qw) if q and qw else 1.0) for e, m, al, qw in eps_windows])
+    if q and q[1] > 0:
+        eps = (eps[:, None] * np.exp(0.5 * q[1] * MIX_XI)[None, :]).ravel()
     Aon, Pon, Aoff, Poff = S.sum(0)
     k = Aoff / Poff
     lo, hi = np.percentile(eps, [2.5, 97.5])
@@ -416,7 +456,11 @@ def evaluate(st, sc=None):
         S = np.vstack([S, neighbor_rows(R, ok_g, withheld & (R[:, 1] > 0))])
     r_hat = float(ratio(S.sum(0)))
     if st["eps"] is not None:
-        lb, ub = interval_from_eps(S, st["eps"], int(ok_g.sum()))
+        q_c = None
+        if c["stud"]:  # campaign noise level from its paired groups' OFF blocks (C25)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                q_c = off_pair_q(np.where(ok_g, np.log(S_all[:, 2] / S_all[:, 3]), np.nan))
+        lb, ub = interval_from_eps(S, st["eps"], int(ok_g.sum()), q_c)
     else:
         lb, ub = np.percentile(ratio(boot_weights(rng, len(S), c["B"], c["ci"], c["mbb"]) @ S), [2.5, 97.5])
 

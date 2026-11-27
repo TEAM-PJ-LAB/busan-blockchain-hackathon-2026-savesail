@@ -240,6 +240,11 @@ class Verifier:
             allv.append(r)
         S = np.array(S).reshape(-1, 4)
         paired_g = [r["g"] for r, row in zip(recs, S) if row[1] > 0 and row[3] > 0]
+        # each paired group's OFF-block log ratio, for the campaign noise level (C25)
+        x_off = np.full((p + 1) * gpp, np.nan)
+        for r, row in zip(recs, S):
+            if row[1] > 0 and row[3] > 0:
+                x_off[r["g"]] = np.log(row[2] / row[3])
         S = S[(S[:, 1] > 0) & (S[:, 3] > 0)]
         n_hours = float(sum(r["hour"].size for r in recs))
 
@@ -343,7 +348,8 @@ class Verifier:
         rng = np.random.default_rng(rng_seed)
         A, Pt, wt = self.placebo
         eps = m.placebo_eps(rng, A, Pt, wt, L, G, c["B"], max(len(S), 1))
-        lb, ub = m.interval_from_eps(S_est, eps, len(S)) if len(S) else (0.0, 0.0)
+        q_c = m.off_pair_q(x_off) if c["stud"] else None
+        lb, ub = m.interval_from_eps(S_est, eps, len(S), q_c) if len(S) else (0.0, 0.0)
         if adverse and len(S):
             pv = float(S_est[:, 1].sum())
             pa, ra = sum(a for a, _ in adverse), sum(a * x for a, x in adverse)
@@ -368,7 +374,8 @@ class Verifier:
             groups=dict(included=len(S), neighbour_calibrated=int(nb.sum()), imputed=len(adverse), excluded=excluded,
                         hours=n_hours),
             sums=S.sum(0).tolist() if len(S) else [0, 0, 0, 0],
-            interval=dict(method="cross-fitted placebo", folds=c["pcf_k"], draws=c["B"], seed=rng_seed),
+            interval=dict(method="cross-fitted placebo", folds=c["pcf_k"], draws=c["B"], seed=rng_seed,
+                          campaign_q=list(q_c) if q_c else None, window_q=[w[3] for w in eps]),
             lb=lb, est=r_hat, ub=ub, compliance_bps=payload["compliance_bps"], tests=tests, meter_signatures_ok=meter_ok,
             missing_rate=miss_rate, flags=flags, payload=payload)
         rep_bytes = json.dumps(report, sort_keys=True, separators=(",", ":"), default=float).encode()

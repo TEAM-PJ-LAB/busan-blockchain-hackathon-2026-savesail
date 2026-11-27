@@ -144,6 +144,10 @@ def test_estimate_matches_measure_functions(base):
         S.append([(f * w * ~off).sum(), (P * w * ~off).sum(), (f * w * off).sum(), (P * w * off).sum()])
     est = float(m.ratio(np.array(S).sum(0)))
     assert abs(est - r["est"]) < 1e-12
+    # campaign noise level for the interval (C25): consecutive groups' OFF-block log ratios
+    S = np.array(S)
+    q, cv = m.off_pair_q(np.log(S[:, 2] / S[:, 3]))
+    assert abs(q / r["interval"]["campaign_q"][0] - 1) < 1e-12 and abs(cv / r["interval"]["campaign_q"][1] - 1) < 1e-12
 
 
 def test_deterministic_payload(base):

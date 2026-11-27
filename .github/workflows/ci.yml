@@ -1,7 +1,7 @@
 name: ci
 on:
   push:
-    branches-ignore: [research-results, devnet-runs]
+    branches-ignore: [research-results, "research-results-*", devnet-runs]
   pull_request:
 permissions:
   contents: read

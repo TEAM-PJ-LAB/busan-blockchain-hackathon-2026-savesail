@@ -1,7 +1,7 @@
 {
  "cluster": "local",
  "program": "9yjBhvjDC31vYuhc84ajpB9aMtfoYHvoU8GtAoicQaV5",
- "started": "2026-11-26T22:44:36.285Z",
+ "started": "2026-11-27T00:39:46.926Z",
  "steps": [
   {
    "step": "invest_A_junior",
@@ -24,13 +24,13 @@
     "kg_miss_inv": 0,
     "override_groups": 0,
     "price_micro_per_t": 750000000,
-    "lb_bps": 871,
+    "lb_bps": 872,
     "est_bps": 931,
-    "ub_bps": 988,
+    "ub_bps": 989,
     "compliance_bps": 10000,
     "flags": 4,
-    "envelope_hash": "b1e7b1a188304a17a6844aee4e1385dbc506dde23a553f9af07129347b6ab27b",
-    "report_hash": "4180e39379baffa3a11dc8b0aab1256dbe0a38c2ad312201ff36cb02be2354e7"
+    "envelope_hash": "10a162ad835f72b7d40640661b78b06189c1278f396a9943a3aa5b69e42a997b",
+    "report_hash": "844e243cc7b193d6e67f80ebfab9617581044133cd3f97dd41a717c17f88c46b"
    },
    "outcome": 3,
    "due": "0",
@@ -42,9 +42,9 @@
     "0",
     "0"
    ],
-   "lb": 0.08712060398218768,
+   "lb": 0.08721191808801165,
    "est": 0.09305751176437804,
-   "ub": 0.0987858034080632,
+   "ub": 0.09881099194798282,
    "flags": 4,
    "excluded": 0
   },
@@ -59,27 +59,27 @@
     "kg_miss_inv": 0,
     "override_groups": 0,
     "price_micro_per_t": 750000000,
-    "lb_bps": 737,
+    "lb_bps": 742,
     "est_bps": 783,
-    "ub_bps": 828,
+    "ub_bps": 823,
     "compliance_bps": 10000,
     "flags": 0,
-    "envelope_hash": "b1e7b1a188304a17a6844aee4e1385dbc506dde23a553f9af07129347b6ab27b",
-    "report_hash": "7c5d982adede481b50feb4912a217c68545fe8548fd092deb06fbc2162eb1306"
+    "envelope_hash": "10a162ad835f72b7d40640661b78b06189c1278f396a9943a3aa5b69e42a997b",
+    "report_hash": "d4918664677b318e3376d3aeb100c9ad9c5a9944b57b64062f219d92691a3b66"
    },
    "outcome": 0,
-   "due": "92513861185",
-   "entitlement": "92513861185",
+   "due": "93191802572",
+   "entitlement": "93191802572",
    "dist": [
     "40000000000",
     "50195274200",
     "0",
-    "2318586985",
+    "2996528372",
     "0"
    ],
-   "lb": 0.07374727812078519,
+   "lb": 0.07423121909046138,
    "est": 0.07834816448989734,
-   "ub": 0.08270877802033094,
+   "ub": 0.08229489442381022,
    "flags": 0,
    "excluded": 0
   },
@@ -94,27 +94,27 @@
     "kg_miss_inv": 0,
     "override_groups": 0,
     "price_micro_per_t": 750000000,
-    "lb_bps": 1034,
+    "lb_bps": 1037,
     "est_bps": 1070,
-    "ub_bps": 1106,
+    "ub_bps": 1103,
     "compliance_bps": 9000,
     "flags": 0,
-    "envelope_hash": "b1e7b1a188304a17a6844aee4e1385dbc506dde23a553f9af07129347b6ab27b",
-    "report_hash": "716aef9a495e448fb0afae17a3198ad828994b1d7e0d69d24aca8c01e6c9e948"
+    "envelope_hash": "10a162ad835f72b7d40640661b78b06189c1278f396a9943a3aa5b69e42a997b",
+    "report_hash": "5bb73bdf2de1ddd981f71809d5d114a7fe06fddf0f67bb8253d1068be7dbf14d"
    },
    "outcome": 1,
-   "due": "84299710936",
-   "entitlement": "176813572121",
+   "due": "84042701764",
+   "entitlement": "177234504336",
    "dist": [
     "20000000000",
     "25097637100",
     "0",
-    "39202073836",
+    "38945064664",
     "0"
    ],
-   "lb": 0.10349103138573122,
+   "lb": 0.10378995540669163,
    "est": 0.10703271769911357,
-   "ub": 0.11051417687828785,
+   "ub": 0.11026583233114255,
    "flags": 0,
    "excluded": 6
   },
@@ -129,17 +129,17 @@
     "kg_miss_inv": 15838,
     "override_groups": 0,
     "price_micro_per_t": 750000000,
-    "lb_bps": 921,
+    "lb_bps": 923,
     "est_bps": 953,
-    "ub_bps": 983,
+    "ub_bps": 981,
     "compliance_bps": 10000,
     "flags": 0,
-    "envelope_hash": "b1e7b1a188304a17a6844aee4e1385dbc506dde23a553f9af07129347b6ab27b",
-    "report_hash": "08fdff178e42652118668d7412bf8864b66c5cc59becfd025d3ebc2c3907b0ff"
+    "envelope_hash": "10a162ad835f72b7d40640661b78b06189c1278f396a9943a3aa5b69e42a997b",
+    "report_hash": "8444e29864b6cf6f30481124d11cd5a8841cec1e1f753740b982b56f140e7576"
    },
    "outcome": 2,
    "due": "0",
-   "entitlement": "176813572121",
+   "entitlement": "177234504336",
    "dist": [
     "0",
     "25097637100",
@@ -147,14 +147,14 @@
     "0",
     "0"
    ],
-   "lb": 0.09216922378355491,
+   "lb": 0.0923601398047454,
    "est": 0.09531258416028583,
-   "ub": 0.09824908712737676,
+   "ub": 0.09808851415839524,
    "flags": 0,
    "excluded": 7
   }
  ],
- "finished": "2026-11-26T22:44:46.418Z",
+ "finished": "2026-11-27T00:39:57.905Z",
  "scenario": {
   "withhold": {
    "197": 1
@@ -169,7 +169,7 @@
   ],
   "groups_per_period": 60
  },
- "seconds": 10,
+ "seconds": 11,
  "accounts": {
   "deal": "FTv2bgywKFZ2UrqxPUJu2QFCLgbVUgD6DGPBABLLE3Ab",
   "campaign": "6LppzyRBrJyZBKjb5LYbLycqey7rFX9SRkEad9miY4vt",
@@ -205,14 +205,14 @@
  "deal": {
   "phi_bps": 7850,
   "ref_rate_bps": 600,
-  "entitlement": "176813572121",
-  "paid_cum": "176813572121",
-  "last_lb_bps": 737,
+  "entitlement": "177234504336",
+  "paid_cum": "177234504336",
+  "last_lb_bps": 742,
   "acc": [
    "127685655632",
    "0"
   ],
-  "reserve": "16723023721",
+  "reserve": "17143955936",
   "opex_arrears": "20000000000",
   "senior_arrears": "0",
   "install_cost": "4000000000000",
@@ -283,14 +283,14 @@
  "balances": {
   "senior_vault": "2",
   "junior_vault": "0",
-  "reserve_vault": "16723023721",
+  "reserve_vault": "17143955936",
   "collection_vault": "0",
   "bond_vault": "0",
   "raise_vault": "0",
   "investorA": "138999057898",
   "investorB": "138999057898",
   "investorC": "222392432602",
-  "payer": "2823186427879",
+  "payer": "2822765495664",
   "opex": "60000000000",
   "manufacturer": "4000000000000"
  },
@@ -1325,7 +1325,7 @@
   },
   {
    "step": "initialize_deal",
-   "sig": "4HmpHe6mfZpQRvw8Kh3yYS8KCLVvtVVgWhpZrbtkxHZnujmzUnMdRqiTWfcimyevnDBU2ncN98ZFA1kqiYZPow3p",
+   "sig": "4sf5HSoU3vUibHeW2jiMBBBsAZNeda58RHiozS6F7xvTHQ7PWqV4jqvT9C4nypoC5bfxQ1bLEuYUyhD1EdTE3ukN",
    "slot": 459648000,
    "cu": 41324
   },
@@ -3203,13 +3203,13 @@
   },
   {
    "step": "approve_0_verifier0",
-   "sig": "55nweW5s74SEUipfe4o6kGJZ59W4LP4qZic4tgKgdpu7AYChQ7UqE7fCN2k4ikPJ84cDD3MtAWtpZSMCHg1K9dJ6",
+   "sig": "3yRVsd3DkNRxvybqbV9WcMN3hjVzwH2z6S7hr4Cjdek9y6VG3xit6StcPUXWaP2w4kQW8p5cdhRibn2bDG1PphTL",
    "slot": 459648000,
    "cu": 32864
   },
   {
    "step": "approve_0_verifier1",
-   "sig": "2hSRfmybzJoA1GZ1PuPjUGp5fmqnYBV26Kbbs2Fubvri2KCNQVr4LdoBV4GGZ3yr3KdYwT4xrDxWwXjaEJybeoNf",
+   "sig": "3fruryifXtCM6XewHZ3n57xKNfd6tAstrg3FdQvzYwYKuJGsp5LbJheXwj946KZoESm7LoD5J9sUDFSvvgbwjiSf",
    "slot": 459648000,
    "cu": 33930
   },
@@ -5027,13 +5027,13 @@
   },
   {
    "step": "approve_1_verifier0",
-   "sig": "2qvQwu2J3FKjbbRgfFmrDxMHhSbj65Zh1pfqsRiHv8DwFLQgQJPnNSqQv97imLsbtsf9VTfABHSqxmvgVuxwxLY1",
+   "sig": "r8nwo5ZawPQ3MLjXzuDuaFZBKAgh7vHwJiqUZzbxUtS5AFkW9t9ZHzc7Vnpnm5jNc6QqLZu3apxYaFgDAWhrgEF",
    "slot": 459648000,
    "cu": 31364
   },
   {
    "step": "approve_1_verifier1",
-   "sig": "4zqgBRPyED5sKZiwTcVv5gX5ryfip9L2EZNkpk1h1EV6Cv4RGqBaoxXfs5fftFoGJ6puiVZCzYnsHbBvQi3reeTS",
+   "sig": "5YV4dEzGWFWLGeFx7j1iWqG6RpEdwEm7THd6mxHe1xi5XjBWBkzsiJm7sR8roa9NV14e1eMHV2HTGy2Y9HbvE8wt",
    "slot": 459648000,
    "cu": 32557
   },
@@ -6851,13 +6851,13 @@
   },
   {
    "step": "approve_2_verifier0",
-   "sig": "3kJC69X5tJdLM3udT5ifDAjqkKHCHynoLeQK2vRksLyJNJdphcmVQp2R2uZkRhNXK7ernZDiGkcSo4k1GK3Mniy6",
+   "sig": "3sDLAsQ7EWPGox8friRL16c23qTLv42gfsE8yyZ9HmoBkengpjbqZ7t49BfzYWF4WYuZ5qecGpX73BPejZZe9WVG",
    "slot": 459648000,
    "cu": 31445
   },
   {
    "step": "approve_2_verifier1",
-   "sig": "4YxX9D26LtCvJj3fE5j5rYKtyftDtPaNzB7htnrEE6M8KmU2vnJ6JvuRRMTuNLuGNqSb86Lh9uFb5F7JqLJpuEts",
+   "sig": "4SuDZbwXWMhpnhHzdq3hKUn81WnUWp2ybWpPRzFwpr7LK7PYt7TSDccg2mr99vFRf6domG7B7hURjHDsQPD5nfc2",
    "slot": 459648000,
    "cu": 32820
   },
@@ -8675,13 +8675,13 @@
   },
   {
    "step": "approve_3_verifier0",
-   "sig": "3YP6PGH6MXUWWAdXbqyxuGefnS27KT11TZK5ZDkMMv3FJprBaNe2xQBsCAdRetR5NDe84YoVkYEjVavXkhqZCviE",
+   "sig": "5GbyZQDTEVKzZUQDhkbUXWXwyM1g5MYgMhdeG6zhRrXcuWw8MZorifcSkyVYt9xNJj8tz1WLnjPNrzAXVzBryWad",
    "slot": 459648026,
    "cu": 34445
   },
   {
    "step": "approve_3_verifier1",
-   "sig": "5D9zd4Sbj9ouCDxkDQLR38QhXTLnNZmXyVHP3Qq9NLYNfCFbXWp422sUZ9UWskqWHWZxMmgCJW4UKymD5rowybr7",
+   "sig": "5fqprUWtiSf8djC2T1eYPu11JNk3T5STa1XPJC146TaECzYNRpbCHGRdJEC9QMf9jkXgouwV4oxvc8eVxz1w1Jix",
    "slot": 459648026,
    "cu": 35562
   },

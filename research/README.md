@@ -13,7 +13,7 @@ python3 research/run_all.py                     # 전체(격자 R8·A·B·C·D �
 python3 research/run_all.py --quick 20 --twice  # 축소판을 두 번 돌려 결과 파일 sha256이 같은지 확인
 ```
 
-모든 난수는 (격자, 조건 번호, 반복 번호)로 시드를 잡으므로 같은 명령이면 같은 파일이 나온다. `run_all.py`는 단계별 실행 시간과 결과 파일의 sha256을 `results/run_all.json`에 남긴다. 전체 실행은 GitHub Actions `research` 워크플로가 20개 작업으로 나눠 돌리고(`.github/workflows/research.yml`), 결과를 `research-results` 브랜치에 올린다.
+모든 난수는 (격자, 조건 번호, 반복 번호)로 시드를 잡으므로 같은 명령이면 같은 파일이 나온다. `run_all.py`는 단계별 실행 시간과 결과 파일의 sha256을 `results/run_all.json`에 남긴다. 전체 실행은 GitHub Actions `research` 워크플로가 20개 작업으로 나눠 돌리고(`.github/workflows/research.yml`), 결과는 실행마다 `research-results-<실행 번호>` 브랜치(결과 파일만 담은 커밋)에 올린다.
 
 ## 파일
 
