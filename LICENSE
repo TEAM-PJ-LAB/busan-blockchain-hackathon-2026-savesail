@@ -1,0 +1,14 @@
+Copyright (c) 2026 Team PJ. All rights reserved.
+
+이 저장소는 부산 블록체인 해커톤 2026 심사를 위해 공개한다. 오픈소스 라이선스를 주지 않는다.
+GitHub에서 코드를 열람할 수는 있지만, Team PJ의 사전 서면 허락 없이 이 저장소의 전부 또는 일부를
+복제·수정·배포·재라이선스하거나 다른 용도로 사용할 수 없다.
+
+This repository is published for review in the Busan Blockchain Hackathon 2026. No open-source license
+is granted. You may view the source on GitHub, but you may not copy, modify, distribute, sublicense or
+otherwise use any part of it without prior written permission from Team PJ.
+
+Third-party components keep their own licenses:
+- programs/savesail/tests/fixtures/token_acl.so, token_acl_gate.so: MIT, Copyright (c) 2025 Solana
+  Foundation (LICENSE-token-acl, LICENSE-token-acl-gate in that folder)
+- dependencies listed in Cargo.lock, scripts/package-lock.json and app/package-lock.json: their own licenses
