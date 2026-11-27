@@ -1,7 +1,8 @@
 # P1 test fixtures
 
 `tests/p1.rs` loads these two programs into LiteSVM at their published addresses (PRD appendix B).
-Both are MIT-licensed (Copyright (c) 2025 Solana Foundation) and built from source without changes.
+Both are MIT-licensed (Copyright (c) 2025 Solana Foundation) and built from source without changes; their license texts are
+`LICENSE-token-acl` and `LICENSE-token-acl-gate` in this folder.
 
 | File | Program | Address | Source commit | sha256 |
 |---|---|---|---|---|
