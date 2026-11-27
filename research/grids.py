@@ -80,9 +80,16 @@ def grid_R8():
             for k, mv in METHODS.items() for cv in conds for s in (0.0, 0.05)]
 
 
-GRIDS = {"A": grid_A, "B": grid_B, "C": grid_C, "D": grid_D, "R8": grid_R8}
-REPS = {"A": 10_000, "B": 2_000, "C": 2_000, "D": 2_000, "R8": 2_000}
-ATTACK_REPS = {"A": 2_000, "B": 2_000, "C": 500, "D": 2_000, "R8": 0}
+def newbuild(grid):
+    """Grids A-D in newbuild mode (no pre-installation data, PRD C28). Same conditions and seeds as the base grid,
+    so every run is paired with the adopted method on the same campaign."""
+    return lambda: [dict(c, newbuild=True) for c in grid()]
+
+
+GRIDS = {"A": grid_A, "B": grid_B, "C": grid_C, "D": grid_D, "R8": grid_R8,
+         "NA": newbuild(grid_A), "NB": newbuild(grid_B), "NC": newbuild(grid_C), "ND": newbuild(grid_D)}
+REPS = {"A": 10_000, "B": 2_000, "C": 2_000, "D": 2_000, "R8": 2_000, "NA": 10_000, "NB": 2_000, "NC": 2_000, "ND": 2_000}
+ATTACK_REPS = {"A": 2_000, "B": 2_000, "C": 500, "D": 2_000, "R8": 0, "NA": 2_000, "NB": 2_000, "NC": 500, "ND": 2_000}
 
 
 def attack_panel():

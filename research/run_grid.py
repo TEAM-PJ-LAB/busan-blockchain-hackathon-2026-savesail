@@ -23,7 +23,8 @@ PANEL = attack_panel()
 def chunk_job(args):
     grid, ci, cond, rep0, n, attack_n = args
     c = dict(m.BASE, **{k: v for k, v in cond.items() if k != "method"})
-    seed_base = (ord(grid[0]) - 64 + 10 * (len(grid) - 1)) * 100_000_000 + ci * 100_000
+    base = grid[1:] if grid in ("NA", "NB", "NC", "ND") else grid  # newbuild grids reuse the base grid's seeds
+    seed_base = (ord(base[0]) - 64 + 10 * (len(base) - 1)) * 100_000_000 + ci * 100_000
     hon = dict(err=[], lb_pos=[], cover=[], pay=[], det=[], ba=[], flags={})
     att = {k: dict(n=0, det=0, se=0.0, se2=0.0, su=0.0) for k in PANEL} if attack_n else {}
     for j in range(rep0, rep0 + n):

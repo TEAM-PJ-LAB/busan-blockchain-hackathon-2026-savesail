@@ -15,6 +15,7 @@ reproduce E1-E7.
 import numpy as np
 from scipy.signal import lfilter
 from scipy.stats import norm
+from scipy.stats import t as student_t
 
 VERSION = 2
 # ship: (mean speed kn, laden no-sail fuel at mean speed kg/h, engine load at mean speed)
@@ -261,6 +262,72 @@ def balance(xg_on, xg_off, scale, floor, z):
     return float(D), float(SE), bool(abs(D) >= max(floor, 1e-4) and abs(D) > z * SE)
 
 
+def cross_fit_off(F, V, D, Uh, Hs, train, fold_h, model, K):
+    """Newbuild mode (no pre-installation data): log-fuel baseline fitted on the campaign's own OFF hours, cross-fitted
+    by contiguous folds of groups. A group's prediction uses only OFF blocks of the other folds, so it does not depend
+    on that group's own random OFF position."""
+    y = np.log(np.where(F > 0, F, np.nan))
+    P = np.empty(len(F))
+    for k in range(K):
+        kn, beta = fit(model, V, D, Uh, Hs, y, np.flatnonzero(train & (fold_h != k)))
+        ev = fold_h == k
+        P[ev] = predict(model, kn, beta, V[ev], D[ev], Uh[ev], Hs[ev])
+    return P
+
+
+def off_noise_share(A, Pc, off_cell, g_idx, G):
+    """Share of the ON blocks' within-group spread that is noise (newbuild mode, C28).
+
+    ON blocks carry the sail effect, and a wind-linked effect also varies inside a 15-hour group, which the design
+    variance counts as noise. OFF blocks carry no effect: the OFF blocks of consecutive groups sit l = G - j + j'
+    blocks apart, so pairs with l = 1..G-1 give the within-group noise variogram (lag weights G-l as inside a group).
+    Returns min(1, upper 95% bound of the OFF estimate / mean ON within-group variance); 1 when it cannot be formed."""
+    with np.errstate(divide="ignore", invalid="ignore"):
+        lx = np.log(A / Pc)
+    g = np.arange(len(A))
+    x_off = lx[g, off_cell]
+    on = np.ones_like(A, bool)
+    on[g, off_cell] = False
+    with np.errstate(invalid="ignore"):
+        s_on = np.nanmean(np.nanvar(np.where(on & np.isfinite(lx), lx, np.nan), axis=1, ddof=1))
+    nxt = np.flatnonzero(np.diff(g_idx) == 1)
+    lag = G - off_cell[nxt] + off_cell[nxt + 1]
+    d2 = (x_off[nxt] - x_off[nxt + 1]) ** 2 / 2
+    est, var, wsum = 0.0, 0.0, 0.0
+    for ell in range(1, G):
+        v = d2[(lag == ell) & np.isfinite(d2)]
+        if len(v) < 3:
+            return 1.0
+        w = G - ell
+        est += w * v.mean()
+        var += w * w * v.var(ddof=1) / len(v)
+        wsum += w
+    up = (est + 1.645 * np.sqrt(var)) / wsum
+    return float(min(1.0, up / s_on)) if s_on > 0 else 1.0
+
+
+def design_se(A, Pc, off_cell):
+    """Newbuild mode interval, from the randomisation itself (Neyman-style; no pre-installation data).
+
+    A, Pc: block sums [group, block] of fuel and prediction for paired groups; off_cell: each group's OFF block.
+    log(1 - r) moves with a group's OFF position j through h_j = a_j (1/A_on + 1/A_off) - p_j (1/P_on + 1/P_off),
+    a_j the block's sail-free fuel; over the 5 equally likely positions its variance is (4/5) S^2_h. The four ON
+    blocks are a simple random sample of the five, so their sample variance (fuel put back to sail-free by
+    1 - r_hat) estimates S^2_h without bias; effect variation inside a group only adds to it (conservative).
+    Groups are randomised independently, so the variances add. Returns (se of log(1 - r), degrees of freedom)."""
+    g = np.arange(len(A))
+    on = np.ones_like(A, bool)
+    on[g, off_cell] = False
+    A_on, P_on = (A * on).sum(), (Pc * on).sum()
+    A_off, P_off = A[g, off_cell].sum(), Pc[g, off_cell].sum()
+    one_r = (A_on / P_on) / (A_off / P_off)
+    h = np.where(on, A / one_r * (1 / A_on + 1 / A_off) - Pc * (1 / P_on + 1 / P_off), np.nan)
+    with np.errstate(invalid="ignore"):
+        s2 = np.nanvar(h, axis=1, ddof=1)
+    k = np.isfinite(s2)
+    return float(np.sqrt(0.8 * s2[k].sum())), int(3 * k.sum())
+
+
 # ---------------------------------------------------------------- stage 1: one campaign
 def prepare(c, seed):
     rng = np.random.default_rng(seed)
@@ -425,15 +492,19 @@ def evaluate(st, sc=None):
             Do[h] *= 1 + size
     Uho = Uo * np.cos(np.radians(tho))
     Vind = V + (st["Vind"][camp] - st["V"][camp])  # independent speed follows the real speed
-    cacheable = not sc["att_report"] and not sc["att_speed"]
-    if cacheable and "P0" in st:
+    nb = c.get("newbuild", False)  # no pre-installation data: baseline from the campaign's OFF hours (C28)
+    cacheable = not sc["att_report"] and not sc["att_speed"] and not nb
+    if c["wx_src"] == "ind":
+        Uh_m, Hs_m = st["Uref"][camp] * np.cos(np.radians(st["thref"][camp])), st["Href"][camp]
+    else:
+        Uh_m, Hs_m = Uho, Hso
+    V_m = Vind if c["speed_src"] == "ind" else Vo
+    if nb:
+        P = None
+    elif cacheable and "P0" in st:
         P = st["P0"]
     else:
-        if c["wx_src"] == "ind":
-            Uh_m, Hs_m = st["Uref"][camp] * np.cos(np.radians(st["thref"][camp])), st["Href"][camp]
-        else:
-            Uh_m, Hs_m = Uho, Hso
-        P = predict(c["model"], st["kn"], st["beta"], Vind if c["speed_src"] == "ind" else Vo, Do, Uh_m, Hs_m)
+        P = predict(c["model"], st["kn"], st["beta"], V_m, Do, Uh_m, Hs_m)
         if cacheable:
             st["P0"] = P
 
@@ -444,8 +515,15 @@ def evaluate(st, sc=None):
     if sc["exclude_viol"]:
         inc &= ~viol_grp[grp]
     w_on, w_off = (inc & ~off_eff) * tw, (inc & off_eff) * tw
-    fs = shaft_fuel(shaft_m, st["mcr"], st["bq"])  # shaft-implied fuel on the meter's scale
+    # shaft-implied fuel on the meter's scale; newbuild mode calibrates the shop curve on campaign hours (common to ON
+    # and OFF, so it cancels in the ratio)
+    bq = calibrate_sfoc(meas, shaft_m, st["mcr"], np.flatnonzero(obs)) if nb else st["bq"]
+    fs = shaft_fuel(shaft_m, st["mcr"], bq)
     F = fs if c["fuel_src"] == "shaft" else meas
+    if nb:
+        first = np.tile(np.arange(c["L"]), ng * G) == 0  # transition hour of each block (C19)
+        P = cross_fit_off(F, V_m, Do, Uh_m, Hs_m, inc & off_eff & ~first, ((np.arange(ng) * c["pcf_k"]) // ng)[grp],
+                          c["model"], c["pcf_k"])
     S_all = np.column_stack([np.bincount(grp, F * w_on, ng), np.bincount(grp, P * w_on, ng),
                              np.bincount(grp, F * w_off, ng), np.bincount(grp, P * w_off, ng)])
     ok_g = (S_all[:, 1] > 0) & (S_all[:, 3] > 0)
@@ -455,7 +533,17 @@ def evaluate(st, sc=None):
         R = np.column_stack([np.bincount(grp, F * w_ref, ng), np.bincount(grp, P * w_ref, ng), S_all[:, 2], S_all[:, 3]])
         S = np.vstack([S, neighbor_rows(R, ok_g, withheld & (R[:, 1] > 0))])
     r_hat = float(ratio(S.sum(0)))
-    if st["eps"] is not None:
+    if nb:
+        cell = grp * G + blk
+        Ab = np.bincount(cell, F * (w_on + w_off), ng * G).reshape(ng, G)[ok_g]
+        Pb = np.bincount(cell, P * (w_on + w_off), ng * G).reshape(ng, G)[ok_g]
+        off_cell = np.argmax(off_eff.reshape(ng, G * c["L"]), axis=1)[ok_g] // c["L"]
+        se, df = design_se(Ab, Pb, off_cell)
+        if c.get("nb_shrink", True):  # keep only the noise share of the ON spread (OFF-block variogram, C28)
+            se *= np.sqrt(off_noise_share(Ab, Pb, off_cell, np.flatnonzero(ok_g), G))
+        z = student_t.ppf(0.975, max(df, 1))
+        lb, ub = 1 - (1 - r_hat) * np.exp(z * se), 1 - (1 - r_hat) * np.exp(-z * se)
+    elif st["eps"] is not None:
         q_c = None
         if c["stud"]:  # campaign noise level from its paired groups' OFF blocks (C25)
             with np.errstate(divide="ignore", invalid="ignore"):
@@ -474,7 +562,9 @@ def evaluate(st, sc=None):
         pre = np.arange(int(t0 * 0.75), t0)
         full_ba = fuel_of(c, st, ell_n * (1 - s_h), camp)
         act_ba = full_ba * st["m_ba"]
-        out["r_ba"] = float(1 - (act_ba.sum() / P.sum()) / (st["meas_tr"][pre].sum() / st["pred_tr"][pre].sum()))
+        # newbuild mode compares with the before/after method the same ship would get with pre-installation data
+        P_ba = predict(c["model"], st["kn"], st["beta"], V_m, Do, Uh_m, Hs_m) if nb else P
+        out["r_ba"] = float(1 - (act_ba.sum() / P_ba.sum()) / (st["meas_tr"][pre].sum() / st["pred_tr"][pre].sum()))
         out["truth_ba"] = float((nos - full_ba).sum() / nos.sum())
 
     if c["det"]:  # verifier manipulation checks on included groups (C11, C13)
