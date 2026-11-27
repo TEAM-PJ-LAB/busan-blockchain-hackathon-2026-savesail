@@ -4,21 +4,31 @@ import { writeFileSync } from "node:fs";
 import * as chromeLauncher from "chrome-launcher";
 import lighthouse from "lighthouse";
 import desktop from "lighthouse/core/config/desktop-config.js";
+import { computeMedianRun } from "lighthouse/core/lib/median-run.js";
 import puppeteer from "puppeteer-core";
 import { PAGES, serve } from "./static_server.mjs";
 
 const [out = "out", base = "", reportPath] = process.argv.slice(2);
 const { server, url } = serve(out, base);
 
+// Lighthouse scores vary run to run, most on shared CI machines; the Lighthouse docs advise several runs and the
+// median (docs/variability.md: 5 runs about halve the variance). One discarded warm-up run, then the median of 5
+// per page by Lighthouse's own computeMedianRun. The thresholds are unchanged.
+const RUNS = 5;
 const chrome = await chromeLauncher.launch({ chromeFlags: ["--headless=new", "--no-sandbox", "--disable-gpu"] });
+const lh = (u) => lighthouse(u, { port: chrome.port, output: "json", logLevel: "error" }, desktop);
+await lh(url(PAGES[0]));
 const results = [];
 let fail = false;
 for (const pg of PAGES) {
-  const r = await lighthouse(url(pg), { port: chrome.port, output: "json", logLevel: "error" }, desktop);
-  const c = r.lhr.categories, a = r.lhr.audits;
+  const runs = [];
+  for (let i = 0; i < RUNS; i++) runs.push((await lh(url(pg))).lhr);
+  const lhr = computeMedianRun(runs);
+  const c = lhr.categories, a = lhr.audits;
   const row = { page: "/" + pg, performance: c.performance.score * 100, accessibility: c.accessibility.score * 100,
     best_practices: c["best-practices"].score * 100, lcp_ms: Math.round(a["largest-contentful-paint"].numericValue),
-    console_errors: a["errors-in-console"].details?.items?.length ?? 0 };
+    console_errors: Math.max(...runs.map((x) => x.audits["errors-in-console"].details?.items?.length ?? 0)),
+    performance_runs: runs.map((x) => Math.round(x.categories.performance.score * 100)) };
   const ok = row.performance >= 90 && row.accessibility >= 95 && row.best_practices >= 95 && row.lcp_ms <= 3000 && row.console_errors === 0;
   if (!ok) {
     fail = true;
