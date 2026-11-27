@@ -9,6 +9,7 @@ import {
   type Commitment,
 } from "@solana/web3.js";
 import { createRequire } from "node:module";
+import { rateLimitedFetch } from "./rpc.js";
 
 export interface SentTx {
   label: string;
@@ -84,30 +85,66 @@ export class LocalChain implements Chain {
 }
 
 // ------------------------------------------------------------------ devnet
+// HTTP only (no websocket subscriptions), every request through the rate limiter, the recent blockhash reused for
+// 20 s, and a sent transaction never sent again while it can still land: after sendRawTransaction its signature is
+// polled until it is confirmed or its blockhash expires, and only an expired, unseen transaction is rebuilt.
 export class DevnetChain implements Chain {
   readonly kind = "devnet";
   readonly conn: Connection;
+  private bh?: { blockhash: string; lastValidBlockHeight: number; at: number };
   constructor(url: string, private commitment: Commitment = "confirmed") {
-    this.conn = new Connection(url, commitment);
+    this.conn = new Connection(url, { commitment, fetch: rateLimitedFetch(), disableRetryOnRateLimit: true });
+  }
+  private async blockhash() {
+    if (!this.bh || Date.now() - this.bh.at > 20_000) {
+      const b = await this.conn.getLatestBlockhash(this.commitment);
+      this.bh = { ...b, at: Date.now() };
+    }
+    return this.bh;
+  }
+  /** slot when confirmed, null when the blockhash expired without the transaction landing */
+  private async landed(label: string, sig: string, lastValidBlockHeight: number): Promise<number | null> {
+    for (let i = 0; ; i++) {
+      await sleep(i === 0 ? 400 : 700);
+      let st;
+      try {
+        st = (await this.conn.getSignatureStatuses([sig])).value[0];
+      } catch {
+        continue; // transient RPC failure: keep polling the same signature
+      }
+      if (st?.err) throw new TxError(label, [], JSON.stringify(st.err));
+      if (st && (st.confirmationStatus === "confirmed" || st.confirmationStatus === "finalized")) return st.slot;
+      if (i % 8 === 7) {
+        const h = await this.conn.getBlockHeight(this.commitment).catch(() => 0);
+        if (h > lastValidBlockHeight) {
+          const again = (await this.conn.getSignatureStatuses([sig], { searchTransactionHistory: true })).value[0];
+          if (again?.err) throw new TxError(label, [], JSON.stringify(again.err));
+          return again && !again.err ? again.slot : null;
+        }
+      }
+    }
   }
   async send(label: string, ixs: TransactionInstruction[], signers: Keypair[]): Promise<SentTx> {
     let last: unknown;
-    for (let attempt = 0; attempt < 5; attempt++) {
+    for (let attempt = 0; attempt < 6; attempt++) {
       try {
-        const { blockhash, lastValidBlockHeight } = await this.conn.getLatestBlockhash(this.commitment);
+        const { blockhash, lastValidBlockHeight } = await this.blockhash();
         const tx = new Transaction({ feePayer: signers[0].publicKey, blockhash, lastValidBlockHeight });
         tx.add(...ixs);
         tx.sign(...signers);
-        const sig = await this.conn.sendRawTransaction(tx.serialize(), { skipPreflight: false, maxRetries: 3 });
-        const res = await this.conn.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, this.commitment);
-        if (res.value.err) throw new TxError(label, [], JSON.stringify(res.value.err));
-        return { label, signature: sig, slot: res.context.slot };
+        const sig = await this.conn.sendRawTransaction(tx.serialize(), { skipPreflight: false, maxRetries: 5 });
+        const slot = await this.landed(label, sig, lastValidBlockHeight);
+        if (slot !== null) return { label, signature: sig, slot };
+        this.bh = undefined; // expired unseen: rebuild with a fresh blockhash
       } catch (e: any) {
+        if (e instanceof TxError) throw e;
         last = e;
         const logs: string[] = e?.logs ?? e?.transactionLogs ?? [];
         if (logs.some((l) => l.includes("custom program error") || l.includes("AnchorError"))) {
           throw new TxError(label, logs, e.message ?? String(e)); // program rejected: retrying cannot help
         }
+        // a stale blockhash, or an identical transaction already sent under the cached one: take a fresh blockhash
+        if (/blockhash not found|already been processed/i.test(String(e?.message))) this.bh = undefined;
         await sleep(1000 * 2 ** attempt); // exponential backoff (PRD 12.1)
       }
     }
