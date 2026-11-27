@@ -1,0 +1,3887 @@
+{
+ "cluster": "devnet",
+ "program": "94CLe2FNJ9ZHUq4i8pRARSRkkEvEMkL4fBrCcJg2hcHn",
+ "started": "2026-11-27T12:11:06.440Z",
+ "steps": [
+  {
+   "step": "invest_A_junior",
+   "rejected": "TierNotAllowed"
+  },
+  {
+   "step": "invest_A_over_limit",
+   "rejected": "LimitExceeded"
+  }
+ ],
+ "periods": [
+  {
+   "period": 0,
+   "payload": {
+    "period": 0,
+    "data_root_ops": "b7b3bb42e8c2e7f098c6fc45acde271ace9f255fdf59fc684e206a67f58482a1",
+    "data_root_ctrl": "62d3c15ef1d0c0723f7622e8e259cf3f26f7a7eb4090768d84ac2210e1149279",
+    "kg_on": 1066353,
+    "kg_miss_payer": 0,
+    "kg_miss_inv": 0,
+    "override_groups": 0,
+    "price_micro_per_t": 750000000,
+    "lb_bps": 774,
+    "est_bps": 831,
+    "ub_bps": 892,
+    "compliance_bps": 10000,
+    "flags": 4,
+    "envelope_hash": "10a162ad835f72b7d40640661b78b06189c1278f396a9943a3aa5b69e42a997b",
+    "report_hash": "c53f3f080f7db074d89e017aa4311bc9bdaa3bfaaf256c4b532f356730a89c30"
+   },
+   "outcome": 3,
+   "due": "0",
+   "entitlement": "0",
+   "dist": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "lb": 0.07742584303309474,
+   "est": 0.08314475342616101,
+   "ub": 0.08916152650955467,
+   "flags": 4,
+   "excluded": 0
+  },
+  {
+   "period": 1,
+   "payload": {
+    "period": 1,
+    "data_root_ops": "ea4afa3c2c1bb8a3c7916705ec96acbe5bb2e245d18a47bd6474eba9597e7b71",
+    "data_root_ctrl": "54ee96928ab91f6ad911619d8a3d3adcf340301c0912e2e26984e7c563f9559f",
+    "kg_on": 912927,
+    "kg_miss_payer": 0,
+    "kg_miss_inv": 0,
+    "override_groups": 0,
+    "price_micro_per_t": 750000000,
+    "lb_bps": 661,
+    "est_bps": 705,
+    "ub_bps": 748,
+    "compliance_bps": 10000,
+    "flags": 0,
+    "envelope_hash": "10a162ad835f72b7d40640661b78b06189c1278f396a9943a3aa5b69e42a997b",
+    "report_hash": "7a8c8301f85acf24d9eefcff95b506945ab75b8c88dc4213f0fd163077190aa5"
+   },
+   "outcome": 0,
+   "due": "82478212559",
+   "entitlement": "82478212559",
+   "dist": [
+    "40000000000",
+    "42478212559",
+    "0",
+    "0",
+    "0"
+   ],
+   "lb": 0.06617599692276965,
+   "est": 0.07048133278786484,
+   "ub": 0.07477998269497199,
+   "flags": 0,
+   "excluded": 0
+  },
+  {
+   "period": 2,
+   "payload": {
+    "period": 2,
+    "data_root_ops": "e2d56f5682ecc7478696a1c989204e0326a887cbe8d7c2db9a4568e39978852e",
+    "data_root_ctrl": "0096ae2451f929828d0850f1a3bc3eec80ee16d64e415d409aee945a64f142ae",
+    "kg_on": 1151012,
+    "kg_miss_payer": 0,
+    "kg_miss_inv": 0,
+    "override_groups": 0,
+    "price_micro_per_t": 750000000,
+    "lb_bps": 992,
+    "est_bps": 1028,
+    "ub_bps": 1063,
+    "compliance_bps": 9000,
+    "flags": 0,
+    "envelope_hash": "10a162ad835f72b7d40640661b78b06189c1278f396a9943a3aa5b69e42a997b",
+    "report_hash": "42c02ca54a5cccd9fb81c020bad6446eaf2ed7f4d631833e35b6f02a5096f4cf"
+   },
+   "outcome": 1,
+   "due": "80603198930",
+   "entitlement": "163081411489",
+   "dist": [
+    "20000000000",
+    "32814698741",
+    "0",
+    "27788500189",
+    "0"
+   ],
+   "lb": 0.09926312773765601,
+   "est": 0.10279589329876401,
+   "ub": 0.10626706105251013,
+   "flags": 0,
+   "excluded": 6
+  },
+  {
+   "period": 3,
+   "payload": {
+    "period": 3,
+    "data_root_ops": "123b438997de90adf9ac48148a86a7078c91b53b19fe2a37b848f29313ccd640",
+    "data_root_ctrl": "7f8c95d56fb3237ffb85c74f34d5f70f4633f806f56beb64f93bee1b33ef829e",
+    "kg_on": 1036763,
+    "kg_miss_payer": 0,
+    "kg_miss_inv": 15838,
+    "override_groups": 0,
+    "price_micro_per_t": 750000000,
+    "lb_bps": 893,
+    "est_bps": 924,
+    "ub_bps": 956,
+    "compliance_bps": 10000,
+    "flags": 0,
+    "envelope_hash": "10a162ad835f72b7d40640661b78b06189c1278f396a9943a3aa5b69e42a997b",
+    "report_hash": "ff48fa84ccbd84d0b8ced04780123903e32588dc93551010e609e535c3515054"
+   },
+   "outcome": 2,
+   "due": "0",
+   "entitlement": "163081411489",
+   "dist": [
+    "0",
+    "25097637100",
+    "25097637100",
+    "0",
+    "0"
+   ],
+   "lb": 0.08937697357564447,
+   "est": 0.09239975718093839,
+   "ub": 0.09552818641744895,
+   "flags": 0,
+   "excluded": 7
+  }
+ ],
+ "finished": "2026-11-27T12:36:29.678Z",
+ "scenario": {
+  "withhold": {
+   "197": 1
+  },
+  "off_violations": [
+   125,
+   135,
+   145,
+   155,
+   165,
+   175
+  ],
+  "groups_per_period": 60
+ },
+ "seconds": 1523,
+ "accounts": {
+  "deal": "6cKGBuGsBi1h4PjTa1sEqQwLMx8ULgvqWfufopGWrvCX",
+  "campaign": "HwH45Pg5Pi2TFGbPcDiJFuRzXZf2kYvs8f4t5DyPHx2P",
+  "mint": "AaV8MSYxaqtrtB5h43L8AxzneBCRQQyLEiwy8zqN7xpP",
+  "vaults": {
+   "0": "BHR6df8hdcQLd7gQm5FWkN9C2haXqLEbUyW9pZi1KnSn",
+   "1": "3eDkMADoE9me7fQmdNoCTi5JwZuD966CoGKymXTB6J4b",
+   "2": "A9ce8JjBueudzxy9gfvLH7GViCkwt3tEfERHFKQwRW7D",
+   "3": "H3Jm6KDsFej2SPGLuHWx8QSPD8WUxzX3QjLBmS2QZqW9",
+   "4": "6tBSiUJMKcBtKwZ19j9o1ABNcnapfP4jhe1p1pMnXWMP",
+   "5": "8G9Noh3MUuJstrADcTMV4Q3B39v6AcYPeHmcs6q6ULq"
+  },
+  "periods": [
+   "7ijVK7gzC9AxiZUFHPaT8vc8GzDHmQ7mXL3ov56HtKrM",
+   "C3ghFULFYLZnoJ9Jb1iJyVcbWybxGB8cwp89ete5df98",
+   "3BG9DeftHVF8ZXrXV7BeypNVruSRNmz914CsvqPiSdtU",
+   "7p27VbuYm4eRy7YFPKAGNbWsgFFhwBKdE4hFmiRBrpH2"
+  ],
+  "roles": {
+   "admin": "CEkzD9GudhZgLzp2Mcbhn9Y5NKEhmE1QRfKT6w612fKq",
+   "payer": "Bt1pPxj2ZJniWeskoxdyruDdTZWEc5jjVXof9xzGnwRo",
+   "investor_rep": "3Vr1jLtjjaWGdD8GJJNnoubwMcDe9auMn2RKLCrmdzUg",
+   "verifier0": "CC74vCoZ21W9daZmcMygMVTWmAY4SYm76jNNHrpZHdF2",
+   "verifier1": "HFwtNyFm4eadtM4KFaunQJVbdhY2Uwku9939gSo8Yvht",
+   "verifier2": "2aErfyTTBd6o65bMc9C7jsopFHi33GcVjZXRtDUr5pYg",
+   "manufacturer": "B3H6hx8LyV69nhPCECuoqWSuHaUt8MHme2rgxkJXi7Qm",
+   "opex": "3hHYtpmqmAHPdyro8CGyQMsdTCCKQhWVqCyjNhM6sgJA",
+   "investorA": "AovnFM1zjANpJq2Hzn9ncJmC5XwoSC866yU4BERjd2iR",
+   "investorB": "DA8E3XUsoiZkr28eJQJoDh3XAaYmThDkg19r2nVLMSX5",
+   "investorC": "6Hkfd3kZEc7G5pyPfknv8BFzf7vWLJGosmdM4Zcb2DhA"
+  }
+ },
+ "deal": {
+  "phi_bps": 7850,
+  "ref_rate_bps": 600,
+  "entitlement": "163081411489",
+  "paid_cum": "163081411489",
+  "last_lb_bps": 661,
+  "acc": [
+   "127685655632",
+   "0"
+  ],
+  "reserve": "2990863089",
+  "opex_arrears": "20000000000",
+  "senior_arrears": "0",
+  "install_cost": "4000000000000",
+  "caps": [
+   "786232000000",
+   "3213768000000"
+  ],
+  "raised": [
+   "786232000000",
+   "3213768000000"
+  ],
+  "comp_min_bps": 9500,
+  "miss_max_bps": 50,
+  "opex_per_period": "20000000000",
+  "reserve_target": "50195274200",
+  "n_periods": 40,
+  "senior_per_period": "25097637100",
+  "n_groups": 240,
+  "groups_per_period": 60,
+  "bond_amount": "1000000000",
+  "slash_per_miss": "300000000",
+  "retail_limit": "69930000000"
+ },
+ "token_accounts": {
+  "senior_vault": "A9ce8JjBueudzxy9gfvLH7GViCkwt3tEfERHFKQwRW7D",
+  "junior_vault": "H3Jm6KDsFej2SPGLuHWx8QSPD8WUxzX3QjLBmS2QZqW9",
+  "reserve_vault": "6tBSiUJMKcBtKwZ19j9o1ABNcnapfP4jhe1p1pMnXWMP",
+  "collection_vault": "3eDkMADoE9me7fQmdNoCTi5JwZuD966CoGKymXTB6J4b",
+  "bond_vault": "8G9Noh3MUuJstrADcTMV4Q3B39v6AcYPeHmcs6q6ULq",
+  "raise_vault": "BHR6df8hdcQLd7gQm5FWkN9C2haXqLEbUyW9pZi1KnSn",
+  "investorA": "DCXwmK3yVujXqsNkwArcmf9wHf6N2Rh2NjWm4nZz1ga2",
+  "investorB": "8uUrBVA6rQP7fGSy8sdZrN8Ds7yjN3aCTVGH2542ABZf",
+  "investorC": "Gp8TAg5EeiuThrBWJdG792KgtqWqALgDthrQvS5pu47u",
+  "payer": "8dkkQ3xZyKByP1TgYi3kpbXVMrZwmdmMhghE5fYKne2e",
+  "opex": "EC9HsXcLGNRiRdzG4Bz263XRxoUJAUSzrNyx7fY8AQKq",
+  "manufacturer": "9yrxvzZpZpXtdAf3jKrk7pqhMgSHp5yibkBiFrphRQh"
+ },
+ "positions": [
+  {
+   "investor": "investorA",
+   "tranche": 0,
+   "address": "2FeQszaeKyu39Fxvd6uVjKJLsp7vS4DZmMwQFSBbKyP3",
+   "units": "69930000000",
+   "claimed": "8929057898"
+  },
+  {
+   "investor": "investorB",
+   "tranche": 0,
+   "address": "TkUszE6apJ3nL5YELcDJQfafCToDBuRSabQXMChq8pd",
+   "units": "69930000000",
+   "claimed": "8929057898"
+  },
+  {
+   "investor": "investorC",
+   "tranche": 0,
+   "address": "47vGhqJCyzxtbX7uhwYMmkw9AjVMHEc8eTFymCbk4oNi",
+   "units": "646372000000",
+   "claimed": "82532432602"
+  },
+  {
+   "investor": "investorC",
+   "tranche": 1,
+   "address": "3mmM7SHZJhSdK2tPfk7FeAojShquo6cz6wAr5n8dQD5M",
+   "units": "3213768000000",
+   "claimed": "0"
+  }
+ ],
+ "balances": {
+  "senior_vault": "2",
+  "junior_vault": "0",
+  "reserve_vault": "2990863089",
+  "collection_vault": "0",
+  "bond_vault": "0",
+  "raise_vault": "0",
+  "investorA": "138999057898",
+  "investorB": "138999057898",
+  "investorC": "222392432602",
+  "payer": "2836918588511",
+  "opex": "60000000000",
+  "manufacturer": "4000000000000"
+ },
+ "schedule": [
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 7,
+   "missing": 2
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 4,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 2,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 3,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  },
+  {
+   "off": 0,
+   "missing": 0
+  },
+  {
+   "off": 1,
+   "missing": 0
+  }
+ ],
+ "txs": [
+  {
+   "step": "create_mint",
+   "sig": "4Hm8crUbnJe6LMcbXRAnYGZxiUrkNb9hau7WCq7jyitM9WtHte5vNxV2o2gTiQ2qLa9u6C4o9Xfmwnvi3134kV5C",
+   "slot": 526863545
+  },
+  {
+   "step": "token_account_payer",
+   "sig": "4YhFEVJysZANrH249cD9Q9j2BZxruGtWs2qZMDa1rXaso1A7agM6Soy4jPCDrX3SX1XJT9cTT4zLcmShwG7tNKRR",
+   "slot": 526863550
+  },
+  {
+   "step": "token_account_investor_rep",
+   "sig": "4kuCbXqhCvMy5FRxqbfkB8FKMMHnGYpS32bvg3BUtq8PjumE2K41bkuFzBpzwSaKAVrAJTxtHkVeX69ycdvqkH32",
+   "slot": 526863594
+  },
+  {
+   "step": "token_account_verifier0",
+   "sig": "12465XD7gF4LqJ9TudNuVd7sqiwdAtpUogwY7aFP5oo6nndbNdAPrL4H9dgAm9QDtQuaKp86VoMEcwYh96EhDbZy",
+   "slot": 526863599
+  },
+  {
+   "step": "token_account_verifier1",
+   "sig": "3Bzs3r4hpXk5GzYuMRXFmwYNWHWwEd8n9jkTnNJfN4yjKcd5XnzLwwwsoNUDaEwahcisX6f3BxBF9GwehsDpBnPu",
+   "slot": 526863604
+  },
+  {
+   "step": "token_account_verifier2",
+   "sig": "2zktbFZ9UNUYJcB7XCrrhvNehWMCKmbuBqJdaLt4kBupC2PReYsrUFvaMGUGsaVpgCJLpwWEBPjVRCdT6wDvV6KJ",
+   "slot": 526863609
+  },
+  {
+   "step": "token_account_manufacturer",
+   "sig": "596J7xGDo2Yi5bG3krZqFuFybRNYYe3j6e1MmNsvMw5YJtxgARKcbQAio5MH9Ydq2mpGjFRXJ3vqvXrXRBsbPYiD",
+   "slot": 526863614
+  },
+  {
+   "step": "token_account_opex",
+   "sig": "2ACcCpTjEnenBE4qgyyMD2KEzbwXh4YYJJWVWEoyTqRrQCxSAqxjeWRgjkBqVmrJJx7XBmXpyaGRRpGBc7yzcUmx",
+   "slot": 526863619
+  },
+  {
+   "step": "token_account_investorA",
+   "sig": "2YuqL6GG2TGfJipo241E9hV2C5TB8Mz2kUhjrDD8DN5p7ccHfKg632sLLr2qReXHWXN3ibUujtZpMtLVWRdLdnkm",
+   "slot": 526863624
+  },
+  {
+   "step": "token_account_investorB",
+   "sig": "jExqafd4rmug3BFqTLoFAiZUCCwGNo32ujhK2FqrrXs8SgipXaTYKeHyw44UE3cCTzJPQAsELHcuESfK3Ksk4TX",
+   "slot": 526863668
+  },
+  {
+   "step": "token_account_investorC",
+   "sig": "3DkTxJLWe5xWzytYxNdUkKqFGsdJiakE4xEnjRSgQBMh38bj4Eu52PTYjXSrRazRjN5mPNk6dPbVXyC9dkPMT5ao",
+   "slot": 526863674
+  },
+  {
+   "step": "initialize_deal",
+   "sig": "48CVGS5zpwAmudUNPiNAgghwfaF1kSgHW9oJpGjncyWrMVexhzbeXmgTz17JZbfdvZSfsdQJP2x4FZtZAs6ByLgE",
+   "slot": 526863679
+  },
+  {
+   "step": "init_vaults",
+   "sig": "3F3fCtFxTrFx8vkGCMgEQVPMzkrpJDNoDgJdbq6b3rYaQZD9BPfns292Toc3bUDhCacowVTeoyV4VLuKgamw1JzK",
+   "slot": 526863684
+  },
+  {
+   "step": "set_kyc_investorA",
+   "sig": "462byhHvVL1YtzU6DyaK8zrszS3HU4M4aJbiKjpdt4fn3npS8TZeXDPKWWKZxk1DJLHEYTwX4dhU2h38EDR1fpm2",
+   "slot": 526863690
+  },
+  {
+   "step": "set_kyc_investorB",
+   "sig": "31xXUZh91eq9N564iVSQ4Ext6dpZHoMrgP27g83PGmun6S98ZfweBRtsHM8g2Uf5k4YCzRuNZykQSqZifag17Mxr",
+   "slot": 526863739
+  },
+  {
+   "step": "set_kyc_investorC",
+   "sig": "4QeAPSGmCsN6StyhHEZLXFaDwUDNLMyNjNwzQNfZySQhEWSzu8nVcNVtdciNQqvjdiqNm3th2PMxfXACtCgwZF1M",
+   "slot": 526863744
+  },
+  {
+   "step": "invest_A_senior",
+   "sig": "9KRpJores7EDJbefYHJYxAKXy66iB3WD9Jwig1b5LLFV8hdN7MWD8o8BimYwdUZkZms1TujbbJTaLdE5pKRDP7v",
+   "slot": 526863748
+  },
+  {
+   "step": "invest_B_senior",
+   "sig": "iyPkxa6XBb9fghXipMkbwyeat7aid24UUHv5w4DK9fogb3i4yWWNrW3nb15e3QN95LzF5p1QjsfMo5SxCaw7UTi",
+   "slot": 526863754
+  },
+  {
+   "step": "invest_C_senior",
+   "sig": "21qTsir71RpHwX2hfzxkKZHaB6o8pHbUM5Jt5yZsuftKk17pDXaYAsiCaYpgS92nYvMF3iaCUiWNnqwSH5Rc9WCB",
+   "slot": 526863759
+  },
+  {
+   "step": "invest_C_junior",
+   "sig": "4d1YpT1ZNMrjhjQN3ReB4CZKYcFHPUYtjorunvPk2YNEiRPjX7eCYsW5Woy52Y76YoTuYrM3aVScVJDkTqC3zjF5",
+   "slot": 526863763
+  },
+  {
+   "step": "close_fundraising",
+   "sig": "ya5QjrBHDppLt2LPF97dQGnuJHMaWqhQRbSfSW6djK65UEJA3jEUGbZubGHsxb1vAUTFiovQMjCWNvQj9J5FKeG",
+   "slot": 526863810
+  },
+  {
+   "step": "register_anchor_0",
+   "sig": "5TEXpvshKprs1BqQYUDgoGGu6fmozqRfx42qexTmq4h1UcJ1B5gTqoVM8DbKMrCdx2ajva6w1bg55E65ir6fGqMd",
+   "slot": 526863815
+  },
+  {
+   "step": "register_anchor_1",
+   "sig": "5xitcX56duh31BCX1ypCPfcVSrHZ7xjP2PxEVjno6pc29Sb7zpEcNi9QHEuKzfE9ZUQs6cBYsRLG9C4oTH2EUL47",
+   "slot": 526863820
+  },
+  {
+   "step": "register_anchor_2",
+   "sig": "2CJkLXpPN66ugmceexhS7AVAQnMnvYAjSEUvkB2osMSjUPu18bXv1xpkK273rdkjPZP2MhoM9dMkZq1vBvm7Kirx",
+   "slot": 526863824
+  },
+  {
+   "step": "reveal_0",
+   "sig": "3eifXUGbNXWLwkAFUeEXdVD2avHcayuM3dKCAgbs5w9GEKLZ4gWj9Uoh1zLc2QMAT1WghD9VHKNbdiwoGaTnRTu8",
+   "slot": 526863830
+  },
+  {
+   "step": "reveal_1",
+   "sig": "2kdp2jgKPSNJECWb4h7CLM9ZeWLUJSYTFQzRaMQqYqyjNr94SEYbC5YiHypjv2r9La6aR4XQtCstkzoyqsLHcP5t",
+   "slot": 526863835
+  },
+  {
+   "step": "commit_0",
+   "sig": "2VadWAcv1v3BJaSU5qxdjupMynCQChxcJk8UHCRqb4nnPirTAXfpq1PbbtD62XSyXWFeNTsqH7ivbYtrumJRX3gM",
+   "slot": 526863835
+  },
+  {
+   "step": "commit_1",
+   "sig": "ppSgxyCycemTfPX7tSFvpCx5DaVfr3seor9GxX6kdgDDvoeoVcRaopYMUrP66UQtfrhRYzDXNDWJRAUgdaEqGLk",
+   "slot": 526863881
+  },
+  {
+   "step": "reveal_2",
+   "sig": "2JkLV63czbh37bMvcMoWcpXCQNLLqF2pGtq1ML49y73vhupRqyW4yg13NuvbZKki8cXKTKU1n7TJDNQ2Y14kwgmR",
+   "slot": 526863882
+  },
+  {
+   "step": "commit_2",
+   "sig": "tvaQ6FcnykdtrbsnG8C7GbGuehLQWQgzgyNhTHjMLMbkKEKGHYRG4pucCFWgueqkFfoFPkaLKHAkTMoPsPD1Q91",
+   "slot": 526863887
+  },
+  {
+   "step": "reveal_3",
+   "sig": "1bboUULho3aKQHWAmEJVNyTP2YQFwkf6T6Zo1dW5yNmJwQwNPXAn7ERYAL5TSUXZzdr2zsD98Mu6655GgpTWX11",
+   "slot": 526863887
+  },
+  {
+   "step": "commit_3",
+   "sig": "62vdhz1duJf7HL1DDb7yC287HCvfYCyKatbbDmFoLv4uwaMUmucgz9U5euqLAnyAr94wHzkkQ4xqC27EMX1YKp6H",
+   "slot": 526863934
+  },
+  {
+   "step": "reveal_4",
+   "sig": "2Tkkp1kPjQRGzXKkAxar2Mkei6SqjgWaiev4nfRYKgETFG3cyT2mqXcsNz4CnxM19JPYjQDP2vN62Y4A88VJUCGJ",
+   "slot": 526863934
+  },
+  {
+   "step": "reveal_5",
+   "sig": "2iquYRqNzudRYic1a48gwwVt5pfeZjiShzTJysfMTifeXwz7KhQs9jhvFzdUS7BNLZWpY97ap1EycRRfTLto5o7M",
+   "slot": 526863939
+  },
+  {
+   "step": "commit_4",
+   "sig": "3KL28eAtymQoQErDj94QPTcC4jbVBPFw6nH6uVkvfY98WoB6zk3Gjf9Lvpo8jwetH6Qr4EBMv3xHDWX1G25xS31k",
+   "slot": 526863939
+  },
+  {
+   "step": "reveal_6",
+   "sig": "D5P6vnEuYt4cATZgza5xrC7GW9ddcPxJ3zXym4LCmwmZqaQ8E4wRa85cXERr51qi2CLdteaLeNB89jytmnZh6eG",
+   "slot": 526863944
+  },
+  {
+   "step": "commit_5",
+   "sig": "3J3zpF2ZXrManNXyE2RcZC3yA91F4pnEDC21yCARL1xHYdob7J3WLMqyAQUFXUT5fyffLZeKWaEsyN8j6YvzX5kQ",
+   "slot": 526863944
+  },
+  {
+   "step": "reveal_7",
+   "sig": "4NY5NqC8E64iYrGAQumLd1w3Y5Z9jiWkr5pK7JNrUcqHBjadSDCBW36G2L8KK84HPjGKrmxUh8vFZthjmJM76DQw",
+   "slot": 526863988
+  },
+  {
+   "step": "commit_6",
+   "sig": "2E13uRhmwt9PWqeC5fna2A6KytaYWUEhcc4Dr154T8acMDYCXZboZ1ZY2uRKSvVXLc8MhBeuD1Gpdu314oy1Do8Y",
+   "slot": 526863988
+  },
+  {
+   "step": "reveal_8",
+   "sig": "rUTvPtgKiy2hahhqSNPNH9PB2srFJbUuw6HQ8QFGgoafjEwkruf7Z2yC6waUBxHTFBapPUNBFQpNJjmaACTnyJ3",
+   "slot": 526863993
+  },
+  {
+   "step": "commit_7",
+   "sig": "EiiRxdWLwVuFJzjSm3ZqCjx7WQH1bBxAvDTF1oWUtXRr4pRXDxKjAAVNVdHDG3H8cSieWaMu3RcrudkAsqVDds5",
+   "slot": 526863993
+  },
+  {
+   "step": "commit_8",
+   "sig": "5c3LnUw4qXPhzCzxcV96fQbwziqbwrhdRXP3bfPQqSDumPrCVE2Sy6szzBXSrhxER3288ytffrWtSVGMAssR2ZGv",
+   "slot": 526863998
+  },
+  {
+   "step": "reveal_9",
+   "sig": "BqaMbS5Y1UrzNNsukpZEX81Xku45RzZvDc8j5qjNjNYaYJBcsYLt9MxQrG8WJwZCYicQ7D1LReJivNFtRjUMs2w",
+   "slot": 526863998
+  },
+  {
+   "step": "commit_9",
+   "sig": "59G8SqEpFSVpXdgkQDnCqPcRUAFL5HrijDZ1yDHtFp2hivWkRgmzSRdkAASRvV2ZnuqEnNKnhHPKYptT9LDfHMEn",
+   "slot": 526864044
+  },
+  {
+   "step": "reveal_10",
+   "sig": "5fSX3sveYgqGJ8EmYVPc4TsqdThNy9Kkqf6wvwc2oRiGovfdYkLooTaFmFqiSjuv7EnS3j3sDNG7y2jtcpGZGdzQ",
+   "slot": 526864044
+  },
+  {
+   "step": "commit_10",
+   "sig": "ccmtZNtkNoDLrUdmhNhz9m1gtn7LrxXkVHWLqmJpUNP1XU3CLneYKv48rDLdWC1ruPu8oFz5bMBeWUDFtNrLAye",
+   "slot": 526864088
+  },
+  {
+   "step": "reveal_11",
+   "sig": "4bBXGZgBd8y9n5cMpvY5jssmqfxpH7aou3mCXjLAt8CPRHuy2aDLFFtEuu9JuMRbWcvLDwbYtLVqFCY7c9dWSJc1",
+   "slot": 526864088
+  },
+  {
+   "step": "reveal_12",
+   "sig": "3yP4FDLv6qGoDjU9asRDVgSf5eSsuiJSGs2znnpYVEAxJcQ4VuQjSvf5PREAJn1jbmVzX1YnBXVubaZHsvM3E6Lb",
+   "slot": 526864094
+  },
+  {
+   "step": "commit_11",
+   "sig": "xypyjSYJftXAWCrNzxbNCK7Uo5ujCdL3JYawHPjiCtW3dfVbtjnkK8dkkroLztzcpFjd37L2unNvfBfbPvtwrub",
+   "slot": 526864094
+  },
+  {
+   "step": "commit_12",
+   "sig": "3FFhPChsX9BMwVfhDmftaM4w1WcxrkMTVrsGeHzWPJqmvSj8iqk9L6Uechogzk4XVHQvfRX9pxh1e48dWHVgcQz1",
+   "slot": 526864140
+  },
+  {
+   "step": "reveal_13",
+   "sig": "5XDzocXjNiUtLqeoaga7xVg6LCXiWJU6Zpr7uHUwEQg5hVuq6nkSHu98pLK5yridM2pP6Wy7TbTHRPdMVhcYrzsy",
+   "slot": 526864140
+  },
+  {
+   "step": "reveal_14",
+   "sig": "36gTtGYTDaj4HMm6DrWFTDoGvUDYoQ8pEiG4bvuauZKKR3KMbJd8rVpKw81En6rZk4WTgzByLwoRxgZjTFxh4ZS9",
+   "slot": 526864145
+  },
+  {
+   "step": "commit_13",
+   "sig": "5xDERjr8ADB11QncmZuiS5JALpUhX4s8Bd1uqfotSgbTG2VfTLBeRQEdi7cyxamKUyBmVnRRyUVHE3YbsKimnZon",
+   "slot": 526864145
+  },
+  {
+   "step": "reveal_15",
+   "sig": "4hANFuQHnxvUaUmCzqCtezCHU6L3Wnghd5n3aUTR6S4NRmddpJkbhmC3ydJnfkXk95nvAPed4Jkt5aEjf7oRmR1D",
+   "slot": 526864150
+  },
+  {
+   "step": "commit_14",
+   "sig": "2Cm72Dy3SeadA1CLdRVrFi9nAGeWRwDzejBQuaNGCuW7TMtXaHexTZSUjsQ32jrY9SdfmoUDMVbGR8R1eTuu7TCr",
+   "slot": 526864150
+  },
+  {
+   "step": "reveal_16",
+   "sig": "2kfKbYB2mY998kCwtQrabU2wSQeNr1J18Wpy6tzU4h1d6BdWwaUnh44j4uXHLdA2sVF8KUuwp5Y3EiC62zKZ6DaU",
+   "slot": 526864196
+  },
+  {
+   "step": "commit_15",
+   "sig": "8GiLg8KW262uWvqo37RAEGt6JmyTQEStP9WTvaSJVKwFHNaxUWwCvbMv8LmUNjYetNE4npE5bacQ3jZ7tYhuDt7",
+   "slot": 526864196
+  },
+  {
+   "step": "commit_16",
+   "sig": "45z9YV3A7eZgdt6LMT7L4gWR9T8qTN5gFyMkEZraittsXsoQ29Rrh4sHiQ29WxPn3qk4KFBEb6qbNL6vR2mGq8Sp",
+   "slot": 526864201
+  },
+  {
+   "step": "reveal_17",
+   "sig": "4GFSDmr6BQFRGysSNBEZcJgERXBCJw9shZ5D88QLAqY2YQjmrziqqLS6QrzMnnUQ2a8beRNLvzTaUC1SLxYhZ8bx",
+   "slot": 526864201
+  },
+  {
+   "step": "reveal_18",
+   "sig": "4ymaJarrTkcfyTnoSyQsAmnfT66qxSp4mRKmHNt3zbGzSUzootYnGJfjikxJYgpQPx6itGQ7g2iYiaLJdh5NAEcL",
+   "slot": 526864248
+  },
+  {
+   "step": "commit_17",
+   "sig": "5Lbrv3XgkdSFDn3XGSsmd4JVBn6GNVcgP4WtRakESfxTJWqJXKpdzMhVpVq1QVpL9VvfNbp29ouLa7y7F3Qxdm4y",
+   "slot": 526864248
+  },
+  {
+   "step": "commit_18",
+   "sig": "4fVEBiqkEF2pgRpWx6YXZrgUWbDH5R28CLfbp5E33DWmDCDdTBB19NwnUms2D2RdxUNzgY3tsRezPggfw5fWCnVJ",
+   "slot": 526864296
+  },
+  {
+   "step": "reveal_19",
+   "sig": "4prQUUTcpGPCeFcHtusiPuUuwoTBnGVmAiQR9NboT8JfV8KAEzaGbRek4RDZV9bDiLVWi1DiTmzPPiwGVnVQpxSS",
+   "slot": 526864296
+  },
+  {
+   "step": "reveal_20",
+   "sig": "2mQUoarSEbsna5zRFcQaSkpdyMhG2DpGHXw7MAWpVHXhjrn2a13DowGh4ESkxRBzL6CWfM5wX5whNRbQCkqUsFdk",
+   "slot": 526864300
+  },
+  {
+   "step": "commit_19",
+   "sig": "3TRt5Kv4U9RoN6KMtKf7LrJdh9dfxLuxgDM9iidfGwsdnr8ez267VAbj92fmBXXX5ji4dVLY1FNtzF4jZLdk7Wh7",
+   "slot": 526864301
+  },
+  {
+   "step": "commit_20",
+   "sig": "62bqSi7ybKWa4be2XCMwNayrt7ijMtTMRQqfGNKHSPhziGzYQMtZEjSkTM2cfqxjtb4V2qKKxHsEDwrZFDG6L92C",
+   "slot": 526864306
+  },
+  {
+   "step": "reveal_21",
+   "sig": "3KWg5H1CwWdGFLaLw6sFaLNQpp2E2QCKkCeSs7s84hHVY3CZ9NSZS1xYCXuVxvVrRE6WPDXDsteoLPX2sEEZNpu2",
+   "slot": 526864306
+  },
+  {
+   "step": "reveal_22",
+   "sig": "3Tt1xe3Wg81ATjiFTiF2AHMyU6WpNAbv6zkcZYBxJo9BBkciH4Eyw6busHtqJ4eKDGhf9x3neP2uggPzY7jKx3SR",
+   "slot": 526864350
+  },
+  {
+   "step": "commit_21",
+   "sig": "4jMYS6qZSzYWFqMAKJks7kfYYRLHVZUL1DWNa98bceckSKaa39ndpXWUz3RW1MH4fB2Tgs571ia8KF9kKbuBbXpz",
+   "slot": 526864350
+  },
+  {
+   "step": "reveal_23",
+   "sig": "62QH38xXEN5SHo6qkiWsNbdNJjniAwWyBMe28D77f9ggneFfgpQcHWZypRPaXCW3WpTQMk5P4EEXoBMicYymdmYr",
+   "slot": 526864355
+  },
+  {
+   "step": "commit_22",
+   "sig": "3exritMqtVK4uDcAzM3FVkWUKRs8f4RYpBusFdUmGhyWjEfz6YQBtVhi2Vii17r3QwCPEityEE1oF5W5CEfFn5vF",
+   "slot": 526864355
+  },
+  {
+   "step": "commit_23",
+   "sig": "4tkha1Bhbk84MgZ7i9wJStPfkfrWF5E4ucSmJChKVwBY4B9CqHTiqiKK9frzR2CKvMztG9bG9kcm6Ra7EBe6VjQZ",
+   "slot": 526864360
+  },
+  {
+   "step": "reveal_24",
+   "sig": "2ohAESAzGMVHvEzSKoBPyGqkMssRqRyg8WQmjPGSdHbMLDoQPe2KBtwbiHFHLcYqCsAGMVL9mUkwwpynhMBHaQ7E",
+   "slot": 526864360
+  },
+  {
+   "step": "commit_24",
+   "sig": "2ayx49VFyeaRUk11dyZdvwKG1UVtka71PKgp3V5YfcVTqBjABxLvsoiPKtvNCXPfNtk1qb5k7zQBU5z4Eucx4AVZ",
+   "slot": 526864407
+  },
+  {
+   "step": "reveal_25",
+   "sig": "3p5deoA9SNPDLuq7NA5kVr5FaJy53HRE4fg9QoaSPeQX5JnGVxuZivMb1mggRF1wiuHrNh7rHhjEiE89n9tuCtM4",
+   "slot": 526864407
+  },
+  {
+   "step": "commit_25",
+   "sig": "5ZLZpd4o1dZxcHcpwxCWRcPCBcpU5VEAJLm2MwTHqAEZj6VLLLN2bSQr6WgiB2wJguJgX7fBN8RN3nZ6saWZAWUA",
+   "slot": 526864412
+  },
+  {
+   "step": "reveal_26",
+   "sig": "5md6QVwr4UBrjqSSwCCX5G82LEdnxgwLtdSkFLsHUwXWeX6wpT7xq1AofR3DRqqXqPsqKfiutJcByK8A58cuThZt",
+   "slot": 526864412
+  },
+  {
+   "step": "commit_26",
+   "sig": "58YZS6HMcHmmJ2QXUn8RxLuFJV9Gc1Nr9xPM9jB8R3CxxyLDjboLdMVoH8r3sjZGiJxT9WZF5rLobJQJmXCnVmrs",
+   "slot": 526864460
+  },
+  {
+   "step": "reveal_27",
+   "sig": "5tBxX7YCxtupvD3eLV8vG1KNUcmiTdnReMDpM5oHRfXN2zEs8GJovLGrdWhfY3cuMpNfKwgvnuxzS9cqELJBZiyM",
+   "slot": 526864460
+  },
+  {
+   "step": "commit_27",
+   "sig": "258Sax23U2rfCAU1aRQS53onZQgivzKB8VPHJQhnGoUPGX2btaDGobLbCZjnC6McHYo1vi9S4pdLSpzfKBjT9swa",
+   "slot": 526864464
+  },
+  {
+   "step": "reveal_28",
+   "sig": "2cSprFNMCti6gyHer5krF1cFku56xp9RMCfPVB6PADsxM3PoyDJ56APiC95EdsSXkP9KW95x6pSk16Jf8QvLfBhD",
+   "slot": 526864464
+  },
+  {
+   "step": "reveal_29",
+   "sig": "5XpmAVdqHSQjX2KU6o7q9uXM46wknLWNnKUuCXTj2dy7f8YZViUz83yLSRkexn2VGqs1DQd1a2jt8B6VDMhMzRBy",
+   "slot": 526864509
+  },
+  {
+   "step": "commit_28",
+   "sig": "5sv2DM96GoRsrmBgzURtM9PJhVtKW8ML3bMyjas5v6GHUoqJDLCVzGrhthh6uUowvB19UcTo2D13PMh2T6Y6Fnj9",
+   "slot": 526864509
+  },
+  {
+   "step": "reveal_30",
+   "sig": "5ouJxepTC1tYDiDB5uCqhBmxPrTXndste35VrPaf8rFmqRvdFUCKwg8NATKDpx23CMSvkJ7vm6fZbiGJ8FTpB266",
+   "slot": 526864514
+  },
+  {
+   "step": "commit_29",
+   "sig": "sJDtRpyYrHvwmQwEwiGZvzkpZdey1oeLXg7bVjHNqnxHhbgh5f1bB3CoFyb1BaUASjR5spphLCuvm6aiSPjAxyE",
+   "slot": 526864514
+  },
+  {
+   "step": "commit_30",
+   "sig": "7agJpShvKZRrdGZmX4EYM2Xnq2n6NwuXnAGmykxT2PfQmag5GV2nD392KozgYJLinazD2V8h3LpFkrEYVQvnaKU",
+   "slot": 526864561
+  },
+  {
+   "step": "reveal_31",
+   "sig": "5jZPsU4wGshPFA4Te8YTwXAsN3h7yLp7FbJ1RRZXnLvwd8VF1ssbdMTFmR3t4QyN9qYkXKgHvg2MafjMBt27ksCF",
+   "slot": 526864562
+  },
+  {
+   "step": "reveal_32",
+   "sig": "VHM2WzfcaJkrfcfzdBN1THmkrFVWg7imXni1c6bSMg2c4jhSqww3jjtxdcFefRWPwxwuxSk6c1gtUqDteU9e7QP",
+   "slot": 526864567
+  },
+  {
+   "step": "commit_31",
+   "sig": "26t23Q8Q5tCLbeJHHdP6hRFEWFKzzoQQQ74T2aWaG3szVpptttQm4b9JSwnuYGS9wVBQQbvuC9aHGsvTAZvLR9Qa",
+   "slot": 526864567
+  },
+  {
+   "step": "reveal_33",
+   "sig": "5exZBAdcjDmQRSe4U3p1zvYHApaeB5akHhH5S9BKH69TuGUdNM7HGX5qiYaWepHivHn5gJLBSgKHPSD5rdhAbQnx",
+   "slot": 526864572
+  },
+  {
+   "step": "commit_32",
+   "sig": "ZLjD8E1W6Pp2JPYi349iER8rHR46PFXdNfakfVgDzUygRWjVWwUsgwqWep6te6JMyeDpqY8kUsz8Aq7kFLmiJox",
+   "slot": 526864572
+  },
+  {
+   "step": "commit_33",
+   "sig": "4RjmdeHoXwhhzk5rddJD79XWan2eLWtzYYW5Z6P7tK8BQmejyrjoExLyMLpVGmCVKGNWzN7r9HvDPbAbmZqJ8QRn",
+   "slot": 526864620
+  },
+  {
+   "step": "reveal_34",
+   "sig": "44TZv1Jcph31beMLsa4ALZefBMiUGxo7eEnTkR3mPCxKzYKnGaijK68XjyogUskoXw4cwy47Qwj64krMwvfMpEWH",
+   "slot": 526864620
+  },
+  {
+   "step": "reveal_35",
+   "sig": "2F9DRVRHVGntWuWMb9jYX6HWq9fZc7E8oLUYUCY1H1qUfqLFandmhZo8LPX3vS9WH9jcKxwQRpAnpxBrgzbH9ejD",
+   "slot": 526864624
+  },
+  {
+   "step": "commit_34",
+   "sig": "4hKXxiJcFKJ5FbtPBzZjisnLcwVjaSUdjcY8w4DegKfRr6HdtpXLfQcXSvqubyWjEHYCr6n384DLPRTecvMiJZ5e",
+   "slot": 526864624
+  },
+  {
+   "step": "reveal_36",
+   "sig": "36invybioadFLq6FgdPEkFMsXdoQ3qPVQ2iPbP22A34oJZBUy1gLSR9fYeBE6iZKGtaZSgbHjkF7Ja5Mrgs5XC5e",
+   "slot": 526864672
+  },
+  {
+   "step": "commit_35",
+   "sig": "51Qm5nJaAdePz4Vdy3CFWmeCaAq5RPo77VqKn5ZzC3Ttv9HsykkHHsc4hMqoY2E6jkPgTwoxxusxDK6gdisndjEw",
+   "slot": 526864672
+  },
+  {
+   "step": "commit_36",
+   "sig": "5wTtCDWD39CUiHMCRjqgfqBZYWW56Kwu9ERnJQ4dupWAxuzU6tidufv8Q152x1dZNEcg5SRRk8yC1hcCCoNtVfur",
+   "slot": 526864677
+  },
+  {
+   "step": "reveal_37",
+   "sig": "62aNZju2DYW8Se2iUjV7WyQk5t6DtwasgPP1iPRmx9FeD25pFTra3kvbPCWZMdGTzsAYEvGXeA1QEeLYvHS6NjVC",
+   "slot": 526864677
+  },
+  {
+   "step": "commit_37",
+   "sig": "5s9A4bqnDkzghujrVFZizhhNfPxnA7AgxDY36DvsWQLt8okkM4MyrydTFBzLF5r8ySWDYYcVdNpQKUTT3YGUxUfx",
+   "slot": 526864723
+  },
+  {
+   "step": "reveal_38",
+   "sig": "65scbPXRuBkWHYiM6U9rxMN613wnzGizGojxEMgCn3vBevM3bmTqAu9vfwCSxmcL6DmmxVt9C7g3K2zhPzkGUYwm",
+   "slot": 526864724
+  },
+  {
+   "step": "reveal_39",
+   "sig": "2DPjFQDmsPXbCrZwGJyJnYvjz3YhxsVHtGoNWqXAgFk14sZekrB88jnXAea3dbrKwPbRvDkg9DPHn6PzMzBukcRx",
+   "slot": 526864728
+  },
+  {
+   "step": "commit_38",
+   "sig": "5q4sHoHWkLfnNLJtpWzGopH9UJSUtHT2n2yxtLQTc1QAnQyE5PL4X4KxAMUHa1WXpcjDRu87eRxzkTUkeYEGeNXm",
+   "slot": 526864728
+  },
+  {
+   "step": "reveal_40",
+   "sig": "2BC4YaLCVesT1uXJvbXBQF74K8XQo6mmeLRB4Z8Rg6kdQM6RK4YGy1PbQznEmVC9xaTh2VahHa8KCmh17VCDVbFQ",
+   "slot": 526864733
+  },
+  {
+   "step": "commit_39",
+   "sig": "2GXc1YJNqB1AjtXDaZg5L1KFUKbX1LwrY3ddUvam5xuev3f2cafrAfed4yfNf1wyWSuHFjHwkaj7rVW5SdS14pyf",
+   "slot": 526864733
+  },
+  {
+   "step": "reveal_41",
+   "sig": "wNdEXRy4ZNbRFdGJFbF5WB3NJqrZXvLBiEJTaDD5HA2XbTD85ocwtFGrfu8e1c6viUaqNGTTq3m2Yjznazh3zkV",
+   "slot": 526864777
+  },
+  {
+   "step": "commit_40",
+   "sig": "57KWPc4r27pgCvU5i765zhC2jaWqa8Tq9wWSPrun99HGZujuZVaBABftMEiBPhYa3VqnpWDncvrhnJ53Aoyh7H2V",
+   "slot": 526864777
+  },
+  {
+   "step": "commit_41",
+   "sig": "457eRrUTJWDMuV7ia92UniEHDQxokKEUw54D5R8RhSexkPn46R8ynAtRDTSxFwrXsYkQrTynz211uVa91M49cs1Z",
+   "slot": 526864782
+  },
+  {
+   "step": "reveal_42",
+   "sig": "2zrcJ2rr5WpF8jnAehTNYJ64Q96zKEu1vY7iSXRcjL5xHKj7dRBvuwfdMnEfygwPNNgTRu7Ksn1pWaEdfpxMGptn",
+   "slot": 526864782
+  },
+  {
+   "step": "commit_42",
+   "sig": "2KTMKRezh5pjBWyhQs1Up684rrzxxoQGttVfNexhzRQKUWk7HoFtc9DUZTD2z7EefdfKwN96iAvuJyDvLkzov3jr",
+   "slot": 526864788
+  },
+  {
+   "step": "reveal_43",
+   "sig": "5PPRJw4xWZDU3RBjPPwxf2D5KuZuLQsEUaB3nqgEaNnx6pfAnQLs7LUgFAz6DmHTJCpfxCUW49nECSRxmQ4TbjCH",
+   "slot": 526864788
+  },
+  {
+   "step": "commit_43",
+   "sig": "DwdbGLcvdkBiPC9yBb63Lg2nHekdF4egTnTwgsqK7NMxduyEeGBP8k12SSAbtAqDgNLon2c2V44V4iysW5Hhhwm",
+   "slot": 526864835
+  },
+  {
+   "step": "reveal_44",
+   "sig": "5rkyfGgMigkwGEJaQmk7HBVezvYf7Ww82FvUYM4cZeiXUz65dcgkKNoYvumGSdZXGJCguymC4tzceCK2bEft3HUk",
+   "slot": 526864835
+  },
+  {
+   "step": "commit_44",
+   "sig": "3fPM6ShcfbMkNuYdeG6ANve8N31vdir2EUV7ntmkEDk2KxaA2thHuaLofzKM6ZyyJVMrgUR4WpZbvRVfJz1PuneP",
+   "slot": 526864883
+  },
+  {
+   "step": "reveal_45",
+   "sig": "5JgP2RJbT9gNzLuRrzynnWkMNrcQkqf21HfuVNafRW5FNMgfKjcJYLNDtEZd3rewds5Lzmm5QXGcNbyXGiYeCu3c",
+   "slot": 526864883
+  },
+  {
+   "step": "reveal_46",
+   "sig": "4oyyGjxhWJYWxD4mtDg5vTXuLFm4VzDmnU29QUVWT18tSK17a2MYjx7qNgKqNWd6MYbpWkF3hCA4ecd771stvreF",
+   "slot": 526864888
+  },
+  {
+   "step": "commit_45",
+   "sig": "4wmYPHmBdeMZLxqfb8HgUzoSM4X3gk2uGngutQW17awVL118zMijgyqfvg5bxyAc6mQr7e5N247qeXDBy6q4dk9a",
+   "slot": 526864888
+  },
+  {
+   "step": "reveal_47",
+   "sig": "4D6sg4H5DY3Fh5pACn3XZTwS5yjBpBJQAXw4zueapXMnNSg4GhaX3jzGY2D4uTdwL8yv6c6vfmykrdpfDknRkt4M",
+   "slot": 526864892
+  },
+  {
+   "step": "commit_46",
+   "sig": "2kR4P6HE2TE73vaWX8MSnNfWanqPSyN4LAnLr3oJYQaH4gXskE5br3uW9fbynXaQGqPmJhgGfxr67xZSUK7tn5Zz",
+   "slot": 526864892
+  },
+  {
+   "step": "reveal_48",
+   "sig": "5DWud4LJTvs84SSXhYpx6hVVWqAQTZDQaZYtNNMgZPFA5xsnCgBZfe2UtxZJyB2Q3zaQaDqfQDwKHpHxLzBPqPci",
+   "slot": 526864938
+  },
+  {
+   "step": "commit_47",
+   "sig": "Ks9nZH9ferh8rDLEaL8m8AGW7f4ec7zwermVfAVBvqZRvpo9nmYgARSDejFafD2t9Lh2Dams5pLECxwLQjdH2H9",
+   "slot": 526864938
+  },
+  {
+   "step": "reveal_49",
+   "sig": "5Kprq12CYb6eaoXJzMYk3GDyhVW9pecmfN9SRQ2B5ZQMx3YJDEh2S1jSwnWY2JuMCXPZWFqDiPmCTwDQWv8anVbd",
+   "slot": 526864943
+  },
+  {
+   "step": "commit_48",
+   "sig": "gdsfbSmDbUPARfLK4Vkcm2Cs1hrohX22WCN4CvNZ2CjDbCJF2BHvcg3zhoAm8tW4wWb9srqhTFB9yk5yS4uvgyn",
+   "slot": 526864943
+  },
+  {
+   "step": "commit_49",
+   "sig": "3rrcfWbQMKiPgGxsPjGraC3RHn5dUmQMbVtZSSCu9TGyYgku6oS8miXXJsGuySHLX9j3i2A9SmPSK9rD8dnSix4E",
+   "slot": 526864948
+  },
+  {
+   "step": "reveal_50",
+   "sig": "26iUaRr6UE3oo3r2f28sHWVhFiyjaDVa4N82FKEwdjesohgDqCaE9nww84pPKodEa7Ptyn7d9iSpZzkbkhnabdE8",
+   "slot": 526864948
+  },
+  {
+   "step": "commit_50",
+   "sig": "2y5uts9ZSaVvRm86yoDnYeZCxsRqVEnsUaarEM8wRGPGeY2gnCLVaAFar6hpo4Kb2YprFnD1fVQxvDxN7dUum48E",
+   "slot": 526864995
+  },
+  {
+   "step": "reveal_51",
+   "sig": "2gnUGe8Qmc7x1XNfxtJPKAMYSS1bToKb5eAt8gLW2ArSNa3h2NtTcgUd5fgus8vQqJws5ZZxPgHoHkmPc4Prvrfr",
+   "slot": 526864995
+  },
+  {
+   "step": "commit_51",
+   "sig": "9qSFmYAzJkigwNCw9ry9CAkTZFvCtwBFjjsPsQk3oszqCseLsdWRoAkcnn7AsD2jJKm3BdJRvWPtqjaETvjP79o",
+   "slot": 526865000
+  },
+  {
+   "step": "reveal_52",
+   "sig": "2WKVLtuAEnGVY8QxxEbAEpikTbZMEGpmhfsC8HP4LWJdv8iUczRywcNAWcfq3GAX6PPRDp9UJvAZqqAdN5arkRHb",
+   "slot": 526865000
+  },
+  {
+   "step": "commit_52",
+   "sig": "5N7Q5YRZC5zmgpeD8LzJ4VQ1AiLhaLygY4fjYcPmBdzZndNMeXR2cQvP3A1LA4hoKp7ZGvnUxRfC2uuNum3A7beV",
+   "slot": 526865046
+  },
+  {
+   "step": "reveal_53",
+   "sig": "3jrsascD6cMS6NG36oGCb5S1CUk6zjNWokh9qeyoapTTfcd1QsPQ7fChTApLzCJnyCpNGD6sBPWeDJAi9nNEmCBk",
+   "slot": 526865047
+  },
+  {
+   "step": "commit_53",
+   "sig": "5M72ra9ae2kbzbn5Gr6558JeVAddVguhZXdM9QmbnAgauLGnApKJCHrMDWpV4HsdyQsKKQG4rWcSL5BVNq3Fj5nW",
+   "slot": 526865052
+  },
+  {
+   "step": "reveal_54",
+   "sig": "7Q8i4nMN28M8W1UuYtQ3TRLrV9xVRNazwJXtPZH9Lboq1nkqaou6ByjbMEDhXujT2JMf5wpyG9UcK8ysfdLjVdi",
+   "slot": 526865052
+  },
+  {
+   "step": "reveal_55",
+   "sig": "2bTjYNwSzzXLTLykfExr5LhZ5NJEVqyoECvmVu7ScurNn39KfxmHMbD2TT2uBKoY69aXrPFqZkAPfu8271NzRomn",
+   "slot": 526865110
+  },
+  {
+   "step": "commit_54",
+   "sig": "4nmuj4Hx7DPqSbvGJCrMLZEYLeL5t4YkqHdzoH51m2NiDtPRUCN2PdgzRvfgSiDfezQe4D1agDK8sYpzsN5PobJW",
+   "slot": 526865110
+  },
+  {
+   "step": "commit_55",
+   "sig": "zMXNxo1HzbBKRmegYGNaXK8Nt7Qebf5YEKCUG72V1o7vA5uYiNQHMwzPkrU2jaLpZS2B6JzsPEw5YiZUK4Tp6Zx",
+   "slot": 526865159
+  },
+  {
+   "step": "reveal_56",
+   "sig": "2m4KTLtpxTQnNADyU65fLjexkDZuM7G1Gmqx9eUiQNgZhqQNehPRdNv7T2rUtP5fzhRod3ABFF4ko9sHmv8fcmiT",
+   "slot": 526865159
+  },
+  {
+   "step": "reveal_57",
+   "sig": "2YeLkopm2Jzru9qhHoCWWWggihcnYGRqqkBzhN5ZJNMPxuSrGT1RQqV9wMBJ7N1fYTSR1v5KnRp9xAKpnBFoSrex",
+   "slot": 526865164
+  },
+  {
+   "step": "commit_56",
+   "sig": "2esE1eoD1kgEjPJvGoCsBU3hDsAYTRsUQ9HtRMQRFA5xS6xBxMviEwM7jV31on6iqJDH8hzabmAw9ufNhsWQD1KA",
+   "slot": 526865164
+  },
+  {
+   "step": "reveal_58",
+   "sig": "2RjbQX2G1SD5wB9H1tjih2rCTnooTiZRgsbqCbhfLkBV3hsv3ikKs76TG8KLLjCwmv6MtZKNWri3xKb7mysYDaBN",
+   "slot": 526865212
+  },
+  {
+   "step": "commit_57",
+   "sig": "5qygbFcneW4LWygepH2ac4C6HJbMQKN6iKA8vkK6DzisZKoLQkyoBWdX2siCsUxdnD8V8xgzcdcme9EQmXDRSeBf",
+   "slot": 526865212
+  },
+  {
+   "step": "commit_58",
+   "sig": "ZWq7yQK46brDvV361otujmtPNhaEn3iwJ25V8vMttwoZF6SiJqZVAPeL4wsaV3KzkNbPgXsaMwDovkJizq8RS86",
+   "slot": 526865260
+  },
+  {
+   "step": "reveal_59",
+   "sig": "4RpiXzzTDmssSdLuqHr3tCJoz9iwVAfYGSbKfWtFY2hCTT8FnwsiTetQV6xDfK5VYBN2F4rKGEVyZWg72U44SaYk",
+   "slot": 526865260
+  },
+  {
+   "step": "commit_59",
+   "sig": "ABf9wW9qYFe6ND5yMG5ad5GXFJ9R72PYR4m6wENM7jwrw3WStF77YAUPygSbEzgFsTSQcY7pdBGwymaHEh47ZrN",
+   "slot": 526865265
+  },
+  {
+   "step": "approve_0_verifier0",
+   "sig": "46ngDNa2MpaWFQ6f7mUiAUEv5QxTDMBMFDDj5PwgbzpTu1rigXd5CD5y82mvi5aMyxqnrKNRwrehnxb8aCYyNbJ4",
+   "slot": 526865273
+  },
+  {
+   "step": "approve_0_verifier1",
+   "sig": "3sHj3qcZngVbh4J6RrKVfHpHG9mdDodkYL6qRWWRpz31p3LW2WjfnXTxjAc9uvAWkHaXtiT1Y3qdH723gDcQkyWC",
+   "slot": 526865278
+  },
+  {
+   "step": "settle_0",
+   "sig": "3ra28uaCr5qtujgCbp1oW6ph8w5KQChb2uqwk7zMVnDE9uaYk7WBZonzfdXuFYk7DXZ8EAu32VeXkr1FHKfAjYKz",
+   "slot": 526865283
+  },
+  {
+   "step": "distribute_0",
+   "sig": "2wPfwM9Kwp9w74BuBT3GLafaeUaPoNnGLp1d7p9ZEmR3SwuhjiYpBtp1VMx5qu24Qw4GLTYXcUuuE5zPABaySFqj",
+   "slot": 526865327
+  },
+  {
+   "step": "reveal_60",
+   "sig": "5B2nahGcPYgqTHNFF6px9UAp9c6FbgTyZ88szebUaDKNUqiXTnh4W6hHbGjiWvpZ3P4kBeF7U8svAA3kyv9jn1mc",
+   "slot": 526865332
+  },
+  {
+   "step": "commit_60",
+   "sig": "43Kxb4NT9N88pqewDi95Hx4Jr3XUx4EZXdTe5oGz5mqEyDiriJvHmAYTJsrukv4pY4FF9AmjgpNYoyBBJ9fFLJCN",
+   "slot": 526865337
+  },
+  {
+   "step": "reveal_61",
+   "sig": "3ViTdBEsD8m591a21wJ5cyRFu7NyB6K2f52Dw7hkQgG2PwYpaHvpY7fzE1iiwr4jUESJjEurTsYtLRMzPbyj8os1",
+   "slot": 526865337
+  },
+  {
+   "step": "commit_61",
+   "sig": "4DK3EP267YfJLj8MDBzFhwxC4dWyjc8QSP9gSzwm8goxCmggYNg6wkKwqkExNErGTUAXQhoNYktHcS129a12AB4w",
+   "slot": 526865342
+  },
+  {
+   "step": "reveal_62",
+   "sig": "2ZhLEKPSTJniAgfNWDDMdd9k4rDKrhJCGUNbaahgbVVXjNv1Dd6tBdL4y3rojsZ49Qhvrxb5BqnRrgwuzUMgQJyn",
+   "slot": 526865342
+  },
+  {
+   "step": "reveal_63",
+   "sig": "WxwnwZQAdNJ14S8DK3DQ41cxAPLhDDYjfXXvZEZHFEMf2YejtP2rNoBbp5KGNRk2qAxLNwhATz6xEVDLLdC3HA6",
+   "slot": 526865385
+  },
+  {
+   "step": "commit_62",
+   "sig": "5KB2BbWcipD19Htgc56wEEVHXsiPft1SEV2DcoyjVtektTAommgLuH5gc1NA1R1ftYKTBjwTRK3JvkW5P5J5EeNk",
+   "slot": 526865385
+  },
+  {
+   "step": "commit_63",
+   "sig": "4q26oYLykWjUvDEQ4wXH2os1XhyHFsERbtuWTJdNiVCbyk4fXfNznya3LbBGUcbyo8aErBu1x29NHg6nd7HFjqwQ",
+   "slot": 526865390
+  },
+  {
+   "step": "reveal_64",
+   "sig": "3kL8EmAAnvWSqsFR2KATp4BMpFftTQ4tFSWyA792AHWWoZ3NXAzHMngQEsc6dtabjFN9CvoeK6WDiYkxxcufFxm6",
+   "slot": 526865390
+  },
+  {
+   "step": "commit_64",
+   "sig": "2jt5yFbQ3t3gzcwB6iWFNzvTADjuLgmc85xq2mjbZ22EFVqLqH6Lyb748ZkU1aLgHndVhULgWSYUz9JkgboE7gY1",
+   "slot": 526865437
+  },
+  {
+   "step": "reveal_65",
+   "sig": "3uchmwhB3g5sVVdwQQqacskQoQvZxMrwUykDKRgBXKKp7UmzeXr4wDxgFreNQ7QxZfiYCFWMtsTd8KiNP9ZySCA5",
+   "slot": 526865438
+  },
+  {
+   "step": "reveal_66",
+   "sig": "5uRQphUafJp6dqFY6tsNwTTJivBSbUGUVPA6YjFwodwcHkyH2wuksBMYo8DWbcFjLV61cFKrCjYtNMu6Tnmy9enf",
+   "slot": 526865443
+  },
+  {
+   "step": "commit_65",
+   "sig": "t6rQrFpYUomwz1QgxGq4FUJ39Ys4zfgpEz6e8dtHyxdBR2TtUbYMzADtKRfV17CCLn2q8MYtjHFFEjTsgqPhKEq",
+   "slot": 526865443
+  },
+  {
+   "step": "reveal_67",
+   "sig": "4hL9TCS88y73BWxwsvSJf1ib1rJMZcUrJXHDdRpmcj3duyswxi1HDNQcwtZmiBCm9qMoz6ScbjLZHD2tNQfxXhKv",
+   "slot": 526865448
+  },
+  {
+   "step": "commit_66",
+   "sig": "5zZg5qoERJcu6e6BKb4idGnEyMZ6cpfsD2dHMwNX5TQw8Ra8q8cQ7Zzj4G5towG512jW19d73UgkvfVY8XD6kTHw",
+   "slot": 526865448
+  },
+  {
+   "step": "commit_67",
+   "sig": "3ekA8xwvi3eEd2U6kWFhUD8FF4eoNuShcSQpqJk7wxLAxkQne8f73QoGWi7scay4SgZKpFbUk5Ez7XzEhYJUBGhx",
+   "slot": 526865495
+  },
+  {
+   "step": "reveal_68",
+   "sig": "4TVrndnT5ahfJp7eiYuqGwT9cyH26H4QTxAJ7qjng2Ld2GR4fNGLeS2CmsgZGH3mPTofpHyf14hNyxtiqNa1umbe",
+   "slot": 526865495
+  },
+  {
+   "step": "reveal_69",
+   "sig": "5PL1SRXmw1ZkT5wPFgYWMzEDQwGw2QFbN4Mz1hXzEBBLQAVuwyqpGXyQE9z3XffD1kfpHyV3dEPdWrCYsqdYdt4b",
+   "slot": 526865500
+  },
+  {
+   "step": "commit_68",
+   "sig": "2i1ZRgUN9VkXnbh9k5VWzNTMMtAwGxbkijzeYdRgsFi83BCTnCckfXGGsTq1a5yXYiGvDBrXZPyzwzZKeiiSe7wy",
+   "slot": 526865500
+  },
+  {
+   "step": "commit_69",
+   "sig": "67iAYYKMMLxr36XjXBS7vtjSbsRBeEfSgkDQgNGfNGkEyY5xbTqC8DQEYskfwUvGBGLsXQ9VH9VbLx89bUEPory7",
+   "slot": 526865547
+  },
+  {
+   "step": "reveal_70",
+   "sig": "5immVvbfqKDByBwMfMEzNCuMSk2B12yCfF6knuCP8BsuvUsbVKRMjJFbc2BbngDtN8ZQVPC7FNGe6dyaASWDNeko",
+   "slot": 526865547
+  },
+  {
+   "step": "commit_70",
+   "sig": "5ArWBSkHeD1VG1ZdSHRQ7j4WLZiNkhQX3ratV5CequX6AVh7C3NyvNa4oqhtSqekY9TBnYh9TxSoY4wVgwGxVDPf",
+   "slot": 526865552
+  },
+  {
+   "step": "reveal_71",
+   "sig": "21LuuLnrFiXJAt4CML9PSVsdzaRVMTAGp9PL7QGYFA18zCv3C1wNGFavTcetrRGwMSrtsLFKuj98EX8Qgeg91ja9",
+   "slot": 526865552
+  },
+  {
+   "step": "commit_71",
+   "sig": "3bZWNeb2CFFRDAXYp3CbapseQnAspJ37r25mJPKZYAT7ubZW4v4fExcxT891gZQ5nqDWKPEYmFXGteZHEMhbc38H",
+   "slot": 526865599
+  },
+  {
+   "step": "reveal_72",
+   "sig": "5Mf7tQMBTyrtvm6vR9WSW24BLrN74wFVpHdEB8PGZfWd1xjLCRt2xqySA3e7DaSZ2VhNax5MUEbJ4HoKmtFBTPD2",
+   "slot": 526865599
+  },
+  {
+   "step": "reveal_73",
+   "sig": "2J749qfh2eWjSTo7LHAYYUwWFjWRRqna4Ng3STGWtN5SMQk9VVrZ2R2HdhsK5Z88NvrUx7zxc8ik9TViwiFujYpq",
+   "slot": 526865604
+  },
+  {
+   "step": "commit_72",
+   "sig": "5vdpgWfxhdFr23bRLX94wvhjZq42AvRqBRUisAcz8LgbpeCLQDxj9Hqxn6PAwJqy8sTB2vKEPEK8tQaoqt39hYJF",
+   "slot": 526865604
+  },
+  {
+   "step": "commit_73",
+   "sig": "2znRb8TiApRxmM7yihf6nm9Zs5pUcqE2tn3e36TBbKyyJs5Ahe3GKapfrVfc2hasWSo1DSA3cJ6gVau2ir1wLDYy",
+   "slot": 526865651
+  },
+  {
+   "step": "reveal_74",
+   "sig": "pkCgeR8BRUnew4S5PurKt9nbN5bx33hcBfSuqcfXkagBT1diXe6GJAMPMnZ9G9PGK4zagMMYzBajGUCRiVg4M7v",
+   "slot": 526865652
+  },
+  {
+   "step": "reveal_75",
+   "sig": "3Uy5xTzDririqDPx8HpyNxzZjTZPpPLmF1fxxA47JxeJ6N6phbqW1yCqwZmgjinHY3mGdSpMsXjXFkXq8LqbEteB",
+   "slot": 526865656
+  },
+  {
+   "step": "commit_74",
+   "sig": "t4Z9N5yNuXGm33qCjSuccGhGu9oGEzZx7dVkDAigakNuUyWoJhv1CKp51q9qKEqYDpurzPy8MAK6DahR7gXNJ3m",
+   "slot": 526865656
+  },
+  {
+   "step": "commit_75",
+   "sig": "4P41y9xgaJF91nmtzhh7CVBK59vcTh93v345FVB4uhbUSdmrN2ZcvwSPxSccEjEsFPB9qQUWef9pT4zY9GWXC5cB",
+   "slot": 526865661
+  },
+  {
+   "step": "reveal_76",
+   "sig": "29RVHLVBtwhJRc8CGHwTyeRpyPHuEXfvh7cZrTyqkRN6KEBGJPtntDqA1Ww1UEAejENpKjSg19aZoinj2jf524Bp",
+   "slot": 526865661
+  },
+  {
+   "step": "reveal_77",
+   "sig": "4kMym1ocgG2gm1bLGD3EjJCxgThb6d78MJLtKhpR5Y8keYgvqUYGHHQTHyHUnmSrwXuKmyEj6Lr6HxFn31cBS9Ln",
+   "slot": 526865708
+  },
+  {
+   "step": "commit_76",
+   "sig": "41u3iFdrjQ2yC4GAmD3VhHkLEUp3xMAwov3rraDhBHY5e3DvxvaxzmYhfj997TR7rCUF7kjxovUwN9S93g5rtc94",
+   "slot": 526865708
+  },
+  {
+   "step": "reveal_78",
+   "sig": "4LjkjMKZw5yjnDYCDnbPnooS492nMdA8B3RbYJA5rkihoUJLpwRvk4Rg1vrVDFoY8SGowHd5XwvmTNfuZjmUxEZ",
+   "slot": 526865756
+  },
+  {
+   "step": "commit_77",
+   "sig": "4CGwbExPjHHyyTJYuvmW38NTYjzeE921mCtCxjjer9Gk1quEz8CpvFQqCqkRh4W64uCF2ZVZHu8D92UyLS7VsrPN",
+   "slot": 526865756
+  },
+  {
+   "step": "commit_78",
+   "sig": "2mrjzMMJRwbZBAQTvWFU2hpndRvbgn3Gj1Hfgr9W7yKtqd4FWE9r3XFiP97rkxzRMHZVcYaLDXkWMTwftfXbEBy7",
+   "slot": 526865760
+  },
+  {
+   "step": "reveal_79",
+   "sig": "3Gw7yHQkm3xKktnnRPCrQw1NpEHJAQ7p3N27mo3GaGAYLQLzicdL5RWndZMqX32yP7rfaU7bJJZrVTBX92i7j3TD",
+   "slot": 526865760
+  },
+  {
+   "step": "reveal_80",
+   "sig": "5n5NA4dZ1PcsgnFJQ8yDdJLekLGG3gxbHKCitHuZVfhHeho7E5rPK1Cjf1ePwwVoHRBo5UfhviteRhmWmkxdp8Fd",
+   "slot": 526865808
+  },
+  {
+   "step": "commit_79",
+   "sig": "3UFU5s6p5wSq4Lh4VAyKEcFnnxbNqDGPPpUjrnNfVgZ9MPKh6Z7pgGK7sW91N1YYsSuREn4igzbTkExVwfbF4oR7",
+   "slot": 526865808
+  },
+  {
+   "step": "reveal_81",
+   "sig": "5oZ7sHydogF6ownqKr8fAXwcCHpTg5SkbReHQHtvWPv4SnPoAjnxGayKvpcKzxqLdSjPqQHmmjUyNpMny2nM3rF6",
+   "slot": 526865812
+  },
+  {
+   "step": "commit_80",
+   "sig": "3orxSCFZ9H6kaYBr2YM8z3EWvLTj3pHxddjA7e6KuWa9WjH5wAzdJJ5KSUaHvCRgQ9Q33vAeqnt1Yhc2cQoaSCxK",
+   "slot": 526865812
+  },
+  {
+   "step": "commit_81",
+   "sig": "3tZUr4HvRQxLhvUe7WAFWQ72uRqeyYiHtV3kxVXGvEPSU27WVDNrk8T8HEpERoqUfbAbZGLEEjoq2EmBCjyH95hd",
+   "slot": 526865860
+  },
+  {
+   "step": "reveal_82",
+   "sig": "787HT6w4ydpehfnydboivnLH1WhfQZX9jZotTb5SfR9HV92GTjgMEnrK5R8Yg6gXKuHVvZdaGxytNZ6TwsT1Ubg",
+   "slot": 526865860
+  },
+  {
+   "step": "reveal_83",
+   "sig": "2Ta8e6gnSD8tFfAKQ1e9jEEdLDeiSTcJik8sPSueGqP7XAXLUz2F3BV8WZ9sy8yxi1ajkT2MbLhbGwJrua7MWqLm",
+   "slot": 526865865
+  },
+  {
+   "step": "commit_82",
+   "sig": "5H7TgmYc4gc6E15vFi39vagmvH7NervR2FCKdeZbtrV1Kvh3CXTrQuoGtotqMMeaKh1GXKmhABLb5zWdNR9b891t",
+   "slot": 526865865
+  },
+  {
+   "step": "reveal_84",
+   "sig": "5jFMBRdA9B8dFeLnNvWVhdVdKrenNdMdSkEwxZrqAbMEc1pTA2MEzmopbTXakuwTubsNeUafqxtno9r6U76n23an",
+   "slot": 526865871
+  },
+  {
+   "step": "commit_83",
+   "sig": "3dZBcGRbkpBDbLUwvc7uDhrtjCksfhfYGCtgfo5RiP7QWX6bQ35Z9LZ64fNqZmBWU7ZXZ5pg8yhzGzHu71wd82DD",
+   "slot": 526865871
+  },
+  {
+   "step": "commit_84",
+   "sig": "56LEh615DuCDzrFXWMj5EpWAZ3hkcqyPk1AMpRqXjwvrCZwLuR8GgbY5uUiqHh8TBfPB64bX4StwfAW4uat7Xckq",
+   "slot": 526865917
+  },
+  {
+   "step": "reveal_85",
+   "sig": "2QMvWZRCcML3UuxNJT2cfaRPYdrzweZxHqdeG9BH2UWC1hDoSxwdBVLTaomZdepy1gCAN4sYRKWRVLatxibQ4woa",
+   "slot": 526865917
+  },
+  {
+   "step": "reveal_86",
+   "sig": "2SM4M27rmoouCegc4kFLa9o6qLVBUpydc5RJqyYU6nq2iZYR8o3rX8oBNkQZCeteCfFUcEwbxHpppsJKWhZstSW",
+   "slot": 526865965
+  },
+  {
+   "step": "commit_85",
+   "sig": "3RJc8bafMx3WNVYb6n2rUnbqJ6W51xEuLGPqcKdowr2Cy34Vk1mwJctExNrnhevS2ywvmBH9JWCK84Cryfgbp6zJ",
+   "slot": 526865965
+  },
+  {
+   "step": "reveal_87",
+   "sig": "528VWqUQdsQ6A9jKAgpqUCgwxh6Hn9dk6qE3FwzyJCWAP4Z9EnSWgpXRG1Vcr7dk9i9YCTvMTdhkkaR74H489jEV",
+   "slot": 526865970
+  },
+  {
+   "step": "commit_86",
+   "sig": "4Mqp1RUnzPpkGj3AkNuZWotEXAwR9EAJmjYtkwSAHF3Z4eg5StPWzx5yGJbu61HcyQ1cyLtGWEpFeyMfBDU4C6aG",
+   "slot": 526865970
+  },
+  {
+   "step": "reveal_88",
+   "sig": "26y4ggYErHw4XbmFVRcpweV6y8sqLrei7gwkzi8rHC4ojeqo7ajCJiUGWdGAThBx8T4L8sNw536fPvhn1Z9PmPjq",
+   "slot": 526866018
+  },
+  {
+   "step": "commit_87",
+   "sig": "3whfBkjzzmCEMtcC3vfijAWFfzwHeUp7Z9SVwMTrZGuzsmKhJvLRVK12GEzDeQmgDHZxifCfZo4UDmvvLka814i5",
+   "slot": 526866018
+  },
+  {
+   "step": "reveal_89",
+   "sig": "6b5ABk4qSeVgEACLrBvtwp3vU5igE9qVrzgQQZpV6Fh1qRMpQ2nbt9LtmQ6sGrKSjwBUfWQhPEoQd3WhBBBzM54",
+   "slot": 526866023
+  },
+  {
+   "step": "commit_88",
+   "sig": "2rP4G4fdSPn6PoTo2R8hbz5DYcLMF998PeVKLDyXM1gW43495PnhrsCexyCKrcFK5XzyU8LuoByBujtu21cE4GFM",
+   "slot": 526866023
+  },
+  {
+   "step": "commit_89",
+   "sig": "5njdKPVwKdtNpEbSXSDUH2FWS1xWvNKQKwaFwEjRK7Lt3TcBPJGWmXV65bzyMwqXjZKot1YoBeYqdh7KGP6xtyRu",
+   "slot": 526866070
+  },
+  {
+   "step": "reveal_90",
+   "sig": "5KuMsSEuPGaiZ9HXD4oKdbEJ6teWXbsGWLamtESUDQJgV2sxwFVgEpzGMo5sVt1uupuzYk3Li6PS8RibXhDPQkGZ",
+   "slot": 526866071
+  },
+  {
+   "step": "reveal_91",
+   "sig": "2QedXhp1pgYgtpvKapv5pCCiJct4sWDmEnCUzUGgzgwTHR6UZvDS7ZAHB1uKDTcpZ4YSzzgefwj8LGTpiL4VurYR",
+   "slot": 526866076
+  },
+  {
+   "step": "commit_90",
+   "sig": "5qdqxodaCKnD8e7wLoffWFmBDEPKnJgyHa2jCSvdbQDXGkrovko9uonczAFMz8ov7tXRvTT1K1h7SLSgXiPn19PY",
+   "slot": 526866076
+  },
+  {
+   "step": "commit_91",
+   "sig": "2E6PySwGRjRMgoVRX5xTyMaM9bt1d1tWsxrp2esZrT8pSkUTGuz1N8c6VmkTgxUqJSwpPZVNV2QYtaCYmSLG7nCz",
+   "slot": 526866080
+  },
+  {
+   "step": "reveal_92",
+   "sig": "26Rhu9fWCL8zkk239HN8H91Ts9h75ds2ZWAziA2fzAKBSqoFdxAWwGC26AYEW3VGe4KhcgDQPERMbKNAHh4GXuYj",
+   "slot": 526866080
+  },
+  {
+   "step": "reveal_93",
+   "sig": "42WCftdVcFEdTJeYDxFWMiMibEgEG6YY8pLEkKmvxY2r8fMpHDoysZUsNdCHi1JkkSxSceRTpG1ZaapYmpgdBVPq",
+   "slot": 526866127
+  },
+  {
+   "step": "commit_92",
+   "sig": "5EfV6RmA9eXqN1MbmBJHShF6t1fZ4y51PAQ3yoN4SqMmACBGGz9x6BQoNX5vfV6bfhzLc4LnC4qgkGp9Bui721q3",
+   "slot": 526866127
+  },
+  {
+   "step": "commit_93",
+   "sig": "5e1nW1HtAucdACP6iqDr2btruKderV1wTYEUCA7RDVkj6FddbvX7TSMSmos2rkZDcS6iWs9Y31yPUr2d9xRrbwZF",
+   "slot": 526866175
+  },
+  {
+   "step": "reveal_94",
+   "sig": "5cVKuyPb2U992eSeDNgPLzGfh2Jc18QmePT1WMDBLo2tSbXzJYx6Fr9SCgCsYJ9TaZyoQacYy2Fm951RuYQX3Gxc",
+   "slot": 526866175
+  },
+  {
+   "step": "reveal_95",
+   "sig": "5DA7yTdo7eeiuNKY1QifJKNkvhBW82sYd5ie3x6j47RKovKYcQWG6Yrdi7WVYvhJXQ9YDWHkwKy6RebBdj43Zpa",
+   "slot": 526866180
+  },
+  {
+   "step": "commit_94",
+   "sig": "5UrUeY7WscgMsgWasZuP48S1mN4m1KEeQ4AsMGw2VfFomqMPAxJCrjmSxnpT9E7Svm2ABqHvSFtTHe4srLWuSREs",
+   "slot": 526866180
+  },
+  {
+   "step": "commit_95",
+   "sig": "2z8ErDpLnEzwNJ57vCMD66ZoSU7rUiPKMDkFczmTNbTMRTq62mqDArpoqjDvWmZYQpUyD1FquBJydZtwh9MVSizy",
+   "slot": 526866226
+  },
+  {
+   "step": "reveal_96",
+   "sig": "3JFokVF2tRoiMYXp63YeeNiYaWP47WykjLLZwgT34LKCEJ2W6Yd3SGFCgkJBAAV8MYy97jokdCvxWDjbi9TZZy2n",
+   "slot": 526866227
+  },
+  {
+   "step": "reveal_97",
+   "sig": "16HK5b558qpdtyTUFefLd1zimi8WvChtb4ewCpxt6hov3cXtMiftcSWtbkDVUiDkaV5f9n12rrK3c9fo1bomFEZ",
+   "slot": 526866232
+  },
+  {
+   "step": "commit_96",
+   "sig": "5i8ac3xHu3FrzrZmcJktVFCjeLkLLWKkKc7GLCrEgTGjFnbTDcYFkzc2G6eATfrAdhvTMYtzKRdCCSLi4eQfHrvh",
+   "slot": 526866232
+  },
+  {
+   "step": "commit_97",
+   "sig": "4bantoJasF6ogTYu66C2S3zqx9CcHS7kU5arZtrhXPGsvAxCoiwX4v2QNaTx9vF4NJRh4p9MF8DPNdCmJCe4o16f",
+   "slot": 526866237
+  },
+  {
+   "step": "reveal_98",
+   "sig": "56C5UH8NLC6diqX1bQtLpdULa1Pnw6ZDar8zkmHoznEkfMJsPi2rRYC7RRXvd8Z4LPioUTfurgCqbzuNVGjaCk6E",
+   "slot": 526866237
+  },
+  {
+   "step": "commit_98",
+   "sig": "2ixYqwNuzz2RY72SuNC8LN3JvoYgsuFrZjxf5JkPnm7nV1u9wgyJWuVEdjSopyUfpthRwxMT1TdRhZSvFj443HDi",
+   "slot": 526866284
+  },
+  {
+   "step": "reveal_99",
+   "sig": "5hy9PcSe6op2QqJdSDiGgNqCFrGgmk9hrgMdo4fY4aXdqTmG5WMMjy5YCzsAH8NzdhqALvY1QLctmH27Wx75uHFz",
+   "slot": 526866285
+  },
+  {
+   "step": "reveal_100",
+   "sig": "ms6cLu9ZiA85uXq9vg6Qyq1jJ5UEdYmpQMssfPDcfsHpQgaH3CzKKAbmQu4BMdxJbEujLocQTFzwWS2ay2hE5bR",
+   "slot": 526866290
+  },
+  {
+   "step": "commit_99",
+   "sig": "66yV8voujcexZMircfkpTSywyn3EA5qvHV38jjUPz3zidZS48QExHkj4fQC5XtLrHbeXT19k29xuKBcoXEjnmiYD",
+   "slot": 526866290
+  },
+  {
+   "step": "reveal_101",
+   "sig": "5Sf6cZ9npfo3ioyMwgSkkUMBeHJuUVaGCqWVLkZ6ERBWC9PM1BEo8beu9Y13b3iAakt6ZkJZtJAnZEFPVtq1XzM9",
+   "slot": 526866295
+  },
+  {
+   "step": "commit_100",
+   "sig": "2jTA6oa1fdPQXgSNCJM3Sk69tbYDJVQp3UXnxYbqD3RXNeB4i9nrA6E4bj3Fno3rbqDdC1JgLsKyPgTmBupyhMcq",
+   "slot": 526866295
+  },
+  {
+   "step": "commit_101",
+   "sig": "2okoi9iisYhANbzCKZPQcyK7SYcYXWBserpxMnh6cTWrDiqb4xNwVNKo2LNnT4ni3whtdciw2sgcEAbFK64YMkX3",
+   "slot": 526866340
+  },
+  {
+   "step": "reveal_102",
+   "sig": "2rt2zGHbJJiXm5wGmPQHYYaKBXLU7iReR7XL38rcwDmMKAW2NuF6SrjideE8p1oMt7tXmdmUTbjDioJojoYsJp8u",
+   "slot": 526866340
+  },
+  {
+   "step": "commit_102",
+   "sig": "3V4nHLLAGiJcSybUWakbNR8KABkb7NH2QjXX5Y98kTNTcTaZcT9a6PCQibE9k8d2J5xxByqyHKE1PozDam1G4Y8i",
+   "slot": 526866387
+  },
+  {
+   "step": "reveal_103",
+   "sig": "5fJ2cxptkfpvn6TL37A1LA8ijzL2gifV85RHoxsAs8QmAzuaHQae6h7yf8GSFhFcyeqvPgXEMsyN9X2kK25LgEYX",
+   "slot": 526866387
+  },
+  {
+   "step": "commit_103",
+   "sig": "4o76nqUySBKxHX4YJ9JEHzU1Mm5XvQrndEZrtGQvq52JmbumZooHFt8b9uKwNtogaLzh766YW2ycFijEwfMheZrh",
+   "slot": 526866392
+  },
+  {
+   "step": "reveal_104",
+   "sig": "4R2WVzWqFVKVifiX5Xk9iav2i41pRKWx1YgYjyYez89TaGJv6dRhgm47W2QDFiJLHP5dn9UcK4pbZbxtq18fNNXy",
+   "slot": 526866392
+  },
+  {
+   "step": "commit_104",
+   "sig": "G8YQ48rvDxruirn7BNxfRA56ZAq3Lf3ykxm4sAoY8JKEvjbXu8sp67yDq8sspJNpG2TMds3LMK2hFJ4c1QMcM87",
+   "slot": 526866439
+  },
+  {
+   "step": "reveal_105",
+   "sig": "27xVsUG3HexsW7MXAkdRx9P6ha6TemwZY6WkrUz3tMwvMGFmtpstqCGvonTmfnHwgJLbcaQCGt6dLqkgDqRtXhRR",
+   "slot": 526866439
+  },
+  {
+   "step": "reveal_106",
+   "sig": "39Y4cX3m6mPSNRR49Q9tNSxrnUR8emvKPe5b5QR7JWP3VTWzhL1PoXqWEW7uA4ZR9ATmCAaLe9iMsB7CF1MuMQkq",
+   "slot": 526866444
+  },
+  {
+   "step": "commit_105",
+   "sig": "3B1429f7w2X47F39mx2eQU4DKLvuWDwTZPUFG4egT7QGvaHzoyGXQCuCGYHqoVnCsWGmqoFBrncUV2mCJa2h451c",
+   "slot": 526866444
+  },
+  {
+   "step": "commit_106",
+   "sig": "ZqAd5vcDwujYg6wks1esWgepPNLg2gY6yTJb6AXmMtctNuLtabcDRj71EJoFwRenNmyDBAk1NjL5vFYgg141LJB",
+   "slot": 526866449
+  },
+  {
+   "step": "reveal_107",
+   "sig": "5SvGnBABLFAgEffgCyXdyGjeLzjYJCwoRMB3kb2pLCshyeKbdecJ9NVv5ozipGxdkQtEGVWFKAKW2SDbzSMsJbhp",
+   "slot": 526866449
+  },
+  {
+   "step": "commit_107",
+   "sig": "5n2fKVWNuG216sQF8vNP6HoovkJzzbKry7h9oKs2DRoFmT4uPwk7hDJ1x57TTfLH4ViXqkY47XTBfLN6MeVKrSP3",
+   "slot": 526866496
+  },
+  {
+   "step": "reveal_108",
+   "sig": "cR83dgPPfkHep8NUjCqiam7wXFF27pjrTpN87GhpGWJqx8P26LBK8ZTPTXqDSmLt9zNTSmZunyebtgxr7xWYBt9",
+   "slot": 526866497
+  },
+  {
+   "step": "commit_108",
+   "sig": "4CL8pv1rVZtMCubsAibdT4hXAL1nLfXpY4Rmpq9NqSWYejGMKE85P4QCF2WnMd3PS2Waog8HJx4YEvH2k63nt5S7",
+   "slot": 526866502
+  },
+  {
+   "step": "reveal_109",
+   "sig": "43LqjH3X9DPrMAbeHK765TE6ZizkwcPJBLYDJpY9ooPt4g89E4TE1tJ72k5hoaAMhVvkBcHstwkzU6X4orMzML58",
+   "slot": 526866502
+  },
+  {
+   "step": "commit_109",
+   "sig": "5Y1eM3Hmbd5CWEzEuF9dopHUPU6oLEHqPh3qxkJm7r6LypSbzUQUkZY6RyeMfWvs5UpNv23FCEBtzRrMx8A9r1u",
+   "slot": 526866549
+  },
+  {
+   "step": "reveal_110",
+   "sig": "3g1hxzbT96TR8bDmf7dGWSEkg6rQciBFVNdJEoxa6P7JcUphvMYqUsHmfoPpDAfKh8afwkCdHrsvoXwqNof1Vdpk",
+   "slot": 526866549
+  },
+  {
+   "step": "commit_110",
+   "sig": "ZPS2jQEaPDrYnoGQTrjP3NvmQpUEo7ADaDupqFQYwXPNZmhHHqpL2sZwosuGKVc6oF7hxnC2YZ2sRXyFVudbQb6",
+   "slot": 526866554
+  },
+  {
+   "step": "reveal_111",
+   "sig": "3gd7yN9EMuckQQr7xXDnnD9d5qeBim6wb1uP8aM5KnxoF2Pzu9mQkBnacs8EXZvLjjzFbEnmjREhE9b9BkSEYgoM",
+   "slot": 526866554
+  },
+  {
+   "step": "commit_111",
+   "sig": "5XmfJHvDYJHPtZMEMH7h6Y3HUeQaUCsXKKMhXKUMvgsfdRL33dYU76S9tpvrQiK3mkKVQtmKk23AzNGLJSpomcKo",
+   "slot": 526866600
+  },
+  {
+   "step": "reveal_112",
+   "sig": "43CoXzuUKMeB84pzfZdzB6foQRRkEtoq4DkgwGek9wivtYNR2UK3d6CfoZ5L3dNgGck3tcrx82PU5YMQbXjBPwaX",
+   "slot": 526866600
+  },
+  {
+   "step": "reveal_113",
+   "sig": "3zr8Q4QpZK7udbbDjT1xXhNL76yp8hkFq66STmYA2ZBZxLcGbbkDNBoLGgr7SBRLmG3FKKviGKrjE8N5CCQmwZtf",
+   "slot": 526866606
+  },
+  {
+   "step": "commit_112",
+   "sig": "MBmANvFtPVJzynAbovQ92qGHBoPczVFM5Zdiejuab6qkVaK13nSgc34j19sSqyUBDv6xoC8hwAU2z4ciBrJ7jGQ",
+   "slot": 526866606
+  },
+  {
+   "step": "reveal_114",
+   "sig": "21uryFcW8JdUtbe3DB3yTkNzKNpxC7rYbFenAMUy6kHS3vPM3rqkeiKhZXpjR2Q6QFg9wcD1sqghUg94evwt94S1",
+   "slot": 526866611
+  },
+  {
+   "step": "commit_113",
+   "sig": "5HmJPJKYrncjwcEqYGF9USg8WFWSFN2CccTFDo51FVVPVJCoGfZKb19aEWq6uphymnfMJqS2ymPbXbPU7dTE66E",
+   "slot": 526866611
+  },
+  {
+   "step": "reveal_115",
+   "sig": "4gD2UJ2x5rRyAQoBN5q2jWqqoVfr59iP9hKj1ZvWASzLJnkcJa8oYwWMikSnWEKaDLDx3TqmQrhLvkMghkpcHYbf",
+   "slot": 526866655
+  },
+  {
+   "step": "commit_114",
+   "sig": "52BLTfazBCXcz6jxU4WBw6BS6dnsBtHDnwfYMtvLZtdYZsbypkPEzER6XnnzjaBYaTenCXh3f1Yv2LFUWAQMywiA",
+   "slot": 526866655
+  },
+  {
+   "step": "reveal_116",
+   "sig": "4VfvtY71Gq8PcF7M9qoQK7HbKJVJWLeAoMGD5yQDyQ996G3f5vBFgYbE19BUtLPm3JsuCm5tVjZVdEgjtHtNp3tg",
+   "slot": 526866660
+  },
+  {
+   "step": "commit_115",
+   "sig": "gi3GYZ3WUnWgKs7HKFbKWz8TJH5KD2mQuqkEZfsU1LiWbiD3ParBmhxpJPnqKT5ykGsjRa5ZL5RdHGZ779VwuTk",
+   "slot": 526866660
+  },
+  {
+   "step": "commit_116",
+   "sig": "URYFUsuB7SxqNefP1wbLLa2AqyMJaMxjVifU3NycbqmoppN8EAaWU2hgwPzCQT9TQfBiAtHrfjFeF2VbREwnBhA",
+   "slot": 526866665
+  },
+  {
+   "step": "reveal_117",
+   "sig": "3gX998k4La2Eia4jy6829k8MzAWWsSXezq1u5ibJcGPKEiBrz8RgsYvEVAsGtnonvL1cXavsiAx5B1i3KEMDNkPz",
+   "slot": 526866665
+  },
+  {
+   "step": "commit_117",
+   "sig": "cSwJb2FZRz1PJA73jJ1yVCj4886Tf1Gu6UTrJ46HBG7SPxsW9RQsUSrL5y3KbhqsRXB7cP4enbBDJNyWsvRKZr5",
+   "slot": 526866713
+  },
+  {
+   "step": "reveal_118",
+   "sig": "2oX8yJX1wUYDVPAWRzDa8hoErEjnrxGKXJpubuVtavej99kemFzoTGcjRGa1i8K9f3PiioAg93tij2jaVRdzo5rY",
+   "slot": 526866713
+  },
+  {
+   "step": "commit_118",
+   "sig": "2bQQZk7MoUXa5EuV1MxWcA8Z1VsA6VaC8qnuUr2F3dk5EX9Dc8UPcgn3CSZw6YpjwqU4bHpMw5won73WDw9sWv7A",
+   "slot": 526866760
+  },
+  {
+   "step": "reveal_119",
+   "sig": "QvWFdNeDjuuyWjt3N8Hw9oTdxq7yFXHmdn5bgYxkF1NcrizcAEbXiudhaYSC7mHPcZAEMYXQ4JBBVotq5vqqBqg",
+   "slot": 526866760
+  },
+  {
+   "step": "commit_119",
+   "sig": "5o3M98cD8HS5yCWs4UZmN8wD9FNYL5FLJZQ49wrvmHwr5E6ZSP3CgvomzNZGtUTJzxdFhTL6MGuTjTio8oTqjoDE",
+   "slot": 526866765
+  },
+  {
+   "step": "approve_1_verifier0",
+   "sig": "5eommzESrEUZehdxk3SxWDSkHjRupvZgvAs8vGrayjJPtk6mbpK24iLsKqcdynmDnHj3GiVvLT9EMhU8EBcUcZxH",
+   "slot": 526866774
+  },
+  {
+   "step": "approve_1_verifier1",
+   "sig": "3nU6BD5CFL3mK29m38cDBDJWjV61rp1cN7sRondaxNmVECU9f5Adgd1P8dMzZ2AwfJsCjiBUYzSpn36zrhZfcCmd",
+   "slot": 526866780
+  },
+  {
+   "step": "settle_1",
+   "sig": "5rFLpXqezZmkmZer27KG5u5XeV1CN9p2MGU3J7TXAGTv6qtm6shXQEwQf9Z7DG8P3z5EWZ6SXGjNJxdhyEoa2j51",
+   "slot": 526866784
+  },
+  {
+   "step": "distribute_1",
+   "sig": "2Y35qBSThikH5frzCV2AFt9KHy7p2aGEkCAU76QjDd1LW7hS3yyv7k4a8KtKkHtakGmJXFoaeNqSAehNXJQvdksQ",
+   "slot": 526866828
+  },
+  {
+   "step": "reveal_120",
+   "sig": "3PiyphqG6hzTEGPN2iEMMCCiD8jCTfzkQ6obDfjrTkLMi95H57S15UawMRfGPijmhfNZRTucQFwNKSSwi4Zbpkhn",
+   "slot": 526866834
+  },
+  {
+   "step": "commit_120",
+   "sig": "3pK65C5ZfgfZV3DuiCV3gR5JsTKuNiEq4FSTccJvXFrgaxUncGucYac76P7WECATnDGPNyAHHWyVTwFFzYfBejte",
+   "slot": 526866839
+  },
+  {
+   "step": "reveal_121",
+   "sig": "7HRza7A9bTzPFZL76YVXqyZhbFKkfrN4n2X9Bi3ogwbswFpJVjPfj2vErUNjYDLGir9QMNsWKeYcK1J5TUm7EU4",
+   "slot": 526866839
+  },
+  {
+   "step": "commit_121",
+   "sig": "UmcXEbrvd9uy4XKMAewayToBxh3iy7fZ7HC7Zk2BvY1PCbsX64dQfMG6c5o4LRsWy9JXTwoxRAFMKTL3gQfErjU",
+   "slot": 526866844
+  },
+  {
+   "step": "reveal_122",
+   "sig": "5cgwSoevbNXfFvYEpcyuwZTVqo4r2gFhxoiEU3pDZwEFET5ogZxSs76tjMRA5JQQFNXrrSpsg5VVyKRBu6qeDNtG",
+   "slot": 526866844
+  },
+  {
+   "step": "commit_122",
+   "sig": "65f6pQsKvKiaiBHAankSH3GAqvs96tYcUkXYCgFUV9rf9TXyCzUFHmUc5QpEcZoDyWpcVuKSievuUx2iVUXkDand",
+   "slot": 526866892
+  },
+  {
+   "step": "reveal_123",
+   "sig": "3qJa4gJm2PPjfTkXWF5uWasJC4eKUBmcfs61oVnU5ZiBkj6SSua6aUffe5zYTGDwDfRw6vH8yUwKgrhom5XN6PEm",
+   "slot": 526866892
+  },
+  {
+   "step": "reveal_124",
+   "sig": "37eRdhxAwHMFKWvq5BxhgaDyFiaRva99W5Z7dt1wmUS3yMLa9znhyZcr8k2Z1JMn6L6fTKitFg3FudoTGSJ3LpzG",
+   "slot": 526866896
+  },
+  {
+   "step": "commit_123",
+   "sig": "5qzjB5URssTfUMcVtjTDo8ZUgykfuw9aR7ggmF1ATtNY8QGHwZEhxXsbwFPqSBur4zFyMgP8QarmV7xKKMUNKhsR",
+   "slot": 526866896
+  },
+  {
+   "step": "commit_124",
+   "sig": "41T6k8AaeNxhWmRCUV5oNDja24WM99Tgf4XwCxd3wvdSqBkU8B5EpCTUgVGY1e2LHfqHMepKrAGVugCy5rLkYWFS",
+   "slot": 526866944
+  },
+  {
+   "step": "reveal_125",
+   "sig": "36oiSooAtjn54jwyhFx861kNucsPTvqvUBFXsThAsaLZwiqz471Qa28CarQRuFfzwY5DrDHQ2JfGeiJC9yXt7hVn",
+   "slot": 526866944
+  },
+  {
+   "step": "reveal_126",
+   "sig": "g1QKZuXHsBFYznPkzvVtKDBecZWzWp2QJvcWceva59LbB5ohHERz8fgFJHp4zBULnUx94uTGoRkuCLb74bvqe5Y",
+   "slot": 526866948
+  },
+  {
+   "step": "commit_125",
+   "sig": "uhMaWA71TGpDZ4eY3SoFiX5qs9ppkuCtUYC3vzN2mLHWCNXtihPS2RQWsxGsro7DatxeuaWFoALoJnzUbAvL393",
+   "slot": 526866948
+  },
+  {
+   "step": "reveal_127",
+   "sig": "3ZM11XsroFh6eM7KMCyAZmfpe2jLKBWDKtuQQ4iKUswV3LcxU8mqMvB3LNYFbWJcSKTm2VbCjsWnhr4m9vwdVDfa",
+   "slot": 526866954
+  },
+  {
+   "step": "commit_126",
+   "sig": "5BH8iiQfkwjAFSC5navkSL7ZrLjLBpRqdMu1bZMiagQRUPGYtGfi9cxKaZDfLrHrn56MMKixoSECXrAqfi9Wc1Vj",
+   "slot": 526866954
+  },
+  {
+   "step": "commit_127",
+   "sig": "33KZjFJiVQhkD41hFxjVFpX7rqbSiwHSHbsm7wok668TQ2AS4Xamxemhr2PLQPfSJnn8vyB83bpxhsG2gvH6ABKE",
+   "slot": 526867000
+  },
+  {
+   "step": "reveal_128",
+   "sig": "5bes7ca1MwqPpuTv9Yaxz6Z2m1VQPLQRrVtKmR92qT1dr2iRhYAjsZCW3GryLvrso2a2uWZaBrw9onTZBNd2twMV",
+   "slot": 526867000
+  },
+  {
+   "step": "commit_128",
+   "sig": "2MHZFKS9AK7wYAS3y8nTvmkMK68ofnZunp5BLUPGUJy4EuopAkFw1VgDsnCuTffmy2AFTg77tc9qVLgczxVFTsQY",
+   "slot": 526867006
+  },
+  {
+   "step": "reveal_129",
+   "sig": "26B8EcYtib1N9zeQsmtFN813seeq44xm4hrYZPkEuBaaEmx2JRWcaxUGfE4ESEByWpMXSwA8og7pqFxxXd6BHowD",
+   "slot": 526867006
+  },
+  {
+   "step": "commit_129",
+   "sig": "9CBrNKkYUjJszLmt6pQFDPv6Gy4wEwKFi4xyLwVUXir69eyfdHBZ9PVyRG9NFQJZqcLQHqkh9ogY7fuckhZg7pr",
+   "slot": 526867052
+  },
+  {
+   "step": "reveal_130",
+   "sig": "useHzpYUccH2dy56pV7HEzzPDc9GT3scYKdxGz3xEy6VgBFXhAG1LjgjomNKrGvojqbeG2D2z87qarcejpYtryo",
+   "slot": 526867052
+  },
+  {
+   "step": "reveal_131",
+   "sig": "268aPvaejUuDVfT8BZU4TAp1a3j7Yv2pEQ38ND6HPDFFYvGPGJ1xLgxnH3Zyvs2E4WHx7oCRWKdTwaNXm6B23bs5",
+   "slot": 526867056
+  },
+  {
+   "step": "commit_130",
+   "sig": "3Q1vJDZLnrXgrnNkEK5hkjfpjguiC1NKzEHX4A5Y13C3EMws5ftEb14U98ntDSs32AjxfFzg5USf2k14mpGQXAef",
+   "slot": 526867056
+  },
+  {
+   "step": "reveal_132",
+   "sig": "3C62q7naBp7tVRtCHYBynwKgQtAreEUC7nYwqvVCyYLvWvmPGmKiuai1pGhtCzJzErJCLQfVZkCftoYCoZFt2Kwp",
+   "slot": 526867103
+  },
+  {
+   "step": "commit_131",
+   "sig": "28m8Kj2pr8uUswsgrYCLaL1C5TnK8fySebBETJnZz95imLEkhqsEVMj7kWX3fiqbfh5p5jkid968xjFqJNj4QsdL",
+   "slot": 526867103
+  },
+  {
+   "step": "reveal_133",
+   "sig": "5nXVrw7bpE6i4d6RmegD9BxfjNbZ62JAkWZsHkDax2HAsGDbUEms3U8drqAzLP1nx57G54rVp8HK7GLpkErN7H64",
+   "slot": 526867108
+  },
+  {
+   "step": "commit_132",
+   "sig": "j6hmDwsbuGaS8Wj6KZDyoutHbbV383pX2P5WYEziBNJLPgaSoTKEpHuPSD2V7kT9spbqvgu8GVyGkQroLAbdUmY",
+   "slot": 526867108
+  },
+  {
+   "step": "commit_133",
+   "sig": "23zh48N5NRt3zC9TT7dib3SCSpHHTTETYZFTdyTSwREDjG3Y8gPhW8q2Tq2MzWCj2EN7xyJL1h1uuwtRh5EforZz",
+   "slot": 526867113
+  },
+  {
+   "step": "reveal_134",
+   "sig": "64myEZmbuqc1yRFMjF1gP2TZmUXRvhYnosSCKAL79VR2heXLqCSC4VrVkAt99JYJsLBkapNR7hn9hZTEykaSrVRM",
+   "slot": 526867113
+  },
+  {
+   "step": "commit_134",
+   "sig": "2ekvJbayuydEwK4Uwonb6wsR9kGpRei7HXRXBGMwHQAD1WrDnLDxWNxckCHc9iQakHgNkPriX3tuEBGNneE4Xj2n",
+   "slot": 526867160
+  },
+  {
+   "step": "reveal_135",
+   "sig": "36jHnAsy3Nf8K3prk9sxGxfvYTg7LkuNZBam6ayR1K6SMjNtGww5K7u9yW1eAQkMjo9vK9T5ABA1repWSMfg5W8B",
+   "slot": 526867160
+  },
+  {
+   "step": "reveal_136",
+   "sig": "5Sp4sTxedrRF9DjgJUVSV2oNstXR3jYeSrEiJNJkgfK1cAwUd7wRKFTnwRqAqmDqDkTBnmxmgkEgw683Bj3khATn",
+   "slot": 526867165
+  },
+  {
+   "step": "commit_135",
+   "sig": "4qMcYuXe7stmmaxRxwqxTJMoD91i2Y7bE41kPexXKdjUDrCWYR53t5p4utPMyHSQjJdh6oh3ddrhYd35N3wm1HKp",
+   "slot": 526867165
+  },
+  {
+   "step": "commit_136",
+   "sig": "5oCtqhhbFT4eLkHaszPcDug9Q38E1YmAUkYeQZNr2xp8n225uGDkx7Zfkq7fkKfF6Fd9NhMi7vN2fdPT65QiqqQh",
+   "slot": 526867212
+  },
+  {
+   "step": "reveal_137",
+   "sig": "5jitpG1gSjjPEHubZTboC4uGJCunDUtCwHudR2QWW8UzuhTiRvtNcmR28gG6R7aG7ALAgbNUrRbuAa3GE1WWP4HN",
+   "slot": 526867212
+  },
+  {
+   "step": "commit_137",
+   "sig": "5kmMoUStQSwQQ7gVUyK4h6xXrRowWJSbQeupHU9atiSJJUjHZWmSjTznd66Ec2n9ByssLsVzyftyD6KnPWyrcxRD",
+   "slot": 526867217
+  },
+  {
+   "step": "reveal_138",
+   "sig": "2GZaes5dymzTV3jWYi4jKuM8NAAb2LqGSWAtp12BBoPQzihLvs8zgqjSafQrmin7VGbzXV5mabgdJ956KskujLAY",
+   "slot": 526867217
+  },
+  {
+   "step": "commit_138",
+   "sig": "5Zg1c7nnxpsmz5vkwS3yhpgcZ3rwReUZr3auENwcFV5ak6JtukDzgtL817Tgwdjn4V8yZYPfgvCu76tfvoZJF7kv",
+   "slot": 526867264
+  },
+  {
+   "step": "reveal_139",
+   "sig": "3xJPg8v4qTqbyamsLWVsdHkyfbr2G49JcnCqmgs1o1crxH6aYts5kCenbV78Va9bPJbiMoJMvwgZjZo9U1vufzYf",
+   "slot": 526867264
+  },
+  {
+   "step": "reveal_140",
+   "sig": "2mhzLcJMMfysDC6h9qiv5jQeVY9RLbDsL21t9HgUeid3YjEdahWqL1dCAY8F6fXJHHxLtSCHL2PorGhNv6A8Z6M1",
+   "slot": 526867269
+  },
+  {
+   "step": "commit_139",
+   "sig": "5Qa1s62fQJfirtZLK9vbGajMNuFnURLaH4K4u9uVs7CC5RqZgsBiZFSgHQVNs1vWAYEAoq3h1SAP8QB7c5r3Waf6",
+   "slot": 526867269
+  },
+  {
+   "step": "commit_140",
+   "sig": "FTuZRLGhr7BdoQZnNFaexKnr4YWoXaKPasdCyeXrgpHGybmc9PW1bpbUNJmRxwPtAXiPCdYDAmzqBXNm1SPqGBa",
+   "slot": 526867315
+  },
+  {
+   "step": "reveal_141",
+   "sig": "3vy7b2QnftdPdxcKLw2BpkN9zKM5vGV4ePZiHxvxDoGVLQTkU8rLaEEVPA6y9TsB82dDHYCxUEXTNtZZRuPEfuFE",
+   "slot": 526867315
+  },
+  {
+   "step": "reveal_142",
+   "sig": "3Qthp69TVqrPXJJoFXz6g6JRoFQ6yGcEsafGfqthBzW3f6ZmCtjST5x6qpA1XyNwxLLy2rFAoWnFiG8yGYogHQDb",
+   "slot": 526867320
+  },
+  {
+   "step": "commit_141",
+   "sig": "4b8PRKLo3caFrJggmQy6h4a6DE35J96TppLcA9Rnb7P6Pk1x1N6sL3FTt8HSsXCJ1efq8HGbuiwL1ym8fuSwZRjc",
+   "slot": 526867320
+  },
+  {
+   "step": "reveal_143",
+   "sig": "3g1D8Lgb9v7A3f8tYsRQUM9YmFoUYc82E77hrdrNCiwXeNNX8jh9qTqDpjaUbpCDsxVS9TxfkffTEWfK6LcyfKNv",
+   "slot": 526867325
+  },
+  {
+   "step": "commit_142",
+   "sig": "3wTTjtNQ3wee2QR4RgaDTBGbPtzkMkZSdvmv7unwJzvsVoyXDa2WKmCJUFszV7LA33UkbCCsBogFfhraRV6rkZCY",
+   "slot": 526867325
+  },
+  {
+   "step": "commit_143",
+   "sig": "26hr4GnMZ8tme3KRD856SGR8RspYGiH4rEV19dNg4QqrsrancZJTs9xDjzCbQpX6upsuUn9e1sHGQv5LA8b3cVv1",
+   "slot": 526867372
+  },
+  {
+   "step": "reveal_144",
+   "sig": "4Z4MMUc6CxAa7jsiU3pbWGE7bSUomofTG6nfD2YbtCBTjFGRyyFffc22eQPEfVjV6cwxK5SgS1XjBXkT9ahxwyqm",
+   "slot": 526867372
+  },
+  {
+   "step": "reveal_145",
+   "sig": "21z2582zTbXiav8Z3HTU8bMFZ4wrXcaEFtTeuj3aDHyYWuibQUcEheCDTzNPFrhBQvVg8ARBPKkW4SRVL5eJYtdt",
+   "slot": 526867377
+  },
+  {
+   "step": "commit_144",
+   "sig": "58zAK3gzyKXKqqxNq9hfH8CQJD51rh59m4Px8NSPMWfpn5gFtdkuJYNjXPXgSyXPyBUS7uGpwJ9dn6pnUFFkrvR7",
+   "slot": 526867377
+  },
+  {
+   "step": "commit_145",
+   "sig": "3hab7V1fe2dL6ug2Jov8hXfei2xG4jpjWZ5woRXAUtHbfbEo7XeQ18e6jsERbVRBrcuENt6rxhH1DwLzLAPTHqfC",
+   "slot": 526867423
+  },
+  {
+   "step": "reveal_146",
+   "sig": "5amTo65ivYFkLgGSxvBf4EfA23tKcs5DigGhUAdEsztjFXqHhxVUtaFZpdZfzPxfceXMxUiXK9hRjQH57BLpg8jS",
+   "slot": 526867424
+  },
+  {
+   "step": "commit_146",
+   "sig": "L33TNYkH4rPnfSoXBtJGHEqfFm78oofF8bE2uttxRoaSahicugbgNTLEdTNWbPHKv1z4uLE4vGPzSyDndcALLVc",
+   "slot": 526867428
+  },
+  {
+   "step": "reveal_147",
+   "sig": "4zvhyxxLi2a7gSW4fzsJEMR11ReAXCzZNmweqzQhhzPNZZ2PderiUGdTkNt3rdyeVU2pzXTXEnbEYL3qaDBkzD9w",
+   "slot": 526867428
+  },
+  {
+   "step": "reveal_148",
+   "sig": "3aEBeu39FPVntQBKvvptpK7AoAwNNeapbQ462rpioFjTfCFsVaGSX5CCBYRioHCYw8kBJ6jY4idEa62WaKECEvMy",
+   "slot": 526867476
+  },
+  {
+   "step": "commit_147",
+   "sig": "VLzAvqymVcRUs7Az9JrcwQz47XDyj19vkUUi9sMnw6hsqgD4Pp5SgMr57GvYsrHWLx8PGkfcgPMZL9kNsPjNswV",
+   "slot": 526867476
+  },
+  {
+   "step": "reveal_149",
+   "sig": "DX3i6mHDy9Euk6RfMRefeaGZNgaWCDvQM9fJiq8rZegemETKNmf5dMLsKcrHvZMYYYpabeFu4fDU9UubY1wYiKz",
+   "slot": 526867481
+  },
+  {
+   "step": "commit_148",
+   "sig": "5JpA9aFtm7aZi3Kq7eGXFjpgjfLKHLrsA6oCNuMJVk88DecjhfgrVsYoM4STkKSXhvEmYrjbvRUdfhn59jYWHg74",
+   "slot": 526867481
+  },
+  {
+   "step": "commit_149",
+   "sig": "YkEuwG8Xuyn3SxnuocN3BgJxf9cm9DiHfrK4g3V6XDfy93Jb9iRGc7nQqsAzcAdst1MvKQPJeUEY9Et1xV8vwx1",
+   "slot": 526867486
+  },
+  {
+   "step": "reveal_150",
+   "sig": "g7fH47uVUXq2FLYPwkBtCDvVTFXYmgsrTdYfcArgg3bGztDzxvwy2zU6aPaMUyDKAAWFQQxZcLZi7PShMsJ25Nz",
+   "slot": 526867486
+  },
+  {
+   "step": "commit_150",
+   "sig": "43pMtwBBa1N12K8c5xPx2cYgkBDTZGh2sokTU3Nrdhvcp6ySdFiybTkKtdfnzCJfe23DntaJPu4H5ekcEoaREfGf",
+   "slot": 526867534
+  },
+  {
+   "step": "reveal_151",
+   "sig": "AVRmsGtEFL4kaBEMfbCujiCkCND7Mz7ZZiqQ4VQRcHoVpHHVz4bx44k6TjChM8nHguu5yFbiGUpgC8YzYBZZmne",
+   "slot": 526867535
+  },
+  {
+   "step": "reveal_152",
+   "sig": "5uK12Fp4AroCE65o567QsvMuu6ZVQr9SJSdrYeLiAD5tA8wGBdvRzEbLQHPo88pasZW4sEbmJ2tdKo8ux5x62Ynd",
+   "slot": 526867539
+  },
+  {
+   "step": "commit_151",
+   "sig": "i4N2WhSTCGT3JLnAjVtdpiqLRrGWvGiXBFyEG2sEFn9FoSqsdAXPEpwXCbwkznLXhtRR8etPuCq1PY3ia4tWWtG",
+   "slot": 526867539
+  },
+  {
+   "step": "commit_152",
+   "sig": "4JCCCZPQbSSHjS9aXGEg8JcwXRB76TRy1DZim6Xn9Tz7ueZ3ESC2imBjywZFf1pgubUFEJMptvX7t3TKNoJaMaaZ",
+   "slot": 526867586
+  },
+  {
+   "step": "reveal_153",
+   "sig": "2SVeWsrx8ahVBdAD224Ayd5dFEcs7CMZcwQQqJ1o62EDR87VRaw5hbhC27WEt8CWtzyVBqkaJ5NtzEsw1V8uSRAS",
+   "slot": 526867586
+  },
+  {
+   "step": "commit_153",
+   "sig": "2oa7KpqnACJ1rezTqGTu1GLtgoSMuxaxbPEagAmModsjJuhWNFGfzmmEWYBs7KQXFfrU45kE19BhYQuMm1gPbHCu",
+   "slot": 526867591
+  },
+  {
+   "step": "reveal_154",
+   "sig": "3i5D3CEdYJk1wvr46zPriUkj1BzyxrkG7RUQbMmx7jnBDM89ZmzmN1RuYQ8BXqd5RdQNkrXouAyF2A9BQzqqx2MC",
+   "slot": 526867591
+  },
+  {
+   "step": "commit_154",
+   "sig": "4rskC4g9z9WqR847HZibEykwQSSevkg8BNgXyZM3yYrNnsfMHue6Adz3BJtunfTLzWgJGsCSAuwNzPShrboEz97Q",
+   "slot": 526867638
+  },
+  {
+   "step": "reveal_155",
+   "sig": "2wGaGciMj2sBzsNoLAr27REcK3e2hc7vBmKuSjTE8vs4xGncaZMkj9spQaTaS8PhizapVXEZnuLCebQ9F3gwaNA",
+   "slot": 526867638
+  },
+  {
+   "step": "reveal_156",
+   "sig": "3em5bkdSpMLZ89hCQw2VkX98dSHJbhxd1d352pgptbgtrFagz99Vc4aZTvzbPzZZex7aDxcf6vyEavqATL83sMmj",
+   "slot": 526867643
+  },
+  {
+   "step": "commit_155",
+   "sig": "ZkVTmjBLQyYLDM4BbpsvBVTpz7jFdWn2C7k3kAKVFcpRDWyo1auiud4ZRNF7o1936YAn8C9UPFLqbCt55ERj6cu",
+   "slot": 526867643
+  },
+  {
+   "step": "commit_156",
+   "sig": "4M5mcgLZgjCGGinzgWpf8HWTfSoBX2p433HQpT3s8DgKejahmFCa1JDMhynyg8Nhyh7bxzZBhayWikE3bNvYGYTe",
+   "slot": 526867690
+  },
+  {
+   "step": "reveal_157",
+   "sig": "67Z4xDd1f7GNMbYSBFnMvsTc4rkdHpv94j4JD3qT6ameXNF1TAzzbsq3e5NcGtmKfVQsK8BBUHGwJB5yrNsP5KVm",
+   "slot": 526867690
+  },
+  {
+   "step": "commit_157",
+   "sig": "2cVS4BNANoS6omg8i4r9R5JtWBzwzPVq7iUi2aH7vgDV7NjLiwLW1sjoNqp76AAoMdQzXikCAi2azwpNJN7qcVr2",
+   "slot": 526867696
+  },
+  {
+   "step": "reveal_158",
+   "sig": "uoPbU2PP7nwgioDiey4awtfn1BYCQ6riLiBdFmbQj3EkaHf3RpFGrDAZX7Tn3bBqYgYjjxhfEG83wC4fNYs6Jmg",
+   "slot": 526867696
+  },
+  {
+   "step": "reveal_159",
+   "sig": "5iDtSKEV3KeLYUxrQwiTWSbu8ixom3brrewca45SgxjQF4iEHDwAPRbxc4ozzJhXazVu43RspQQGqp5PbF1QLTLp",
+   "slot": 526867700
+  },
+  {
+   "step": "commit_158",
+   "sig": "5iuTUgT3dtfZBEtyZq4nJoPGZZefFdnMAeLgUxyFPhdxpidXTuYSBiHRK4XNhyrHbZKqvjTbku7rdVcAmx7Bkr6o",
+   "slot": 526867700
+  },
+  {
+   "step": "commit_159",
+   "sig": "y3p8hzG68vgRgPTpfzur5YcfXNdFymH3D7cdxeL1QY4saLwuVN79geMTeQmBktuMhUPp6jtBUiLCW5vbSCpD43t",
+   "slot": 526867748
+  },
+  {
+   "step": "reveal_160",
+   "sig": "4k9jZees8aXLYiE1WnvGSioPFxA8RXvbp9qt9QLcntPkP8NvLt57KjpNom68azMDcJW7KfjaHi79nAN8Q4eP8CH2",
+   "slot": 526867749
+  },
+  {
+   "step": "commit_160",
+   "sig": "25cqU633hqPx6t3yWdrGab3YRnTpCVVRCYMKnvVnjXz4xn1LtXaVCYWgr7YH9kZEvbiHHTtEnkBQZVnAnMZkM6vA",
+   "slot": 526867754
+  },
+  {
+   "step": "reveal_161",
+   "sig": "4oZKzMsCrPthyRoqqYmPqzDPTLvYyB9STx5Y6MuwtrS4w1KWaZA95eyRhEqB1PbDdfnMa2DkP8HXT25kt3dgfUFm",
+   "slot": 526867754
+  },
+  {
+   "step": "reveal_162",
+   "sig": "2CxaYBWoemeeJe4kYxQGi8uvCLNcv8ue6vAjg6dXFXNJfAUpW463wp5Q7tb6ynE3bmY4pSFs3rADYYcK9HBCWUk3",
+   "slot": 526867802
+  },
+  {
+   "step": "commit_161",
+   "sig": "2honzw1YS5jXgoFXBSQ7qVYmCtrdwr7WDYYwn8aTsUtKDUSpnKCxEgLHfTGzSnW7zJwqwej3AwbMG5uVQaeWezeh",
+   "slot": 526867802
+  },
+  {
+   "step": "commit_162",
+   "sig": "2dmCW6FMHkCwfBUtQJo6UhGFigcRRSuPVTJDPr7AGagQnuLbwurxyh6ciFsUchNE4SqhTsX8bVawh5WMJ18RcYbX",
+   "slot": 526867807
+  },
+  {
+   "step": "reveal_163",
+   "sig": "mpGhkQG7ef5mXEa9PjvLMFuL2zR4rBuLnrayzvjQezqbaE4vMZYJshznk74x3wF228WzeygHq4f822TpXM6DWUg",
+   "slot": 526867807
+  },
+  {
+   "step": "reveal_164",
+   "sig": "59maZBNXRqrWg1ezy6yHAH97935DigdAWdTHH74qbFcEi54Hk8MEAoqdgGbPhSFxQ5Py6rGLxtt9mMVKiUj75w9U",
+   "slot": 526867856
+  },
+  {
+   "step": "commit_163",
+   "sig": "u1JZMvy7Bi8SKccbKvyEKpwykyaeHFmY65KEBKm6gNJNSSqZbwtphJ6jVufW6d7433JPE9JNTua8PZ6ACDae92T",
+   "slot": 526867856
+  },
+  {
+   "step": "reveal_165",
+   "sig": "suZxiqqjWxc8vert7qgLk7wLCc1rfEnjZ9fgjJYZuRK2zYafy2iriNXNUdb52uDSYwSfcj21qXdHR7Tu6TtYsVW",
+   "slot": 526867860
+  },
+  {
+   "step": "commit_164",
+   "sig": "3jLxWyr4dTffYw283Di9apGhRCxxAr1TQJpy22vs6aATbmwr8SGE3VzWuUZZHUuRupQFdW3iAfD3wLAskf3MJmxu",
+   "slot": 526867860
+  },
+  {
+   "step": "commit_165",
+   "sig": "4L7EgbmZFVjL2UD3YDDnHcuat3qsKfdt1SHgnmNg8MoCeKZBpAmHkG2jvKMSpw8SWZk8tXK9BPzB9EwCoqk9g4AV",
+   "slot": 526867866
+  },
+  {
+   "step": "reveal_166",
+   "sig": "2oJUZL7VpqdjmfaYvS3Uqf9TP2kCCEGEKqnyj4VU4uxGhpkVj6VL7YWZPRYfRRDzNqF4VYbAYun7Q5pDqhTvdody",
+   "slot": 526867866
+  },
+  {
+   "step": "commit_166",
+   "sig": "3hTDqEYWchqbZFnh35DrWbBMBxXVaut2Hi25ite6PfGhLkUNRJDAGT7YPGd8AGgrk3FMYq1HedEQHvYsh8AVBSbg",
+   "slot": 526867912
+  },
+  {
+   "step": "reveal_167",
+   "sig": "525LUfB6BT4RRochJLkmwmcKYRBRWLhEUmxp4cJP428hnwN9gWmu7cPwkY2UF7z6KEy2eUj8DdNLntA2n2Mp6To3",
+   "slot": 526867912
+  },
+  {
+   "step": "commit_167",
+   "sig": "2R7iFNKP2jHLZH55stjvuaqvxWLEMRYZyV5nmYQ7hQXnohcfxCrdGBuR5m2DUxmDGnydc8Q7Thyn8JUrERcwA3xW",
+   "slot": 526867917
+  },
+  {
+   "step": "reveal_168",
+   "sig": "56B6Ac2bdSo1Sxx4zGRGkhNiDPhizo51hm9uYev9f1i6FtKViZk7hxRCTkDvxhJcRL7Y1bQtAW94vJ3QsrjouFW1",
+   "slot": 526867917
+  },
+  {
+   "step": "reveal_169",
+   "sig": "5pDHLb87QmFWyBXVLPESYiL8fziytUa8JRmkctgXSTGPBCtZWQ1HqEhC1MbDTHwMgLhEHFHJoCRPHT55vUJQMvKB",
+   "slot": 526867964
+  },
+  {
+   "step": "commit_168",
+   "sig": "4jxuZW8rtBfGPgU5T8k541NJiajNxBcPbjqWJUFvjckvHbg4DvFSHdqcyBcrzeCjqZy22V5tNTADxBqRQnvjRLcs",
+   "slot": 526867964
+  },
+  {
+   "step": "reveal_170",
+   "sig": "C6ody8o5FKemgLQbjzv2gCzHRkaPAMd8QXhtnd25irWYoVAmGbBPENXjeYs1Djmg9wmN4RFPDauiZ8WRrBccUPK",
+   "slot": 526867968
+  },
+  {
+   "step": "commit_169",
+   "sig": "3m2eC2MdXeD4q7d4nBgQzH4n6ithdnWxHReqDMFhaD1pmvhbzsmfRSPfSH1MbAYMhXkcg9w1Dyy5NQyJNqBq9yAb",
+   "slot": 526867968
+  },
+  {
+   "step": "reveal_171",
+   "sig": "5Hr5w4sBGmhN9DzeDepEh5nT8TG8N4EKGNiSUcvyFxTQK2MTSsh8HDNwzpAuDUATgTE9NxEVgcoRgbJpfNYoDoUM",
+   "slot": 526868012
+  },
+  {
+   "step": "commit_170",
+   "sig": "5nAQR9Ut37DRRMMNjyLKiEwQmbkHSor7t5BBuhRUsw6Aw8aujpFfr4K1gD4yLqFJ8BHKwvW7hZjK8UWZWcEbAekn",
+   "slot": 526868012
+  },
+  {
+   "step": "reveal_172",
+   "sig": "2EvJshTGbEFUeoczJYc2UcphJwwMDN9hTyyHsuDzgfTsk7W6fR72ctEgnUddc9RHQC9JfVWrJg1gf48iyYouh1cK",
+   "slot": 526868017
+  },
+  {
+   "step": "commit_171",
+   "sig": "aeXb6cDmx9WSixzjj9Js8wMzEtp4Zd4xNuq5pwTTx6viau6jTG8misJHLDYQtVzAnJ5vf8zCwjnyAyZxWpmMFPD",
+   "slot": 526868017
+  },
+  {
+   "step": "commit_172",
+   "sig": "vistQ4F4eRoeG9W5ZFj6gcsJCPvZhARYCw19ugAQeSmBHaUiFJcdAEFaQmhzqhVsQv3P5WNYAkWsTXzLcWf5jbB",
+   "slot": 526868065
+  },
+  {
+   "step": "reveal_173",
+   "sig": "CqQYYSizutTF2Zmr1Za4Jhr7k3pyg96VN9iuFcVajm36CF5r82bQgZ8HuWkqdz5gHK31h7dt5ZcuHiGf14wFWxD",
+   "slot": 526868065
+  },
+  {
+   "step": "reveal_174",
+   "sig": "dK9YM4jvbAhMbahvHYpQWw7byKk17N72hLY2uVdZEHaZAJ8vmyi1CichDCcrvVcKJYD7xnC6nzttYNTaoG3Rsfk",
+   "slot": 526868070
+  },
+  {
+   "step": "commit_173",
+   "sig": "5LpwabtHyk51LxePV2RUKkfZ6U2rpS9gEuXC9Vswht2c74Btd9WFxn9nta1Gwj5LhYaN1Dna1QSqmGSwRC3VxnZT",
+   "slot": 526868070
+  },
+  {
+   "step": "reveal_175",
+   "sig": "4HpQu89T4Qparsgti6CKjw6V4tShsd5CrS2ocZdECnHmDD49LRJcSvr6SHXK9mDLQvRV2t7iJ17t2Xqbfhwhv3Ao",
+   "slot": 526868075
+  },
+  {
+   "step": "commit_174",
+   "sig": "4nkyisHTgRYQzEqbkv6hz79qJFwbYKvPntNVcz6CTWj6MJYgGop5VFEv5vhLwaWdGgouVoG55J9rdkcEV1xWoA77",
+   "slot": 526868075
+  },
+  {
+   "step": "commit_175",
+   "sig": "3E293whieZgvKXq1kyZPdtafVzpwEWUxxSpq5yQncpUWna4Bm6FNFrPiWA49EL9g4XEtVg1TzqV3FtsEFu6NqaBk",
+   "slot": 526868123
+  },
+  {
+   "step": "reveal_176",
+   "sig": "5JyJ9MPwzWhkBDZkG1VFewUt6nk9o3R2qpyi42K6RuAwrcdbbbCjqnDEjyiZox76jTwF682h7D17WGmxSd8VVBCU",
+   "slot": 526868123
+  },
+  {
+   "step": "reveal_177",
+   "sig": "2G3pF76ujAChTRnCi1uoxYdEMzx8fVddV4ckrvUfVyXMK5zJcN9GTTrewfb2G1ArupWubDDrGXAU3tjnQuZr7Sv1",
+   "slot": 526868128
+  },
+  {
+   "step": "commit_176",
+   "sig": "3MNB4Qg5FQrKKgjCQZmn5qG1GSMjLjK4sZb6HPjArc4bWWr6yFqBusKnHFRMBWzHmAmmeg96LqMYNidR3XfRd9sr",
+   "slot": 526868128
+  },
+  {
+   "step": "reveal_178",
+   "sig": "5cc1TBHQiWvFCKMnS8tMcxkX48Ca8mss2SbWhVKW6DeWPSFhXsgf2hJT1J4PtHzgAyjHc9gzUPPGPFJU3wYcdSXD",
+   "slot": 526868175
+  },
+  {
+   "step": "commit_177",
+   "sig": "uQiqnU7Fmpkag9npeupQjUuwjtZndEDup9cff4kzFPAu112nKRJx96wti8Nd2QUS8PidGkH3vkFrnoaRA7ESSty",
+   "slot": 526868175
+  },
+  {
+   "step": "commit_178",
+   "sig": "3YrADBPyQbz8wN84X1CWyrb8K8D988tfUbaezpMzhjqDaruNyUpVkeVz1oJ7p2Kh23rBjRDB6w3V9euEE2dmiP3M",
+   "slot": 526868224
+  },
+  {
+   "step": "reveal_179",
+   "sig": "2noe4oQU7eWUpfCEG9ov5LEVZtbWnDTnFP5bFucYhNg65TG1PFuiy6V7fAMvZz2mjbKu4o8nzkXhYHjLfuGTqHwD",
+   "slot": 526868225
+  },
+  {
+   "step": "commit_179",
+   "sig": "4NEV3KVNZBfNLBaLiNjzRDeUFBHqjt4hAW4CoQGFhLyA7paGMbd1sTcJUQxWvTxoTwGRQTM8iyYdrdJmDdeMpHvN",
+   "slot": 526868230
+  },
+  {
+   "step": "approve_2_verifier0",
+   "sig": "3cbeT6R8QMAXdYZDA6qmJbsFrUt3P8mpxoFKEB56cKsgvbAhPJRxiZihMSgxPbCz2x94P1aSqVgDeKLrnHx6cwWo",
+   "slot": 526868240
+  },
+  {
+   "step": "approve_2_verifier1",
+   "sig": "3Ko5iL6GF2CtBFJLYQ5umfXNDDYUVwnuj2aaoTGN3WdV4B7NxTWPin9t5m2cdmKD6ETGzQeAcggZU2jp72jfNccC",
+   "slot": 526868245
+  },
+  {
+   "step": "settle_2",
+   "sig": "59uJQj2H1KkzfHh8CxbRe6NL2aXP3PXWGQgpJi9HvBkFEV3xNr3pn4tECc8RG3mhYQmrymu54qUfURpqGe5KjeJB",
+   "slot": 526868250
+  },
+  {
+   "step": "distribute_2",
+   "sig": "4Xnn2SMedFJZjZvXZrkSPNBpJPiCssnLGvHn6QWp5A88RF6CS8pBj1Lhu6e3eBorBrLKUwGRDceaZZKdXSrCU2h9",
+   "slot": 526868255
+  },
+  {
+   "step": "reveal_180",
+   "sig": "xkWgpVRojQ2P5K7CgAYWjRYsNT3xqHmzM9KdhA3WdgAAdCsGEpdMMXvAzWGjCwRkzPQysv6c13ngeBa5TG5fvoH",
+   "slot": 526868299
+  },
+  {
+   "step": "commit_180",
+   "sig": "3iJ15seDBHvsUoVQkPLdwzGJLUw7zyMEFf5NZY1zUwroSzbcoTcBuiUymnfU3CY1sdUjo5vMCUYCTVKS7FM1HoJo",
+   "slot": 526868304
+  },
+  {
+   "step": "reveal_181",
+   "sig": "E5jRMtZqtxUg5uAtqR5pc8j7WxmbtDUWH6Bfw52JGGE76wjmVrXcnmPsyjr5nTgSrzS7fnpJGHqPb829u671vY8",
+   "slot": 526868304
+  },
+  {
+   "step": "commit_181",
+   "sig": "5wMPzEY8hWTBhBJuaWQ8Ls9xeczuuJfkPRgDusDYbbjeQ5eSzVacjrmqxHTBqLASLmKxr3VPqpotyGtfmRz6f7Uk",
+   "slot": 526868310
+  },
+  {
+   "step": "reveal_182",
+   "sig": "2c6goX9r5DzwdAYVtPowSfRbGjdLhtpEo9dncocVBJVnTU9cpDx8YqV6ZVSwL4ETMyoENT4Z2PjaBnKMAA9yaT5Q",
+   "slot": 526868310
+  },
+  {
+   "step": "commit_182",
+   "sig": "4vXa3HEGbzyLRhLnCz9rBhXRCxxqSzRSPag67V3As2ai9qL8yv43wQwhwRn5Npe3aGAHXnAc6mqz9KjgHyGfX2in",
+   "slot": 526868357
+  },
+  {
+   "step": "reveal_183",
+   "sig": "o6qEeoJ1i6tL1QMmveSKPA6gLPsSmx6qoagJ6tdCPWYXA3YFKTMKJ5RJZxBRieZN1FKtrgTxWtYBNuaF8Lrpn8T",
+   "slot": 526868357
+  },
+  {
+   "step": "reveal_184",
+   "sig": "3Sb7ExA6TSiqNVRcWwbYRAGDXo3Kpoo4oWP7Qc84oQyjndbu8NrZz9gVcbjVZqFu9vv5uhcYUoYJRE57B4KdW3TR",
+   "slot": 526868362
+  },
+  {
+   "step": "commit_183",
+   "sig": "KY32ESpKTXaHW5uFN9Ehthu6b1DpBgtsfrxzKv4UPrvdVqny6RMp3irZb8vmohaapfxgec9MvxeTyTawK5Rj7hM",
+   "slot": 526868362
+  },
+  {
+   "step": "commit_184",
+   "sig": "2dZ8zwfyE3J2ACme9FTHhz642yzgBREJVXmLu8ocR7YM2zGJZUWS3XVN4uvk2n3sntnCce86YKVT8awTq2rBPMFQ",
+   "slot": 526868367
+  },
+  {
+   "step": "reveal_185",
+   "sig": "2BGLiFQd1MiSueiTk24XsXMCVfeshSUdDMqGNrYMLQ68TMyYZdnbPsYnUDfM252YeUqAmquoQi4XZtw6MWHY4baR",
+   "slot": 526868367
+  },
+  {
+   "step": "commit_185",
+   "sig": "28n2esVv6fpSXQ8414P8YWZMBfPPnypWNNmNVwx4pcsQocPqRrsxsiaBotqcvwRnXhELAFBgamvUzra328A9QWcK",
+   "slot": 526868416
+  },
+  {
+   "step": "reveal_186",
+   "sig": "3D3BRBCkxNtpXLWP39VBiGgSz5iBD8i7hMUhKtuWVFYLosDuoJHe4doQgP3XgfYbhdWs3o31pPWPpQSFqzsWPAXx",
+   "slot": 526868416
+  },
+  {
+   "step": "commit_186",
+   "sig": "3eTMAdmsoFLL8Dswp442r8mMHnShsqrhRp4CmE9VSDa7a4Yqm5n7vHCp8TMx2ejzH6zbEhXAVpdApU4mJ6H2hxhs",
+   "slot": 526868420
+  },
+  {
+   "step": "reveal_187",
+   "sig": "3uxsjx3PMTFSAmo6kk1u6wZJgnEMQkbK67etogiicJaJxNLgmDb3u5FAqgsRk8wAQ4paYZ5MsdwWF7XeZTkx1e5T",
+   "slot": 526868420
+  },
+  {
+   "step": "commit_187",
+   "sig": "4CprXiUKFjv8hLxQvY8HhdAMxiqoc2iCBKXosnfL5yTF6xiBMaJcz4dqUijM2NVMuXvqbWAfLWHt57rvcWZcSUG6",
+   "slot": 526868468
+  },
+  {
+   "step": "reveal_188",
+   "sig": "48uPKuhPAhEKF48kEGPeH3csZqZT8vAiHobajkjjbb6u6Ri83aNW9RKfkHqqpd1KEvgzEQPMrAhMD44Wh6FPHDBr",
+   "slot": 526868468
+  },
+  {
+   "step": "commit_188",
+   "sig": "5dEX6rpDjxjfM8LGkSB22jN5i6S9xbpoA46kbV9s7YhFWqynqrjgbF9izyEsEzgzjd87Gp1BPJrR64iJeE4itadL",
+   "slot": 526868472
+  },
+  {
+   "step": "reveal_189",
+   "sig": "LTZb7FE6hrDmvwxwxspDA1nC1Z7vAAmNt2P233oA9av3i43kgz5sCU28M5WSgdgHv2XXbD47FcdRAzGKPap3xq6",
+   "slot": 526868472
+  },
+  {
+   "step": "commit_189",
+   "sig": "5Xnu9vJW7FSroqqHrfQnF65H5LHXhN4VXaHeSZbfwwAHuCfZSCrhLETiudk7G1b9gtKWB7zbANAs1YcAaChVvGRt",
+   "slot": 526868520
+  },
+  {
+   "step": "reveal_190",
+   "sig": "4UGXFXnrGv46PJoMZsgZ9ujYpfDpwsPPJiRr5b2nt7wyXdBxWvDhRf1Gk6ujdX27nBoVyg5ZDKeM6CGVm4LJU4y7",
+   "slot": 526868520
+  },
+  {
+   "step": "reveal_191",
+   "sig": "4t1mrKmanfmy1pe3gs5cLBHFgiSnMD5M6ntjnC4yKgPWhNfbaJwoSFRMr5AsPibVs8yaYJwxESUG6CCUGFhP9umY",
+   "slot": 526868524
+  },
+  {
+   "step": "commit_190",
+   "sig": "5UWupBRTUesp41W8k46S2MVmcryMvqxAHWQNdYbJueRxG3dgYF9V4XdE3YYCH52vsWJtdKuimTKhtTmT71NbXHJ6",
+   "slot": 526868524
+  },
+  {
+   "step": "commit_191",
+   "sig": "3URxToyq2Uk26TVaNZZyg9DyqUYxHNe2LjZzWtEFXEamPLbgQz9SFqc9tmxwQycu7psabUqpcMJY2KTyd5EHvPVj",
+   "slot": 526868572
+  },
+  {
+   "step": "reveal_192",
+   "sig": "aRdzRVs4MeYgy23z6bwz311wFJ7uXbdRmq4tPT8QgneRtBgGi8ZcfFPABsdoD53zE4U9ZBtf7RCpcSRt8nzDKCp",
+   "slot": 526868572
+  },
+  {
+   "step": "reveal_193",
+   "sig": "247SWjDJ1Z6Pd9dDcMWsCFvTcjZh6sKwKDsern8xZae5BhtXfTskmcG1mSxHpJn74Ker4KDzzD3BYF4dko4N2nno",
+   "slot": 526868577
+  },
+  {
+   "step": "commit_192",
+   "sig": "3efdnPRx7DCAbr2HPDUbio3saU3PGMT6Dy8F6q3P9hnUr51KWPzDeH38oqY4t7ahygDNz2Ru6ogDKtdesMUigBr3",
+   "slot": 526868577
+  },
+  {
+   "step": "reveal_194",
+   "sig": "643Y6kFGUsCFYYPtpc3PbAQnZD8vJaRb2oszvaXAQRFqs6EPzoy78kJYTmMhvMRm5cLcvEZbkRLv19FtAjmgJAKP",
+   "slot": 526868582
+  },
+  {
+   "step": "commit_193",
+   "sig": "c4nEne43Sr42RPLYA34Ks4ZGjDFwWpr2RExUmLJ1VX1mWAM483ZzAybJrKR8pB4pW71bPTY8MKi8kMkPTb1ZcFo",
+   "slot": 526868582
+  },
+  {
+   "step": "reveal_195",
+   "sig": "357Q97j5uRGi7dLFCd1Um1Jy8Ju9wxXQZH98FWbS7vha5vqeAnEYYpZJ4cTV8vVV5ntYWLZtB9CRASkbnZzKc4Na",
+   "slot": 526868629
+  },
+  {
+   "step": "commit_194",
+   "sig": "3GapF73ekCaLRcyyhnapJKCeGmaeeGmVDZejhfX9jRyBPpd8BP4B1MZExggQ2dkwb1sLHmAAYrwsNz8oCEwNt21Q",
+   "slot": 526868629
+  },
+  {
+   "step": "commit_195",
+   "sig": "21VbiUUSu51iKYCWyVqwfXFH9w8vfHbzWJ8Q9JYq8zcs2TpGDHMr5PGJ7kA3ustuj1QD9HepLnFBu8RzKhv87ocZ",
+   "slot": 526868677
+  },
+  {
+   "step": "reveal_196",
+   "sig": "5G6RQdx4B4jCj5sgTqMVrgDp86nJN1g7TtkjQ7TrcDFRkUYrTExgeHeFco3eCgnQsumrTGvxo84i9j6BcgGFWfWT",
+   "slot": 526868677
+  },
+  {
+   "step": "reveal_197",
+   "sig": "456HzaTSS2MdGg5a1V4XTnCeUpCACzCXHvq6nyj4YJCw2tjuPdRfDR8aHL4hpXmU1Lvfhi9YYJ3y2fMF8uAregjF",
+   "slot": 526868682
+  },
+  {
+   "step": "commit_196",
+   "sig": "4ZF2jxLWrHht9USkHefjCwX6Jq92WADBPGtKtbUJVb2FTvnhKzYH87Z4rHTU3mjsgwmJqzq9iXZ3xVPoeABkcYef",
+   "slot": 526868682
+  },
+  {
+   "step": "resolve_missing_197",
+   "sig": "3jg5mFCWsWN9LMbELjVw1MC2JCXAAqw56ZDFAQSgVdPUoACHRHBQSYA1NVo1xJGNZAVebEdqrcABv1qyntYfRFdf",
+   "slot": 526868755
+  },
+  {
+   "step": "commit_197",
+   "sig": "41wyyfzzwqMgqRpCo6LhDvMZwrWq6WTbS4kSK7EnAKA5ENf481E4eK8L55vHaeMPr6iF6eeZrBprRWQVKJeXoTug",
+   "slot": 526868759
+  },
+  {
+   "step": "reveal_198",
+   "sig": "CFvq9CnkToxLki3m5woBJGmP7KUxLFbg7TmhMuWrXq9mzVUcuDpa98i9UfHm5rJWdGTogMrkMZV7UcyYhtrVqVc",
+   "slot": 526868760
+  },
+  {
+   "step": "commit_198",
+   "sig": "5apqzTchVL7oeikLWVqq5BEGuCh5Rm6c15gR8Vs1uWZzPUr1Lt2zYHyLqzc2iiKRCARhWRddmyLmEFxtWPWDCq44",
+   "slot": 526868764
+  },
+  {
+   "step": "reveal_199",
+   "sig": "3UbKRGwbcMWurDtKGAdndg84EJz3GKzd7hngHx45x2JoZotQwK3rtWSQsud5SEFxVoym3DkGU8LHF8Ucsd8dRXG7",
+   "slot": 526868764
+  },
+  {
+   "step": "reveal_200",
+   "sig": "2rAr4XMG7uAVg72fTmDbq6J5RKFyxSmHAREPRwAo7JFAVRfrhfwNCPH4kipdcBfcuyBT5Q5HkXtZrqZ2fpAeqjkq",
+   "slot": 526868770
+  },
+  {
+   "step": "commit_199",
+   "sig": "5E4MhxyUHxxKvd4XkiP2dQ8R7McQP34p6VwFpxDpB6ddhQJVVxMXExFqQMVQ4tRENVd913A9bRPaNY85iRWdrLSd",
+   "slot": 526868770
+  },
+  {
+   "step": "reveal_201",
+   "sig": "3iqnvYM6r4U8nqLsZ79YcwkEqzC3nX5SscyVe9T8MN4dBmC3ZDNPRG3e9GfpMeNgFCqJGWZ9mfwCSFZ2oKyFFLfs",
+   "slot": 526868814
+  },
+  {
+   "step": "commit_200",
+   "sig": "4FqVACcCrHpKur5ADSu8TfAnZW5QoXrzr8nwhXTzQXyrH2hGpdwK92MdPiE2kyVf1h7hJwYotM6cAZgzs2xyWr7X",
+   "slot": 526868814
+  },
+  {
+   "step": "reveal_202",
+   "sig": "3Z4AHrnjqmn1mMx2NuzLNS2RnVRmEFjLvxxEb8CaaEw9Lm65FiN97eDaxLm3xa357DQf2uHG5jW3XrvwYhvxk1Ar",
+   "slot": 526868819
+  },
+  {
+   "step": "commit_201",
+   "sig": "W85DUzRrrJ4tuqxC4N2vximEc63keqAxdkFFZt9XPHWfAnZkQn2MxdC9Kek7ckzLBNXehHQKUiSPSZBtnxQJNXE",
+   "slot": 526868819
+  },
+  {
+   "step": "reveal_203",
+   "sig": "4YnTPpsUUaGXoCqkVS6S4bubJdH5xQJJSLUsDP7eAGA1HMLwHL4JbFXiPZrqrLas9WaUZVnVoWPuowhde5RvJW39",
+   "slot": 526868824
+  },
+  {
+   "step": "commit_202",
+   "sig": "4KGqh5911htcjmPR8HAFycqVB1nJ5sxiAfbJbWiNkPTsKCNLx7zCgHguioG4SWEKGBKcWcAFKuZKwFP5rnLSmxAu",
+   "slot": 526868824
+  },
+  {
+   "step": "commit_203",
+   "sig": "53PLadm5NJvW8abrdxoHfVuoEzY1hEWTUSqFMAQyoGDa76DGUb1qnzrSyJKf6xKfLjhKqGr2gd2R1Af6aQdNRSMj",
+   "slot": 526868880
+  },
+  {
+   "step": "reveal_204",
+   "sig": "H9UsqB57PcYvjt6SmASEej3jkMVnyFcheafTxxE3jx8bwR98yiQF1WrG7B3n3XVJkKz2sMvhDdgxLkwYwRJB63z",
+   "slot": 526868880
+  },
+  {
+   "step": "commit_204",
+   "sig": "3rRg96eggrG2Aupk7jwZdjjDiLjMDo9xGH9v1JM7VW7juCaMWREkAKRfi2Vm6Bz62nC1etGsYU8tcEg5zwF53qzF",
+   "slot": 526868927
+  },
+  {
+   "step": "reveal_205",
+   "sig": "3DHqvgctcnxUMjneMddLrKtuGRzb6kTpFCx9ttKbmsiGGbHLPdV4TT5wkaDpJoK2XcF3Zm7K7jXeYii1nmsMcBYc",
+   "slot": 526868927
+  },
+  {
+   "step": "commit_205",
+   "sig": "4LR6bH2EbPHFKJHLFBqxt8RqKW3771F7WowiPQNaiQhNWh91gh6EYwu2fx9qcj4VjkU7VjmiLu7czs9jD3SMCMK9",
+   "slot": 526868975
+  },
+  {
+   "step": "reveal_206",
+   "sig": "3iFfJoArxnWr1d9TM1Zwoko5hWyQhMRV2WJwWrW6TpMq2hsQAYPDZ761T9hDYWt8BNp8zjAbRrJU6LKY49zistsE",
+   "slot": 526868976
+  },
+  {
+   "step": "reveal_207",
+   "sig": "26xVkH9VAhfuKnsBsusXWevNbmuX84ofZ5zEutUqyUkxHVRGZLKtYh8YaWH3NRVURjQTxTsYVY1ntMk26jQvU2Nv",
+   "slot": 526868980
+  },
+  {
+   "step": "commit_206",
+   "sig": "3k7RUNuUCMnCq38mQZ9nBPND9nza2MMae1xD54681CakEdJ5h5F2znk3RnTkSNHwBTBeqyLJsM7HNZ7phdBsfND7",
+   "slot": 526868980
+  },
+  {
+   "step": "commit_207",
+   "sig": "3QydtPrtaknTcjKEAnzGoBM3dBLuTw8bSX22hPFW1tWwHbL3huodJZnsHBd3Vf6w7qzPq8i49j9b2Ge3iZX46UER",
+   "slot": 526868986
+  },
+  {
+   "step": "reveal_208",
+   "sig": "4ywGcqCmhmHMtYGs5U91n9K6Xwz6dRGUuGPuHm5KisyvoqDhC1Cd3BTD2W4viXD294xqodLmXbWALCQH75YRErdL",
+   "slot": 526868986
+  },
+  {
+   "step": "commit_208",
+   "sig": "VZyUNQ2r9mRRMF4yfTQa51i94Lk25yQo7f4KmLyyL2cH64aREpA8jjEoWBdCMcr7vVuYn1MCLHZxnNb6YP6WQJS",
+   "slot": 526869032
+  },
+  {
+   "step": "reveal_209",
+   "sig": "4e5K5X19S7jSQLVmg9PFcBC7JksHMo6joiYENx6jkGEPa3QAgqtToHAhVSKRZzJ7bWTJeWjaqJ7Z2RUUmkTRDvAo",
+   "slot": 526869033
+  },
+  {
+   "step": "reveal_210",
+   "sig": "4BicpLqYwVukCujU16TojbivUvamX4qtx6WFhvbmc9p4WuBvNbJiUFf9x2yLFEY1RiW8KRaYaKfaocJdVKvNrhNA",
+   "slot": 526869038
+  },
+  {
+   "step": "commit_209",
+   "sig": "2h7tumFbjmTWbh9WMqLcFx7yGnF2QQFVusSYj9osVvond9FmpVE8qEJ3krTvzzu1XhtK8zUpsL3RmMUhKfFuC4G5",
+   "slot": 526869038
+  },
+  {
+   "step": "commit_210",
+   "sig": "bzPDC4B1GdhrkbpVqxYstabeFejxc4K1MCbY9KRqGmr4WVQY3mhEBhxtsSY6BaqF5BXao25tGBuqb9a8xvZsKZH",
+   "slot": 526869043
+  },
+  {
+   "step": "reveal_211",
+   "sig": "3jSJ4TGMz9XWkEKBpVACK9wqNPuHcQY8NQEaUwhGuovQ7PA9LNrS6g49CaiUCD9nZLm9W2CZHhF898hQvZA41vQD",
+   "slot": 526869043
+  },
+  {
+   "step": "commit_211",
+   "sig": "4L1dBYNGhmXinW77rbYuKKH8QxtiZqFpudyYprd5iJyWD1FR3EFcG7R6QKnPnHk3J7qGdibwHDj6kZiRYvHRwWro",
+   "slot": 526869089
+  },
+  {
+   "step": "reveal_212",
+   "sig": "QHHGPAyZpy2wrqZ3RbGXizXdTrkRTHsYzSTSN6N9qFys8XS2JNXXPLyb7Skdwx4sbrLtSKV9mZC9qHcmRuZNXJm",
+   "slot": 526869089
+  },
+  {
+   "step": "commit_212",
+   "sig": "5Qr9x9AEqoGF3RGVJcUpYT6L2y53BC53696A9mMo3pz8jxi1jPtz4q1YunRWrg9hkVomnG9VsSGHEZ4yrVYRcBk8",
+   "slot": 526869136
+  },
+  {
+   "step": "reveal_213",
+   "sig": "5g7T7gaxhMdnyS1sj9MBCCs2rmsDaVgPnWtdtSBeeVHkb5uagBjCKSE8ad5a7FJPLthRqLsjT82WNo8geGyzhYjP",
+   "slot": 526869136
+  },
+  {
+   "step": "commit_213",
+   "sig": "4k8uoYHAVtvwTwBvbRxeDun8p4UBxYscnVUjJpLHdim2XQbubwb323t7Kkun8qiuhDGuR5bUGbcsvm6JpqLYTY2Q",
+   "slot": 526869141
+  },
+  {
+   "step": "reveal_214",
+   "sig": "5ZHW8u4Ee8WmJjP2CVmH6oqgqBt8qzBtUuyr5UeXUpAjPG6kT4fnr7uXDgpZwwWsxXFs8Q8Qfw5NvUqNAqQVZqjh",
+   "slot": 526869141
+  },
+  {
+   "step": "reveal_215",
+   "sig": "RwqmqDZvbR2utxnFq16XGmSnNzhEgq9CSdFmBpewAZCKpDEK2z4eNvcz1oWeqHkurbWRuJmvq6h8rh636tp6kYP",
+   "slot": 526869146
+  },
+  {
+   "step": "commit_214",
+   "sig": "2wyq6Hy9E1FVf2ipmLCCNvBWhQvGRLbGSrXgcSkUqxSUiFfFsCzh4ComvbNtwc12q4emesK8FgFvc9TE5tUfLq6j",
+   "slot": 526869146
+  },
+  {
+   "step": "reveal_216",
+   "sig": "3GLdXDf56251U7MgYdj4bYGuR3TgFTx3kaPXiEJmDSWmMxXCHoyZKRBTxhQzxy3V5LK7F89z2czJLDmyZ6mTJdgM",
+   "slot": 526869190
+  },
+  {
+   "step": "commit_215",
+   "sig": "5aKkijg7MNFWmeoTX2DfHXBcvS9ukkFkfbDbNZZF5giw5nH4TpsfFHbqPL6NspmHDJucHeYAE5pbn6bspaAKJR37",
+   "slot": 526869190
+  },
+  {
+   "step": "reveal_217",
+   "sig": "2zhabRofdeJU6BYV4QteFKieNaYboKL1xm5S83FZpBxFLB4MLgpiSf4XCf1yenz6HPuPS5cvL2Z4hQd6ZBjEA7Ki",
+   "slot": 526869196
+  },
+  {
+   "step": "commit_216",
+   "sig": "4UQQDNEbXBsAdLdPfXJd644PVwGubnjSx9WMvb7PAmkciYbGJEzQzhCj2vGKeEJAQrNkjqXesKX1uQ6iGvBUCQ2b",
+   "slot": 526869196
+  },
+  {
+   "step": "commit_217",
+   "sig": "3osrfKzuzQgqPtLSVCKM7Z8f5SG4cco2zencXZ2eWPHm9xwwNvgSk7HHXunVtZGwEe7Xmziy2yYHCDbqas4LXNnU",
+   "slot": 526869200
+  },
+  {
+   "step": "reveal_218",
+   "sig": "5wFWA394Aon5ELkjP7SbQ88XW96YLYaHfjfFfgnHLNZamTkW4Qp68bPArYPUEYBKhG5Ep7HEzjVNjbhqvPYPiEze",
+   "slot": 526869200
+  },
+  {
+   "step": "commit_218",
+   "sig": "3iRYDfyu7nyTz66VRXpC38vzPNuvFQKRUxYH2bCHnKU28kQnETwEqVJcJd35HeJD4LHXH9AJzDPzGxQzb42JfV8T",
+   "slot": 526869248
+  },
+  {
+   "step": "reveal_219",
+   "sig": "7BV6Mo8svLnCzwvNL9FfFZ7WqsvD8qGBb2fSobhrP5ownbS9uzWLJZnPswmogoBGtuyckPAsaHUMT2C2K38wGSV",
+   "slot": 526869248
+  },
+  {
+   "step": "reveal_220",
+   "sig": "4XqFBPzgi99ikGJmh2RTiyo5fG5deFvVU89R4f2WbMSK5dBxPzemy7RT8WAbSAbxAgxpRCTbeFYKHJsB8YQ7j3Yg",
+   "slot": 526869253
+  },
+  {
+   "step": "commit_219",
+   "sig": "31ZUpP5xjbTrLsbPJFuJ8dSHXAi5AK5Ni7Pu685jr89EaPNuznuW37mPgFmsGJuhyardeCRGYeH1xP3qhNUUqVu2",
+   "slot": 526869253
+  },
+  {
+   "step": "commit_220",
+   "sig": "4nbAG5gtDR4cJwAx1YsWwtbSyRyYEVHycAh4bir5aqXNHfgghLJdhFFohDnnLndFAbr981q5U6JXkDdMeWvPk43q",
+   "slot": 526869300
+  },
+  {
+   "step": "reveal_221",
+   "sig": "3ovhTGFz3Q9hFkn3WswFsFJwNT8YKnxy7FqbP5WHcn9Va1Dz4RxmmP4DGms79RYfhSamxc4eDrbBvmSH71HgkvQy",
+   "slot": 526869300
+  },
+  {
+   "step": "commit_221",
+   "sig": "SZCmdwBPQ7qd26SANb5zQ7Bo4qRqNVPUfnaj9LprqZbXfBbfJ6HaDxKbj8mHoo83ht2CjM5ddiZKTPvt8yGVxy5",
+   "slot": 526869306
+  },
+  {
+   "step": "reveal_222",
+   "sig": "4PzT27bCFVRvxv1ybPTe9pQpFgHhtcy2QkPDqsucBqGGsuFUVfkW3oZPRB5CZEMgb46afe94EETyfMkRuCc4WYdi",
+   "slot": 526869306
+  },
+  {
+   "step": "commit_222",
+   "sig": "2eBwoiugX5S4KJnX5kvpdYwFF2zDhrnVeL1ZFnwEfJC7DMgsVzkHAyPGjThqi3GBJVZahvF6oEDFsMPB3SEV1rXt",
+   "slot": 526869353
+  },
+  {
+   "step": "reveal_223",
+   "sig": "K6TGtFbWCrJwqabzKxq6PWC2owGvCLF3upUctQrERva6wy35XGFvh6gEFuZX4UNV4ktQaMFvxzhY3dfzgKU2Xis",
+   "slot": 526869353
+  },
+  {
+   "step": "reveal_224",
+   "sig": "5U69LXnFTByt6cb36uBceSqiS358JNahnvse9MRtAe7K3B421vK2z1rr3mC1SQrGHMQ8dDmjAToRXbAg6UyHGCSu",
+   "slot": 526869358
+  },
+  {
+   "step": "commit_223",
+   "sig": "73UHo2j5Ny1coD34tTcwSndKspjBhngSwks4fQQEePEeHWNKaAgxGgxoyWgDrbpoN8qDSJrCHawKD3gPcs3ZDdB",
+   "slot": 526869358
+  },
+  {
+   "step": "commit_224",
+   "sig": "21iyd7Z1V7ajhnTvoRdmbBfMwnwxVnCmE4tgPMZGfGzaLqDgxFzkAcB1rvuf16WYP5e2w2A2VeBauWaj7UthxNwZ",
+   "slot": 526869406
+  },
+  {
+   "step": "reveal_225",
+   "sig": "2CtjUpYvt3HXufVC5PbAam2EpfYtwDuzPz96EPbpzhN4JVfYLnwJJmtiVFNcUkDrdAmsDxzZE9P6f5Eo3QTKTDPd",
+   "slot": 526869406
+  },
+  {
+   "step": "reveal_226",
+   "sig": "5LVqmBGF9e1NFfYLiXzAnRwSibG9LRzERnT5PkuWEdrSh42Er4G8HMhyuWQAo2FrAVPMh6ZWiw343bBEoQhB2tB9",
+   "slot": 526869411
+  },
+  {
+   "step": "commit_225",
+   "sig": "5TkFCNNkHdGrR9JsrXKpLqMGY1fKpKhyFNvvC45CtKvfraqEke794RsCuX1so5nST1QREJdHSRsdp2EMeKpUSwa5",
+   "slot": 526869411
+  },
+  {
+   "step": "reveal_227",
+   "sig": "5B2hz8DR4nYSCJANZF34mc4cf81d6uvvYv3GMg1HdVh1UTMnGAgNoTDhNYfPm1gmCkz2tfYBsvB8avFjUkR71KSw",
+   "slot": 526869416
+  },
+  {
+   "step": "commit_226",
+   "sig": "3kHG654ek5UStHMWZBZusujXuEyxbPASX63ti6PbZheEz5UjLJC6sdFiq7B3YGshhKsVTAJTZfnDts8jPujzh7mc",
+   "slot": 526869416
+  },
+  {
+   "step": "commit_227",
+   "sig": "4HA7kjGvQZ9evykihx2HUn2BtvAL9y5pX1j4LVmysfxdEwRepKUHCBFGYqao6pwFL3fCxLE1AdXpSwK9SqGtBcea",
+   "slot": 526869461
+  },
+  {
+   "step": "reveal_228",
+   "sig": "5BrP2yCeeTmcSP3kLYyNQQUENDjTB5fuwqTodgJi78kBdCNvbuZTWdg6PY21539Vo2NDQJLb5j2iuH5u5gJWjfz1",
+   "slot": 526869462
+  },
+  {
+   "step": "commit_228",
+   "sig": "2Zu3mDeyfMuRyNURuawKSDeNiSkvsLTnJjzSAg6wz6jmedcf7rxrX36XVGqDLmDTN5RBeo4ZTTTN8UsXxroBZTKq",
+   "slot": 526869467
+  },
+  {
+   "step": "reveal_229",
+   "sig": "4x5LuXGGuQMvvDPrvgjggsFM4syYEQDARUk4sWNLEsyPaJXQV9bafGhxWwRzxCbMjLLsCg66groFmpFKL6fF2wJD",
+   "slot": 526869467
+  },
+  {
+   "step": "commit_229",
+   "sig": "3H7eNLGpXDiAVSbLJsKmDoFwVERb6BdD2ULj199R7EBUThUQdLMhxjG4uaaNVpaFbdhPQm6y2Kt4RL4NNHoUCp4K",
+   "slot": 526869513
+  },
+  {
+   "step": "reveal_230",
+   "sig": "JemLNpnrhLGjoRJ8gmzG2YLtoyVyRLdnXaL2HVNVA9H3Xte1N2HYKwsM1Bd4jfTYryDY78fBLXh118TMqGuXyyo",
+   "slot": 526869513
+  },
+  {
+   "step": "reveal_231",
+   "sig": "3vAirbKs6WokUvPdpaZ6JUTXN31tRrkQEBLYFZhH79DPmL4bydNoyAPmgyDYVFeJWdqPK1CPxyPz7dCpKi7hEks",
+   "slot": 526869519
+  },
+  {
+   "step": "commit_230",
+   "sig": "3Z5D9D7eJS349pNdphoHvERVWSz8X9prsoTfLwPQJQm3jVs9WZWGAMtXfEGcLYzQgMAXmgBnzixWZtFV9STxF1qG",
+   "slot": 526869519
+  },
+  {
+   "step": "reveal_232",
+   "sig": "3i1Tb8tZRaxA68J5Sd4T9rJjQpcugaJzCStg63NT7iHFuxDhHhofr2yVcQapsJaEzSBQ6AX4DZ4UTFM5yMHGFQRy",
+   "slot": 526869565
+  },
+  {
+   "step": "commit_231",
+   "sig": "zsaXAdGJou1Vp5E7xTCX2goym7MtpBRZ1TdmmwoXktyPjArYwmPKNnMpEqJk4vtjNkrf1xHN8DobhM352hs34qJ",
+   "slot": 526869565
+  },
+  {
+   "step": "reveal_233",
+   "sig": "5U1LvFXWuWUCvb6tKFiFLgcnnDPxo2G7Dvy94h4rHMx26n7N2E8nvwcCtvfgbMLcugmwZwA5aFVn95FH7ikYJ9n4",
+   "slot": 526869570
+  },
+  {
+   "step": "commit_232",
+   "sig": "DWRV1eUcXGuiQfEP7XNZD917JvgbXTaJynwXovh3V1gNYMorTeDdPgTBbwndwZ4avNTZ2eKXsh3JGi6zVo78Eiu",
+   "slot": 526869570
+  },
+  {
+   "step": "commit_233",
+   "sig": "ryReyk7TtVRpo5dtNa55hooL4UW6ma4SH9VKAD7myp29RoofEnBjXNpnCT9uq3ESXNgrqAYjLcu3tpzo5B1rwCF",
+   "slot": 526869576
+  },
+  {
+   "step": "reveal_234",
+   "sig": "4HQGnVqaMssb2toSmCtKHEm1Z4wHnk2WKJe5YUUSiAHsvo4ZESFsgjWtftYL3YF5eMtipWMnVGeDb5Qe1dNCEs6C",
+   "slot": 526869576
+  },
+  {
+   "step": "commit_234",
+   "sig": "4wN4mBjGFYWPnVyrMN5YyvLvMjEEJpgLTNtXMs5xzcAJtrvhY6iA3qjk7tmVXtoGZnrDSCWnGx298xHrh31RR6MK",
+   "slot": 526869622
+  },
+  {
+   "step": "reveal_235",
+   "sig": "2A1iruYwRRCXThmSfRQdsseqniDuBGQcFqZuGsQRR5FuMGdhRGtfp61DrpJHGTyVCK2YtV4s6iFDxg5JuyoVaU3c",
+   "slot": 526869622
+  },
+  {
+   "step": "reveal_236",
+   "sig": "hQmqHiJt2Ffb8by4snwNYYbfzEHmP73oUwNGaGGSt6Ctc7qmUWEL9kU2ocf3H8kchRnUGnHc3BgxVS8cqi1wLN7",
+   "slot": 526869627
+  },
+  {
+   "step": "commit_235",
+   "sig": "28BoKtskCB3CoWjXDLk9uQ3TTPVbYziq7gJpMXUqciHoB1yN4YVCaZRUS4xBjZ56nAs2mNz5gb3CnH2bsDmr5iPW",
+   "slot": 526869627
+  },
+  {
+   "step": "reveal_237",
+   "sig": "5hjiwMZvXCLxYR8h88dqwyZpQiFugohFGdsFqxM74UTZGZfmkZtaQQJ74tLpoLDPMz1WnfU9NqEfPsf5qkQQnRPN",
+   "slot": 526869684
+  },
+  {
+   "step": "commit_236",
+   "sig": "57ieKgW5uxDZ9sydijczoCW3guLA8DZgvamqfkCGwNwotpePARwnWJaLYCnVm8TnksookwndBTCq9bcGMrSbusNZ",
+   "slot": 526869684
+  },
+  {
+   "step": "commit_237",
+   "sig": "3kkAvEgdHNKXveBmoHuQMvGHK6h8L6o75w6Ug9ezpUUxVNcvgSmYbj36umzRTzFpkYTXWCEucjbjResdXjCaxVza",
+   "slot": 526869727
+  },
+  {
+   "step": "reveal_238",
+   "sig": "54vG9aVS5Ac8VDRBqDrvBXt6eDw9S1iMgMmSfWqqxSoapm5urpoxfVkwNPQidfEUvpEZ5vHWuhb7LXuSBbqN5R6G",
+   "slot": 526869728
+  },
+  {
+   "step": "reveal_239",
+   "sig": "2o5vghH9gjQrpMpcMtrYvkG1d2w4JwyR4KMj2U4Wv7p8oQmJkxvwwhRpwseDA8v4Fn49L9ywDvTnJPTM9nPL7hFU",
+   "slot": 526869732
+  },
+  {
+   "step": "commit_238",
+   "sig": "R51FYfizKdK1qnKSwdqtBEyy2oSPGs4az4BQADV4f8KbMDGy3myG87P5KMMYDswwi4AjcRVH9ofUZucHzxrz3rG",
+   "slot": 526869732
+  },
+  {
+   "step": "commit_239",
+   "sig": "3euE39NcxdmoAGC61UVu2btwtRiWofpbmyswoYFGC4K5s8Ysriv5t1PVreoP3eeHi4YxrJzxRmJ7RhaqWQrcMad5",
+   "slot": 526869738
+  },
+  {
+   "step": "approve_3_verifier0",
+   "sig": "ESgKWyzhANGN1Jc2RAFNwDUa7fskDLtHw2nyGZ2AtqmTQ88yr8ZmdChndbhRfLUnYCor1Tk1YxeboF8axrVUB4L",
+   "slot": 526869785
+  },
+  {
+   "step": "approve_3_verifier1",
+   "sig": "512KjMggwt1jxnFKaLBPEK9Rrirtmpk6DvVRM35d6DwBXk57zJ8vfg7cbqKjwRfEYDuLvYsgAbkzLjGxvQEkSCoR",
+   "slot": 526869791
+  },
+  {
+   "step": "settle_3",
+   "sig": "62NAMc4jpj7mGwJs7jh85qzcSdDuCTnn5hVRzMkJufRuwjQxhT9FGr6TcNUk9Tgd6vxuSxmToJv2DqgB16pmxMUV",
+   "slot": 526869796
+  },
+  {
+   "step": "distribute_3",
+   "sig": "3TDkur2yLHSjEoxjvkKrpzcQfbpzSrkDDZPFqFdcXvptThMzwkCtSPNdv9ZE7ySZ21c8zNpuUEdd4WFCCTgLsYnT",
+   "slot": 526869800
+  },
+  {
+   "step": "claim_investorA_0",
+   "sig": "2gXzdyotwhTrVXPg6W3Kv97PJMP81USeACoCscW7TqrG2us6JH4bsJhJo6U4kg7mBdVLv5fCw1vJhmVaA5xwTRdn",
+   "slot": 526869805
+  },
+  {
+   "step": "claim_investorB_0",
+   "sig": "67kn6DNW82mMBkJ5yhAs54mfjJ1mFDHdf6KoK6GRj6JPznzyH58CAoUsDV9JoN77hhCrWRS9qCtcVSvBNt4Qmor9",
+   "slot": 526869811
+  },
+  {
+   "step": "claim_investorC_0",
+   "sig": "4R3Vh42EQZiyLYbg6WmYjMT3XeFfNAStpV2np47gBuEHKAgXACAPK2yGCaAPsW67mzes5JVbPMCwaWwTcoJzQTCa",
+   "slot": 526869855
+  },
+  {
+   "step": "release_bonds",
+   "sig": "hNSqUWamPHDXCLcXjAZsMFaZNS8wd1JvN5dHATGFw9TY7ZC9KV24WCBa1ArvWgFtzLbNEHsjXgwoHd3aYAKAAZW",
+   "slot": 526869860
+  }
+ ],
+ "tx_count": 525
+}
