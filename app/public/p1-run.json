@@ -1,0 +1,327 @@
+{
+ "cluster": "devnet",
+ "program": "94CLe2FNJ9ZHUq4i8pRARSRkkEvEMkL4fBrCcJg2hcHn",
+ "token_acl": "TACLkU6CiCdkQN2MjoyDkVg2yAH9zkxiHDsiztQ52TP",
+ "gate": "GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz",
+ "started": "2026-11-27T09:52:46.185Z",
+ "deal": "AsR48hi5oRyXY271PXd1Nc68SfqZvnhT8t9JVJSGjfSz",
+ "deal_id": "900001",
+ "steps": [
+  {
+   "label": "create_dusd",
+   "signature": "3hbNM4MGaXrmF2gkh4sbcH3T25QzM6qGUHdPsyMDy4X9CvB1UwsSqApDjbtCoVsGkR2SSNfohpVnGj6hfBwgzuAN",
+   "slot": 526829046,
+   "step": "create_dusd"
+  },
+  {
+   "label": "dusd_accounts",
+   "signature": "eduFKgwHscUmxAkvD7b71H3xkhHZMXMe5neLi6bcn1jeBhZ5BDeYAd7JMq876t7cBJ26JYAoqEv9GDHUgycSyfq",
+   "slot": 526829090,
+   "step": "dusd_accounts"
+  },
+  {
+   "label": "initialize_deal",
+   "signature": "5EbLYyntwsZ17PQ9scf7qzvPagrLxX45c59nwUzpQXPgkwQgJMDsxZ3ZtbULqLB3zRMqWMKhPDureUsST6jgzWEh",
+   "slot": 526829096,
+   "step": "initialize_deal"
+  },
+  {
+   "label": "init_vaults",
+   "signature": "e6rjAxDFFwtAaRvWUq4ZrUXPh3DWq3AVeRMXEysXogcXry4EKGfHLRfnxyc1t5uVnLHrCjHff842CW7ShMwktN7",
+   "slot": 526829101,
+   "step": "init_vaults"
+  },
+  {
+   "label": "set_kyc_A",
+   "signature": "MLFE6Z5jDdmexc88JbjdFaPqp5tRCueNKMshfBhr6dCPnUn7PpMrLbR9SKcJEjJXkuFA6zCKFiUrMZP5kC28Ctj",
+   "slot": 526829106,
+   "step": "set_kyc_A"
+  },
+  {
+   "label": "set_kyc_B",
+   "signature": "ieFHL7SZyaQ2mGxpNr89q685fs3jenFUoYbe1k5syksxNqtBSNUh2iS1DycEp83pZAYQ8k3ejDpoA1ym8HKYF2T",
+   "slot": 526829112,
+   "step": "set_kyc_B"
+  },
+  {
+   "label": "set_kyc_outsider",
+   "signature": "f9GcTKdyVFBkeFqPAWk18PWpnVWsNUA3tz29314B9GfCpC9myXTBjSrzPbKpd9wVXXKpC9GcnCrw8QdN2AwZcL8",
+   "slot": 526829117,
+   "step": "set_kyc_outsider"
+  },
+  {
+   "label": "abl_create_list",
+   "signature": "3CxcKpHZfQLQNA2pVDFMjDbrUb6zVMdTg94bfFWkMGCFovrHoXXAN7bAAWM3Ubjwy8WXsdvCCAhpwYEwdKkr7xXZ",
+   "slot": 526829123,
+   "step": "abl_create_list"
+  },
+  {
+   "label": "abl_add_wallet_A",
+   "signature": "5B5tnWoDjeveAPBVmiE7oq5o6SuAqpLvwd5FG3nbBTDysUHCc1ojCkKeYXRipnqAzEyC435fKqycPC8uJ2QNe1SY",
+   "slot": 526829170,
+   "step": "abl_add_wallet_A"
+  },
+  {
+   "label": "abl_add_wallet_B",
+   "signature": "4WetMb2BsiGngUNoXn8qfUJKvhuRfcphZiRsCgJsw1M1J2aZQ915xMscL4jZkzprHewd8P8pYtPw6qfCv6qmxzuk",
+   "slot": 526829175,
+   "step": "abl_add_wallet_B"
+  },
+  {
+   "label": "create_tranche_mint_0",
+   "signature": "2xao4MJ4XXRgN19mTNfLFo5Y1TwHqz9uwUQECfvizXgXarBh4dRGzjSmp6FhVeqsadwCnPxoDoKYkXuTTsLrCT6R",
+   "slot": 526829180,
+   "step": "create_tranche_mint_0"
+  },
+  {
+   "label": "token_acl_config_0",
+   "signature": "5qCWTrDakeKbYYrLMaLcsVuXBBXrkWbkUQxe6bR7EvLkCaD9hTzGkqduWdy5nuQ4vvTFmRxo3W1SMijzWE6PnUgQ",
+   "slot": 526829186,
+   "step": "token_acl_config_0"
+  },
+  {
+   "label": "create_tranche_mint_1",
+   "signature": "5nmHAWGkg8SNUtFM7A1bweW59rAgkMYDKH16zXXnd6oTFW4CFDRPpDS1UiPzsiLinacYygAkHgSU19wf9TAMVWhb",
+   "slot": 526829192,
+   "step": "create_tranche_mint_1"
+  },
+  {
+   "label": "token_acl_config_1",
+   "signature": "2EWeGJKEEp2qsJqStWwqMndCjaaPL88FLKBuDh17594CHBC6QQAbrjMrL6etMWutjwgtMbWsiR2aX28qzXndr5sc",
+   "slot": 526829197,
+   "step": "token_acl_config_1"
+  },
+  {
+   "label": "register_tranche_mints",
+   "signature": "5aEgf6vmHqu6VYYgzggLJyW9863kTtThe3iszaDAAHivc8CvskgTv79FxAVBwFkSWZRdmKEGRHyUZrSgTA863jXE",
+   "slot": 526829202,
+   "step": "register_tranche_mints"
+  },
+  {
+   "label": "create_ata_A",
+   "signature": "5SVoeYFwNAEFm8r4ZFEGT1jUS8HcG8LVmAe8Ed8oDMmuByYqxXpk7bNE1c1BFVWPMeYnVSHbbZrcXnjYfJRqPQPg",
+   "slot": 526829248,
+   "step": "create_ata_A"
+  },
+  {
+   "label": "create_ata_B",
+   "signature": "VPqFD9goLzCsC7K2SsHFy7KBRwrso7fM1eXx9imwQsBxve5cEXa13NcVLqvEzscnzAR6iFBvYck1XEJ8gvC4KXr",
+   "slot": 526829253,
+   "step": "create_ata_B"
+  },
+  {
+   "label": "create_ata_outsider",
+   "signature": "rvH3Q3RcuiHMvx6jJpo89dzL3VGVQBLQ2GwAWVTMsPcKMCsAobZqHhvysz72wvvPoEvyRjea5FEibTPTxsL8P8J",
+   "slot": 526829259,
+   "step": "create_ata_outsider"
+  },
+  {
+   "label": "thaw_A_self",
+   "signature": "5ddVCqViXJw5vEXBUKiuhAGmkKUvoEPvmMrK98VBkwVb9R5vtD3R6nzoG4PPmGUsGNcDgdJS8hBx1siHLziFSuoi",
+   "slot": 526829264,
+   "step": "thaw_A_self"
+  },
+  {
+   "label": "invest_tokenized_A",
+   "signature": "ECpCnEK1NE9SzAJMiLwfqfMTokLtqbzgmptecr5RyPrBKr7UyvLQQE5ooWFdmzEYyN1ceVocnSkdY6QftiySNUp",
+   "slot": 526829270,
+   "step": "invest_tokenized_A"
+  },
+  {
+   "label": "thaw_B_self",
+   "signature": "3KShFZBF2umjSKUk2FeafXVHt3pzRoAm1ucKrR4Cyrid2j5FkbPKWKuoBoZUBZxE6cUceUVw1zWu6g9yp3EFKvyQ",
+   "slot": 526829276,
+   "step": "thaw_B_self"
+  },
+  {
+   "label": "open_position_B",
+   "signature": "3okqaSwK5nL9P7U6tWBHn66iBGz9rQeXPhJRFBX9AncpE2bi3vpZxAn4dxuu2X45bZxjgXddBscUCjT8KMxJXcuz",
+   "slot": 526829319,
+   "step": "open_position_B"
+  },
+  {
+   "label": "transfer_A_to_B",
+   "signature": "4RhbJ76TbjYsxatcD9bDyZohheYkv97VKm5pftK3pXqBXrQrg5JRAqPQsjNoJXxbnWGsdFVJAfS5wjZEhUWLfb1y",
+   "slot": 526829324,
+   "step": "transfer_A_to_B"
+  },
+  {
+   "label": "open_position_outsider",
+   "signature": "3VfTXjy3R9BTMBeGQ8haqvz8vJFTDzLvHALoZPVFEKBBE79j4PYvC5mpNwA5RnNS2Nazcp66Dj2BkMAfYPuWgzMM",
+   "slot": 526829392,
+   "step": "open_position_outsider"
+  }
+ ],
+ "rejected": [
+  {
+   "label": "thaw_outsider_self",
+   "signature": "4ZCwP7DBGcNfrQ4FhKnr2VjqUGWeQY2kHee2JLba6NvtKXKxwoFUepAeGRzQM3Q7f1V6TtpLr4G4aeGAi7ukRG5P",
+   "err": "{\"InstructionError\":[0,{\"Custom\":4098}]}",
+   "logs": [
+    "Program GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz invoke [2]",
+    "Program log: Failed to pass validation for list [164, 232, 115, 105, 25, 155, 142, 202, 14, 187, 143, 8, 216, 203, 53, 97, 113, 20, 185, 120, 82, 148, 175, 238, 55, 0, 241, 27, 197, 45, 251, 99]",
+    "Program GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz consumed 3227 of 184140 compute units",
+    "Program GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz failed: custom program error: 0x1002",
+    "Program TACLkU6CiCdkQN2MjoyDkVg2yAH9zkxiHDsiztQ52TP consumed 19087 of 200000 compute units",
+    "Program TACLkU6CiCdkQN2MjoyDkVg2yAH9zkxiHDsiztQ52TP failed: custom program error: 0x1002"
+   ],
+   "expect": "Program GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz failed"
+  },
+  {
+   "label": "thaw_outsider_by_A",
+   "signature": "AHaqHWAhRShKPz2xPf3JqeyyLq4eF6RXnzMcP364VGMcfKvWKidssPszJnDYKS2ZZQeEN1UedpLtM4ZYGrrDA9c",
+   "err": "{\"InstructionError\":[0,{\"Custom\":4098}]}",
+   "logs": [
+    "Program GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz invoke [2]",
+    "Program log: Failed to pass validation for list [164, 232, 115, 105, 25, 155, 142, 202, 14, 187, 143, 8, 216, 203, 53, 97, 113, 20, 185, 120, 82, 148, 175, 238, 55, 0, 241, 27, 197, 45, 251, 99]",
+    "Program GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz consumed 3225 of 184015 compute units",
+    "Program GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz failed: custom program error: 0x1002",
+    "Program TACLkU6CiCdkQN2MjoyDkVg2yAH9zkxiHDsiztQ52TP consumed 19210 of 200000 compute units",
+    "Program TACLkU6CiCdkQN2MjoyDkVg2yAH9zkxiHDsiztQ52TP failed: custom program error: 0x1002"
+   ],
+   "expect": "Program GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz failed"
+  },
+  {
+   "label": "invest_tokenized_outsider",
+   "signature": "5VUujsqiCaE2BecnLrRhzcGMDhqWN4ihef1V9gukmogXrNs7ifmMYe1oYaYyH9C1eY5G7wjhZewKbQHm95UCr42i",
+   "err": "{\"InstructionError\":[0,{\"Custom\":17}]}",
+   "logs": [
+    "Program log: Instruction: MintTo",
+    "Program log: Error: Account is frozen",
+    "Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 1176 of 159557 compute units",
+    "Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb failed: custom program error: 0x11",
+    "Program 94CLe2FNJ9ZHUq4i8pRARSRkkEvEMkL4fBrCcJg2hcHn consumed 41619 of 200000 compute units",
+    "Program 94CLe2FNJ9ZHUq4i8pRARSRkkEvEMkL4fBrCcJg2hcHn failed: custom program error: 0x11"
+   ],
+   "expect": "Account is frozen"
+  },
+  {
+   "label": "transfer_A_to_outsider",
+   "signature": "mcKRX2YbMVFVrfmSxsYm8mAx9WKBQuUEQZQ9grRUMBTRfeGmb9rgXq7gV9FVnMHDaqhFx4AC5K61UmpgcJgGiH3",
+   "err": "{\"InstructionError\":[0,{\"Custom\":17}]}",
+   "logs": [
+    "Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb invoke [1]",
+    "Program log: Instruction: TransferChecked",
+    "Program log: Error: Account is frozen",
+    "Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb consumed 4383 of 200000 compute units",
+    "Program TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb failed: custom program error: 0x11"
+   ],
+   "expect": "Account is frozen"
+  }
+ ],
+ "programs_on_devnet": true,
+ "mints": [
+  {
+   "tranche": "senior",
+   "address": "Fpa2Ne4GMXC3FKcXfPZHyekVyy8XQF2zdkeQKQLEZxjC",
+   "extensions": [
+    "MetadataPointer",
+    "TransferHook",
+    "DefaultAccountState",
+    "TokenMetadata"
+   ],
+   "default_account_state": "Frozen",
+   "transfer_hook_program": "94CLe2FNJ9ZHUq4i8pRARSRkkEvEMkL4fBrCcJg2hcHn",
+   "transfer_hook_authority": "11111111111111111111111111111111",
+   "metadata_address": "Fpa2Ne4GMXC3FKcXfPZHyekVyy8XQF2zdkeQKQLEZxjC",
+   "name": "SaveSail Senior",
+   "token_acl": "GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz",
+   "mint_authority": "AsR48hi5oRyXY271PXd1Nc68SfqZvnhT8t9JVJSGjfSz",
+   "freeze_authority": "EnjuDFYaApJtHB8tZxTqzVCKAFihT4x2y7nH7aFkiUmk",
+   "supply": "10000000000",
+   "mint_config": {
+    "address": "EnjuDFYaApJtHB8tZxTqzVCKAFihT4x2y7nH7aFkiUmk",
+    "gating_program": "GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz",
+    "permissionless_thaw": true,
+    "permissionless_freeze": false,
+    "authority": "CEkzD9GudhZgLzp2Mcbhn9Y5NKEhmE1QRfKT6w612fKq"
+   },
+   "gate_thaw_metas": "F2UCQqFBamJKxNVkMySAwajKXkPvKXkM5A16c9LwKj9M",
+   "hook_metas": "FceAs4SyvidqYVw2D7wGQ7FLXbgfFEmyj5nR8XU2Yj7s"
+  },
+  {
+   "tranche": "junior",
+   "address": "EJ9MDd8pS4KhvDMovh5PXVfMWi8vmUo2VHnrgGJHYer",
+   "extensions": [
+    "MetadataPointer",
+    "TransferHook",
+    "DefaultAccountState",
+    "TokenMetadata"
+   ],
+   "default_account_state": "Frozen",
+   "transfer_hook_program": "94CLe2FNJ9ZHUq4i8pRARSRkkEvEMkL4fBrCcJg2hcHn",
+   "transfer_hook_authority": "11111111111111111111111111111111",
+   "metadata_address": "EJ9MDd8pS4KhvDMovh5PXVfMWi8vmUo2VHnrgGJHYer",
+   "name": "SaveSail Junior",
+   "token_acl": "GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz",
+   "mint_authority": "AsR48hi5oRyXY271PXd1Nc68SfqZvnhT8t9JVJSGjfSz",
+   "freeze_authority": "AoMjvhLh7155KVHNt6v52KNesYUkktGGiXNSThWFR1FZ",
+   "supply": "0",
+   "mint_config": {
+    "address": "AoMjvhLh7155KVHNt6v52KNesYUkktGGiXNSThWFR1FZ",
+    "gating_program": "GATEzzqxhJnsWF6vHRsgtixxSB8PaQdcqGEVTEHWiULz",
+    "permissionless_thaw": true,
+    "permissionless_freeze": false,
+    "authority": "CEkzD9GudhZgLzp2Mcbhn9Y5NKEhmE1QRfKT6w612fKq"
+   },
+   "gate_thaw_metas": "HWdHxur39GBRszJTBT5foLbdqD7EUbWu9HBNFvngZB6j",
+   "hook_metas": "3uGjQsyJpL2TnBuzeaCEVJJQGFCbKnNEk2fJ8C7iG2ix"
+  }
+ ],
+ "allow_list": {
+  "address": "C6jSheksL3qCTPDoVkbsXaNhX7dG4CDBifehttbrijGW",
+  "mode": "allow",
+  "wallets": 2,
+  "entries": {
+   "A": "CGW2M9jN8jR39FfiWX5KTGxZGT3xF4QnVTJnSPPFBRs1",
+   "B": "GpRVeiPgB5FTb4g21hJDKFNfgiwNwifwh85zCq41AvVN"
+  }
+ },
+ "holders": [
+  {
+   "name": "investorA",
+   "address": "AovnFM1zjANpJq2Hzn9ncJmC5XwoSC866yU4BERjd2iR",
+   "listed": true,
+   "account": "CorSmV8s9hiy81tJHuSJUBUDMnR5j7cqo4UvizPwjPQ2",
+   "frozen_at_creation": true,
+   "state": "initialized",
+   "balance": "7500000000",
+   "units": "7500000000"
+  },
+  {
+   "name": "investorB",
+   "address": "DA8E3XUsoiZkr28eJQJoDh3XAaYmThDkg19r2nVLMSX5",
+   "listed": true,
+   "account": "4koonxMtLQ9apwT4KUzoVKrQuMdYVFsdsXGYV446W8SC",
+   "frozen_at_creation": true,
+   "state": "initialized",
+   "balance": "2500000000",
+   "units": "2500000000"
+  },
+  {
+   "name": "outsider",
+   "address": "3WK3B9n54NgcdSFwRFQjaZBLNYsaLWbgcgzfuHYgrYnt",
+   "listed": false,
+   "account": "BYwGQhVjNqpbo9rTQMQogTKyjS5NoySGqtdrF5snDmU5",
+   "frozen_at_creation": true,
+   "state": "frozen",
+   "balance": "0",
+   "units": "0"
+  }
+ ],
+ "checks": {
+  "one_mint_per_tranche": true,
+  "default_frozen": true,
+  "token_acl_metadata": true,
+  "hook_is_savesail_immutable": true,
+  "mint_config_gate": true,
+  "allow_list": true,
+  "created_frozen": true,
+  "listed_thaw_and_receive": true,
+  "unlisted_thaw_and_receive_fail": true,
+  "units_equal_balance": true,
+  "supply_equals_raised": true
+ },
+ "duration_s": 92,
+ "finished": "2026-11-27T09:54:18.233Z"
+}
