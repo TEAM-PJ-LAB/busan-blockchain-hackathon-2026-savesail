@@ -1,7 +1,7 @@
 name: ci
 on:
   push:
-    branches-ignore: [research-results, "research-results-*", devnet-runs, "devnet-runs-*"]
+    branches-ignore: [research-results, "research-results-*", devnet-runs, "devnet-runs-*", "devnet-p1-*"]
   pull_request:
 permissions:
   contents: read
@@ -35,8 +35,8 @@ jobs:
         run: cargo clippy --all-targets -- -D warnings
       - name: rule module tests (T2 host, T3)
         run: cargo test --lib
-      - name: program tests (T1, T2 on-chain, T3 on-chain, T4, T6)
-        run: rm -f target/tmp/k2_hits.txt && cargo test --test program
+      - name: program tests (T1, T2 on-chain, T3 on-chain, T4, T6) and P1 (PRD 2.1)
+        run: rm -f target/tmp/k2_hits.txt && cargo test --test program --test p1
       - name: K2/K3/K6 check
         run: python3 scripts/check_k2.py
       - uses: actions/upload-artifact@v4
@@ -75,6 +75,9 @@ jobs:
       - name: executor quick run + reference check
         working-directory: scripts
         run: npx tsx run/run.ts local --quick && python3 check_run.py ../target/run-local/run.json quick
+      - name: P1 run on a local chain (Token-2022 tranches, Token ACL, transfer hook)
+        working-directory: scripts
+        run: npx tsx run/p1.ts local
       - name: executor demo scenario + reference check + web chain comparison
         working-directory: scripts
         run: |

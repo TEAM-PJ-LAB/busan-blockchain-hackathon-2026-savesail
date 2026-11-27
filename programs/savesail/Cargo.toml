@@ -25,7 +25,9 @@ anchor-spl = { version = "1.2.2", default-features = false, features = ["solana-
 solana-sha256-hasher = "3.1.0"
 
 [dev-dependencies]
-litesvm = "0.15.0"
+litesvm = { version = "0.15.0", features = ["precompiles"] }
+spl-tlv-account-resolution = "0.11"
+spl-transfer-hook-interface = "2"
 solana-message = "4"
 solana-transaction = "4"
 solana-signer = "3"

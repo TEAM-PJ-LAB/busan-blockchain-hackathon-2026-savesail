@@ -73,6 +73,11 @@ jobs:
       - name: Deploy and run
         run: |
           SIZE=$(stat -c %s target/deploy/savesail.so)
+          # an existing program account smaller than the new binary is extended first
+          if solana program show "$PROGRAM_ID" --output json > show.json 2>/dev/null; then
+            LEN=$(python3 -c "import json;print(json.load(open('show.json'))['dataLen'])")
+            if [ "$LEN" -lt "$SIZE" ]; then solana program extend "$PROGRAM_ID" $((SIZE - LEN)); fi
+          fi
           for i in $(seq 1 ${{ inputs.runs }}); do
             solana program deploy target/deploy/savesail.so --program-id "$RUNNER_TEMP/program.json" --max-len "$SIZE" \
               --keypair "$RUNNER_TEMP/admin.json" --url "$RPC_URL" | tee deploy.log
