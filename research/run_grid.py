@@ -66,6 +66,17 @@ def jobs_for(grid, quick=None):
     return out
 
 
+def assign(jobs, nshards):
+    """Shard of each job: costliest first, dealt out back and forth over the shards, so every shard gets a similar
+    share of the manipulation panels (a plain k % NSHARDS put all panel chunks on a quarter of the shards)."""
+    cost = [j[4] + j[5] * len(PANEL) for j in jobs]
+    out = [0] * len(jobs)
+    for p, i in enumerate(sorted(range(len(jobs)), key=lambda i: -cost[i])):
+        r = p % nshards
+        out[i] = r if (p // nshards) % 2 == 0 else nshards - 1 - r
+    return out
+
+
 def main():
     spec, shard, nshards = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
     grid, _, outer = spec.partition("@")  # "NC@0/40": only shard 0 of a 40-shard run, split again over NSHARDS
@@ -78,11 +89,11 @@ def main():
         for line in open(path):
             d = json.loads(line)
             done.add((d["cond"], d["rep0"]))
-    jobs = list(enumerate(jobs_for(grid, quick)))
+    jobs = jobs_for(grid, quick)
     if outer:
         o, on = map(int, outer.split("/"))
-        jobs = [(k, j) for k, j in jobs if k % on == o]
-    jobs = [j for i, (k, j) in enumerate(jobs) if i % nshards == shard and (j[1], j[3]) not in done]
+        jobs = [j for j, a in zip(jobs, assign(jobs, on)) if a == o]
+    jobs = [j for j, a in zip(jobs, assign(jobs, nshards)) if a == shard and (j[1], j[3]) not in done]
     t = time.time()
     with Pool(os.cpu_count() or 1) as pool, open(path, "a") as f:
         for i, res in enumerate(pool.imap_unordered(chunk_job, jobs)):

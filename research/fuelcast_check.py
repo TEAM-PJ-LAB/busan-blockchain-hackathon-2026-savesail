@@ -39,7 +39,6 @@ import os
 import sys
 
 import numpy as np
-from scipy.stats import t as student_t
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import measure as M  # noqa: E402
@@ -150,9 +149,7 @@ def run_ship(a, reps, seed):
                 Ab = np.bincount(cell, F * tw, ng * G).reshape(ng, G)
                 Pb = np.bincount(cell, Pn * tw, ng * G).reshape(ng, G)
                 oc = np.argmax(off.reshape(ng, G * L), axis=1) // L
-                se, df = M.design_se(Ab, Pb, oc)
-                se *= np.sqrt(M.off_noise_share(Ab, Pb, oc, np.arange(ng), G))
-                lbn = 1 - (1 - rn) * np.exp(student_t.ppf(0.975, df) * se)
+                lbn = M.newbuild_interval(rn, Ab, Pb, oc, np.arange(ng), G)[0]
                 nb_err.append((rn - truth) * 100)
                 nb_pos += int(lbn > 0)
                 nb_cover += int(lbn <= truth)

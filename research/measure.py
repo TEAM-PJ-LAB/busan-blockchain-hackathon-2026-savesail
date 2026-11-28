@@ -279,12 +279,16 @@ def cross_fit_off(F, V, D, Uh, Hs, train, fold_h, model, K):
 
 
 def off_noise_share(A, Pc, off_cell, g_idx, G):
-    """Share of the ON blocks' within-group spread that is noise (newbuild mode, C28).
+    """Ratio of the sail-free noise to the ON blocks' within-group spread (newbuild mode, C28).
 
-    ON blocks carry the sail effect, and a wind-linked effect also varies inside a 15-hour group, which the design
-    variance counts as noise. OFF blocks carry no effect: the OFF blocks of consecutive groups sit l = G - j + j'
-    blocks apart, so pairs with l = 1..G-1 give the within-group noise variogram (lag weights G-l as inside a group).
-    Returns min(1, upper 95% bound of the OFF estimate / mean ON within-group variance); 1 when it cannot be formed."""
+    The design variance reads the spread from the ON blocks, but the estimator's variance is mostly the OFF blocks'
+    noise. The two differ: a wind-linked effect varies inside a 15-hour group and widens the ON spread, and with the
+    sail on the engine runs at a lower load where log fuel moves differently with the same power noise. OFF blocks
+    carry no effect: the OFF blocks of consecutive groups sit l = G - j + j' blocks apart, so pairs with l = 1..G-1
+    give the within-group noise variogram (lag weights G-l as inside a group). Returns (OFF estimate / mean ON
+    within-group variance, its chi-square degrees of freedom 2 est^2 / var); (1, inf) when it cannot be formed.
+    Not capped at 1 and not an upper bound: the first newbuild grid used min(1, upper 95% bound), which is right for
+    the wind-linked spread but misses the lower-load case (constant 8% effect: bound <= truth in 96.9%)."""
     with np.errstate(divide="ignore", invalid="ignore"):
         lx = np.log(A / Pc)
     g = np.arange(len(A))
@@ -296,17 +300,24 @@ def off_noise_share(A, Pc, off_cell, g_idx, G):
     nxt = np.flatnonzero(np.diff(g_idx) == 1)
     lag = G - off_cell[nxt] + off_cell[nxt + 1]
     d2 = (x_off[nxt] - x_off[nxt + 1]) ** 2 / 2
-    est, var, wsum = 0.0, 0.0, 0.0
+    # est = sum_t c_t d2_t over the pairs with lag 1..G-1; neighbouring pairs share an OFF block, so the variance
+    # of est keeps the covariance of adjacent pairs (lag-1 HAC), which sets the degrees of freedom
+    c, e = np.zeros(len(d2)), np.zeros(len(d2))
+    est, wsum = 0.0, 0.0
     for ell in range(1, G):
-        v = d2[(lag == ell) & np.isfinite(d2)]
-        if len(v) < 3:
-            return 1.0
-        w = G - ell
-        est += w * v.mean()
-        var += w * w * v.var(ddof=1) / len(v)
-        wsum += w
-    up = (est + 1.645 * np.sqrt(var)) / wsum
-    return float(min(1.0, up / s_on)) if s_on > 0 else 1.0
+        k = (lag == ell) & np.isfinite(d2)
+        if k.sum() < 3:
+            return 1.0, np.inf
+        mu = d2[k].mean()
+        c[k], e[k] = (G - ell) / k.sum(), (d2[k] - mu) * np.sqrt(k.sum() / (k.sum() - 1))  # ddof 1
+        est += (G - ell) * mu
+        wsum += G - ell
+    ce = c * e
+    adj = (nxt[1:] == nxt[:-1] + 1) & (c[1:] > 0) & (c[:-1] > 0)
+    var = (ce * ce).sum() + 2 * (ce[1:] * ce[:-1])[adj].sum()
+    if not (s_on > 0 and est > 0 and var > 0):
+        return 1.0, np.inf
+    return float(est / wsum / s_on), float(2 * est * est / var)  # unbiased share, chi-square degrees of freedom
 
 
 def design_se(A, Pc, off_cell):
@@ -329,6 +340,17 @@ def design_se(A, Pc, off_cell):
         s2 = np.nanvar(h, axis=1, ddof=1)
     k = np.isfinite(s2)
     return float(np.sqrt(0.8 * s2[k].sum())), int(3 * k.sum())
+
+
+def newbuild_interval(r_hat, A, Pc, off_cell, g_idx, G, rescale=True):
+    """95% interval of the newbuild mode (C28): design variance, rescaled to the OFF blocks' noise, t quantile with
+    the degrees of freedom of the product (1/df = 1/df_design + 1/df_ratio)."""
+    se, df = design_se(A, Pc, off_cell)
+    if rescale:
+        q, dfq = off_noise_share(A, Pc, off_cell, g_idx, G)
+        se, df = se * np.sqrt(q), 1 / (1 / df + 1 / dfq)
+    z = student_t.ppf(0.975, max(df, 1))
+    return 1 - (1 - r_hat) * np.exp(z * se), 1 - (1 - r_hat) * np.exp(-z * se)
 
 
 # ---------------------------------------------------------------- stage 1: one campaign
@@ -541,11 +563,7 @@ def evaluate(st, sc=None):
         Ab = np.bincount(cell, F * (w_on + w_off), ng * G).reshape(ng, G)[ok_g]
         Pb = np.bincount(cell, P * (w_on + w_off), ng * G).reshape(ng, G)[ok_g]
         off_cell = np.argmax(off_eff.reshape(ng, G * c["L"]), axis=1)[ok_g] // c["L"]
-        se, df = design_se(Ab, Pb, off_cell)
-        if c.get("nb_shrink", True):  # keep only the noise share of the ON spread (OFF-block variogram, C28)
-            se *= np.sqrt(off_noise_share(Ab, Pb, off_cell, np.flatnonzero(ok_g), G))
-        z = student_t.ppf(0.975, max(df, 1))
-        lb, ub = 1 - (1 - r_hat) * np.exp(z * se), 1 - (1 - r_hat) * np.exp(-z * se)
+        lb, ub = newbuild_interval(r_hat, Ab, Pb, off_cell, np.flatnonzero(ok_g), G, c.get("nb_shrink", True))
     elif st["eps"] is not None:
         q_c = None
         if c["stud"]:  # campaign noise level from its paired groups' OFF blocks (C25)
