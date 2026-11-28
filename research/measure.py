@@ -303,7 +303,7 @@ def off_noise_share(A, Pc, off_cell, g_idx, G, adj=0.0):
     # est = sum_t c_t d2_t over the pairs with lag 1..G-1; neighbouring pairs share an OFF block, so the variance
     # of est keeps the covariance of adjacent pairs (lag-1 HAC), which sets the degrees of freedom
     c, e = np.zeros(len(d2)), np.zeros(len(d2))
-    est, wsum = 0.0, 0.0
+    est, wsum, var_g = 0.0, 0.0, 0.0
     for ell in range(1, G):
         k = (lag == ell) & np.isfinite(d2)
         if k.sum() < 3:
@@ -312,9 +312,12 @@ def off_noise_share(A, Pc, off_cell, g_idx, G, adj=0.0):
         c[k], e[k] = (G - ell) / k.sum(), (d2[k] - mu) * np.sqrt(k.sum() / (k.sum() - 1))  # ddof 1
         est += (G - ell) * mu
         wsum += G - ell
+        var_g += (G - ell) ** 2 * 2 * mu * mu / k.sum()  # half squared Gaussian difference: variance 2 gamma^2
     ce = c * e
     adj = (nxt[1:] == nxt[:-1] + 1) & (c[1:] > 0) & (c[:-1] > 0)
-    var = (ce * ce).sum() + 2 * (ce[1:] * ce[:-1])[adj].sum()
+    # the sample variance of few squared differences is itself noisy and low exactly when est is low; never below
+    # the Gaussian value
+    var = max((ce * ce).sum() + 2 * (ce[1:] * ce[:-1])[adj].sum(), var_g)
     if not (s_on > 0 and est > 0 and var > 0):
         return 1.0, np.inf
     return float(est / wsum / s_on), float(2 * est * est / var)  # unbiased share, chi-square degrees of freedom
@@ -340,6 +343,21 @@ def design_se(A, Pc, off_cell, adj=0.0):
         s2 = np.nanvar(h, axis=1, ddof=1)
     k = np.isfinite(s2)
     return float(np.sqrt(0.8 * s2[k].sum())), int(3 * k.sum())
+
+
+def sail_polar(U, th):
+    """Expected sail thrust shape from wind speed and angle off the bow: grows with wind speed squared, saturates
+    above about 14 m/s (sails are trimmed back), none with the wind within 20 degrees of the bow, largest across the
+    wind. The sail maker's performance curve plays this role on a real ship (C28)."""
+    return np.clip((U / 8.0) ** 2, 0, 3) * np.where(th > 20, np.sin(np.radians(th)) ** 2, 0.0)
+
+
+def block_wind_features(U, th, cell, w, ng, G):
+    """Block means [group, block, 2] of the polar thrust shape and of wind speed squared (newbuild variance, C28)."""
+    nw = np.bincount(cell, w, ng * G)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.stack([np.bincount(cell, x * w, ng * G) / nw for x in (sail_polar(U, th), (U / 8.0) ** 2)],
+                        -1).reshape(ng, G, 2)
 
 
 def effect_shape(A, Pc, off_cell, Q):
@@ -415,7 +433,7 @@ def prepare(c, seed):
     is_off = blk == rng.integers(0, G, size=ng)[grp]
     tw = np.where(np.tile(np.arange(L), ng * G) == 0, 1.0 - c["trans"], 1.0)  # transient exclusion (C19)
     th_c = th[camp]
-    raw = np.clip((U[camp] / 8.0) ** 2, 0, 3) * np.where(th_c > 20, np.sin(np.radians(th_c)) ** 2, 0.0)
+    raw = sail_polar(U[camp], th_c)
     s_h = np.minimum(c["s"] * raw / max(raw.mean(), 1e-9), 0.45) if c["hetero"] else np.full(n, c["s"])
 
     # noise draws shared by every scenario
@@ -592,12 +610,7 @@ def evaluate(st, sc=None):
         off_cell = np.argmax(off_eff.reshape(ng, G * c["L"]), axis=1)[ok_g] // c["L"]
         Q = None
         if c.get("nb_shape", True):  # wind features of each block from the independent reanalysis
-            u2 = (st["Uref"][camp] / 8.0) ** 2
-            wq = w_on + w_off
-            nw = np.bincount(cell, wq, ng * G)
-            with np.errstate(invalid="ignore", divide="ignore"):
-                Q = np.stack([np.bincount(cell, x * wq, ng * G) / nw
-                              for x in (u2, u2 * np.sin(np.radians(st["thref"][camp])) ** 2)], -1).reshape(ng, G, 2)[ok_g]
+            Q = block_wind_features(st["Uref"][camp], st["thref"][camp], cell, w_on + w_off, ng, G)[ok_g]
         lb, ub = newbuild_interval(r_hat, Ab, Pb, off_cell, np.flatnonzero(ok_g), G, c.get("nb_shrink", True), Q)
     elif st["eps"] is not None:
         q_c = None
