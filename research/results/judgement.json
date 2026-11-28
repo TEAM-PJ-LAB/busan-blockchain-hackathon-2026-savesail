@@ -1,0 +1,561 @@
+{
+ "rows": [
+  {
+   "grid": "NR",
+   "cond": 0,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.02,
+    "s": 0.0,
+    "hetero": false,
+    "newbuild": true,
+    "src": "NA0"
+   },
+   "n": 10000,
+   "bias": 0.0023881405999999997,
+   "p95": 0.427157,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M3": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "fp": 0.0252,
+   "fp_det": 0.0074,
+   "ba_bias": -1.5010997488000002,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 1,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.02,
+    "s": 0.08,
+    "hetero": false,
+    "newbuild": true,
+    "src": "NA6"
+   },
+   "n": 10000,
+   "bias": -0.005424017,
+   "p95": 0.395958,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M4": true,
+    "M5": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9748,
+   "payout": 95.11290557000001,
+   "fp_det": 0.0054,
+   "ba_bias": -1.436361209,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 2,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.02,
+    "s": 0.08,
+    "hetero": true,
+    "newbuild": true,
+    "src": "NA7"
+   },
+   "n": 10000,
+   "bias": -0.0023187613000000004,
+   "p95": 0.399933,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M4": true,
+    "M5": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9743,
+   "payout": 95.10199205,
+   "fp_det": 0.0061,
+   "ba_bias": -1.3814810409,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 3,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.02,
+    "s": 0.12,
+    "hetero": true,
+    "newbuild": true,
+    "src": "NA9"
+   },
+   "n": 10000,
+   "bias": -0.0022825222,
+   "p95": 0.378464,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M4": true,
+    "M5": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9726,
+   "payout": 96.82011195999999,
+   "fp_det": 0.0057,
+   "ba_bias": -1.3692052286,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 4,
+   "cfg": {
+    "ship": "container",
+    "clim": "calm",
+    "s": 0.0923,
+    "hetero": true,
+    "sd_e": 0.0083,
+    "rho_e": 0.5153,
+    "sd_m": 0.0072,
+    "foul": 0.0259,
+    "drydock": true,
+    "miss": 0.0828,
+    "camp_h": 3405,
+    "newbuild": true,
+    "src": "NC43"
+   },
+   "n": 10000,
+   "bias": -0.0042115415,
+   "p95": 0.210416,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M4": true,
+    "M5": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9771,
+   "payout": 97.6002251,
+   "fp_det": 0.003,
+   "ba_bias": 4.8780268093,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 5,
+   "cfg": {
+    "ship": "bulk",
+    "clim": "calm",
+    "s": 0.0913,
+    "hetero": true,
+    "sd_e": 0.0153,
+    "rho_e": 0.8591,
+    "sd_m": 0.0259,
+    "foul": 0.0439,
+    "drydock": false,
+    "miss": 0.0421,
+    "camp_h": 3120,
+    "newbuild": true,
+    "src": "NC104"
+   },
+   "n": 10000,
+   "bias": -0.0062012926,
+   "p95": 0.283239,
+   "checks": {
+    "M1": true,
+    "M4": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.975,
+   "payout": 96.68574973999999,
+   "fp_det": 0.0078,
+   "ba_bias": -1.7284789606,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 6,
+   "cfg": {
+    "ship": "container",
+    "clim": "monsoon",
+    "s": 0.0861,
+    "hetero": true,
+    "sd_e": 0.0025,
+    "rho_e": 0.508,
+    "sd_m": 0.0463,
+    "foul": 0.0555,
+    "drydock": false,
+    "miss": 0.0197,
+    "camp_h": 4500,
+    "newbuild": true,
+    "src": "NC165"
+   },
+   "n": 10000,
+   "bias": -0.0035651534,
+   "p95": 0.191342,
+   "checks": {
+    "M1": true,
+    "M4": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9712,
+   "payout": 97.83103324,
+   "fp_det": 0.009,
+   "ba_bias": -2.9056986427,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 7,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "s": 0.0753,
+    "hetero": true,
+    "sd_e": 0.0037,
+    "rho_e": 0.8471,
+    "sd_m": 0.0126,
+    "foul": 0.0722,
+    "drydock": false,
+    "miss": 0.099,
+    "camp_h": 6795,
+    "newbuild": true,
+    "src": "NC167"
+   },
+   "n": 10000,
+   "bias": -0.0032981427,
+   "p95": 0.256701,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M4": true,
+    "M5": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.974,
+   "payout": 96.77886446,
+   "fp_det": 0.001,
+   "ba_bias": -5.1098587402,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 8,
+   "cfg": {
+    "ship": "tanker",
+    "clim": "calm",
+    "s": 0.1071,
+    "hetero": true,
+    "sd_e": 0.0092,
+    "rho_e": 0.5259,
+    "sd_m": 0.0249,
+    "foul": 0.0153,
+    "drydock": false,
+    "miss": 0.0653,
+    "camp_h": 2610,
+    "newbuild": true,
+    "src": "NC174"
+   },
+   "n": 10000,
+   "bias": -0.0041930425999999995,
+   "p95": 0.286066,
+   "checks": {
+    "M1": true,
+    "M4": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9767,
+   "payout": 97.00775808,
+   "fp_det": 0.0076,
+   "ba_bias": -0.5902231216,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 9,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.02,
+    "rho_e": 0.9,
+    "miss": 0.0,
+    "camp_h": 1800,
+    "foul": 0.03,
+    "drydock": false,
+    "s": 0.0,
+    "hetero": true,
+    "newbuild": true,
+    "src": "ND4"
+   },
+   "n": 10000,
+   "bias": 0.0004262905000000002,
+   "p95": 0.633972,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M3": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "fp": 0.026,
+   "fp_det": 0.0104,
+   "ba_bias": -1.0746257008,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 10,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.02,
+    "rho_e": 0.9,
+    "miss": 0.15,
+    "camp_h": 1800,
+    "foul": 0.03,
+    "drydock": false,
+    "s": 0.05,
+    "hetero": true,
+    "newbuild": true,
+    "src": "ND13"
+   },
+   "n": 10000,
+   "bias": -0.001733986,
+   "p95": 0.701615,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M4": true,
+    "M5": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9772,
+   "payout": 85.81199669,
+   "fp_det": 0.01,
+   "ba_bias": -1.0251956222,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 11,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.02,
+    "rho_e": 0.9,
+    "miss": 0.15,
+    "camp_h": 1800,
+    "foul": 0.08,
+    "drydock": true,
+    "s": 0.05,
+    "hetero": true,
+    "newbuild": true,
+    "src": "ND15"
+   },
+   "n": 10000,
+   "bias": -0.0012262146999999998,
+   "p95": 0.686237,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M4": true,
+    "M5": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9803,
+   "payout": 85.81133927,
+   "fp_det": 0.0112,
+   "ba_bias": 15.779458101,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 12,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.02,
+    "rho_e": 0.995,
+    "miss": 0.15,
+    "camp_h": 3600,
+    "foul": 0.03,
+    "drydock": false,
+    "s": 0.05,
+    "hetero": true,
+    "newbuild": true,
+    "src": "ND41"
+   },
+   "n": 10000,
+   "bias": -0.0010503497,
+   "p95": 0.404007,
+   "checks": {
+    "M1": true,
+    "M2": true,
+    "M4": true,
+    "M5": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9712,
+   "payout": 92.37671044000001,
+   "fp_det": 0.0083,
+   "ba_bias": -1.4700849357999999,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 13,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.05,
+    "rho_e": 0.995,
+    "miss": 0.15,
+    "camp_h": 3600,
+    "foul": 0.03,
+    "drydock": false,
+    "s": 0.05,
+    "hetero": true,
+    "newbuild": true,
+    "src": "ND57"
+   },
+   "n": 10000,
+   "bias": -0.0042482583,
+   "p95": 0.403152,
+   "checks": {
+    "M1": true,
+    "M4": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9736,
+   "payout": 92.31766842000002,
+   "fp_det": 0.0071,
+   "ba_bias": -1.4234435258,
+   "worst_attack": {}
+  },
+  {
+   "grid": "NR",
+   "cond": 14,
+   "cfg": {
+    "ship": "gas",
+    "clim": "n_atlantic",
+    "sd_e": 0.03,
+    "sd_m": 0.05,
+    "rho_e": 0.995,
+    "miss": 0.15,
+    "camp_h": 3600,
+    "foul": 0.08,
+    "drydock": true,
+    "s": 0.05,
+    "hetero": true,
+    "newbuild": true,
+    "src": "ND59"
+   },
+   "n": 10000,
+   "bias": -0.0083522654,
+   "p95": 0.410787,
+   "checks": {
+    "M1": true,
+    "M4": true,
+    "M8-3": true,
+    "M10": true
+   },
+   "cover": 0.9744,
+   "payout": 92.13833257,
+   "fp_det": 0.0078,
+   "ba_bias": 14.746869850500001,
+   "worst_attack": {}
+  }
+ ],
+ "pooled": {
+  "M3": {
+   "rate": 0.0256,
+   "n": 20000,
+   "se": 0.0011167954154633695,
+   "target": 0.025,
+   "ok": true
+  },
+  "M8-3": {
+   "rate": 0.007186666666666667,
+   "n": 150000,
+   "se": 0.00021809811995046158,
+   "target": 0.01,
+   "ok": true
+  },
+  "M4": {
+   "rate": 0.9748,
+   "n": 130000,
+   "se": 0.0004346967112473141,
+   "target": 0.975,
+   "ok": true
+  }
+ },
+ "fails": [],
+ "r8": {},
+ "summary": {
+  "pass": {
+   "NR": {
+    "M1": 15,
+    "M2": 10,
+    "M3": 2,
+    "M8-3": 15,
+    "M10": 15,
+    "M4": 13,
+    "M5": 8
+   }
+  },
+  "of": {
+   "NR": {
+    "M1": 15,
+    "M2": 10,
+    "M3": 2,
+    "M8-3": 15,
+    "M10": 15,
+    "M4": 13,
+    "M5": 8
+   }
+  },
+  "conditions": {
+   "NR": 15
+  },
+  "worst_bias": 0.0083522654,
+  "worst_p95_3600": 0.427157,
+  "worst_p95_1800": 0.701615,
+  "min_payout_3600": 92.37671044000001,
+  "min_payout_1800": 85.81133927,
+  "worst_attack": {
+   "storm": 0.0,
+   "rep": 0.0,
+   "meter": 0.0
+  },
+  "ba_conditions": 15,
+  "ba_median_abs": 1.4700849357999999,
+  "ba_worst_ratio": 0.007104165266574673,
+  "A": {}
+ }
+}
