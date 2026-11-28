@@ -278,7 +278,7 @@ def cross_fit_off(F, V, D, Uh, Hs, train, fold_h, model, K):
     return P
 
 
-def off_noise_share(A, Pc, off_cell, g_idx, G):
+def off_noise_share(A, Pc, off_cell, g_idx, G, adj=0.0):
     """Ratio of the sail-free noise to the ON blocks' within-group spread (newbuild mode, C28).
 
     The design variance reads the spread from the ON blocks, but the estimator's variance is mostly the OFF blocks'
@@ -290,7 +290,7 @@ def off_noise_share(A, Pc, off_cell, g_idx, G):
     Not capped at 1 and not an upper bound: the first newbuild grid used min(1, upper 95% bound), which is right for
     the wind-linked spread but misses the lower-load case (constant 8% effect: bound <= truth in 96.9%)."""
     with np.errstate(divide="ignore", invalid="ignore"):
-        lx = np.log(A / Pc)
+        lx = np.log(A / Pc) - adj
     g = np.arange(len(A))
     x_off = lx[g, off_cell]
     on = np.ones_like(A, bool)
@@ -320,7 +320,7 @@ def off_noise_share(A, Pc, off_cell, g_idx, G):
     return float(est / wsum / s_on), float(2 * est * est / var)  # unbiased share, chi-square degrees of freedom
 
 
-def design_se(A, Pc, off_cell):
+def design_se(A, Pc, off_cell, adj=0.0):
     """Newbuild mode interval, from the randomisation itself (Neyman-style; no pre-installation data).
 
     A, Pc: block sums [group, block] of fuel and prediction for paired groups; off_cell: each group's OFF block.
@@ -335,19 +335,46 @@ def design_se(A, Pc, off_cell):
     A_on, P_on = (A * on).sum(), (Pc * on).sum()
     A_off, P_off = A[g, off_cell].sum(), Pc[g, off_cell].sum()
     one_r = (A_on / P_on) / (A_off / P_off)
-    h = np.where(on, A / one_r * (1 / A_on + 1 / A_off) - Pc * (1 / P_on + 1 / P_off), np.nan)
+    h = np.where(on, A / (one_r * np.exp(adj)) * (1 / A_on + 1 / A_off) - Pc * (1 / P_on + 1 / P_off), np.nan)
     with np.errstate(invalid="ignore"):
         s2 = np.nanvar(h, axis=1, ddof=1)
     k = np.isfinite(s2)
     return float(np.sqrt(0.8 * s2[k].sum())), int(3 * k.sum())
 
 
-def newbuild_interval(r_hat, A, Pc, off_cell, g_idx, G, rescale=True):
-    """95% interval of the newbuild mode (C28): design variance, rescaled to the OFF blocks' noise, t quantile with
-    the degrees of freedom of the product (1/df = 1/df_design + 1/df_ratio)."""
-    se, df = design_se(A, Pc, off_cell)
+def effect_shape(A, Pc, off_cell, Q):
+    """How the sail effect moves with the wind, per ON block (newbuild mode, C28).
+
+    Regressing the blocks' log(fuel / prediction) on [1, ON, Q, ON x Q], Q = block means of wind features from the
+    independent reanalysis (speed^2 and its beam share; sail thrust grows with wind speed squared and is largest
+    across the wind), gives the ON x Q slopes; a baseline misfit appears in both block types and stays in the Q
+    terms. Returns the log effect deviation of each ON block from the ON blocks' fuel-weighted mean (0 for OFF
+    blocks, and everywhere when it cannot be fitted)."""
+    g = np.arange(len(A))
+    on = np.ones_like(A, bool)
+    on[g, off_cell] = False
+    with np.errstate(divide="ignore", invalid="ignore"):
+        y = np.log(A / Pc)
+    ok = np.isfinite(y) & np.isfinite(Q).all(-1)
+    nq = Q.shape[-1]
+    if ok.sum() < 10 * (2 * nq + 2):
+        return np.zeros_like(A)
+    Qs = (Q - Q[ok].mean(0)) / np.maximum(Q[ok].std(0), 1e-12)
+    X = np.concatenate([np.ones(A.shape + (1,)), on[..., None], Qs, on[..., None] * Qs], axis=-1)
+    gam = np.linalg.lstsq(X[ok], y[ok], rcond=None)[0][2 + nq:]
+    dev = np.where(on & ok, Qs @ gam, 0.0)
+    w = np.where(on & ok, A, 0.0)
+    return np.where(on & ok, dev - (w * dev).sum() / w.sum(), 0.0)
+
+
+def newbuild_interval(r_hat, A, Pc, off_cell, g_idx, G, rescale=True, Q=None):
+    """95% interval of the newbuild mode (C28): design variance with ON blocks put back to sail-free fuel (campaign
+    rate x wind-linked shape when Q is given), rescaled to the OFF blocks' noise, t quantile with the degrees of
+    freedom of the product (1/df = 1/df_design + 1/df_ratio)."""
+    adj = effect_shape(A, Pc, off_cell, Q) if Q is not None else 0.0
+    se, df = design_se(A, Pc, off_cell, adj)
     if rescale:
-        q, dfq = off_noise_share(A, Pc, off_cell, g_idx, G)
+        q, dfq = off_noise_share(A, Pc, off_cell, g_idx, G, adj)
         se, df = se * np.sqrt(q), 1 / (1 / df + 1 / dfq)
     z = student_t.ppf(0.975, max(df, 1))
     return 1 - (1 - r_hat) * np.exp(z * se), 1 - (1 - r_hat) * np.exp(-z * se)
@@ -563,7 +590,15 @@ def evaluate(st, sc=None):
         Ab = np.bincount(cell, F * (w_on + w_off), ng * G).reshape(ng, G)[ok_g]
         Pb = np.bincount(cell, P * (w_on + w_off), ng * G).reshape(ng, G)[ok_g]
         off_cell = np.argmax(off_eff.reshape(ng, G * c["L"]), axis=1)[ok_g] // c["L"]
-        lb, ub = newbuild_interval(r_hat, Ab, Pb, off_cell, np.flatnonzero(ok_g), G, c.get("nb_shrink", True))
+        Q = None
+        if c.get("nb_shape", True):  # wind features of each block from the independent reanalysis
+            u2 = (st["Uref"][camp] / 8.0) ** 2
+            wq = w_on + w_off
+            nw = np.bincount(cell, wq, ng * G)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                Q = np.stack([np.bincount(cell, x * wq, ng * G) / nw
+                              for x in (u2, u2 * np.sin(np.radians(st["thref"][camp])) ** 2)], -1).reshape(ng, G, 2)[ok_g]
+        lb, ub = newbuild_interval(r_hat, Ab, Pb, off_cell, np.flatnonzero(ok_g), G, c.get("nb_shrink", True), Q)
     elif st["eps"] is not None:
         q_c = None
         if c["stud"]:  # campaign noise level from its paired groups' OFF blocks (C25)

@@ -29,8 +29,9 @@ Design (fixed before the first run):
   truth) by the one-sided binomial test at 0.1%; M10 when before/after bias >= 0.5%p.
 
 Newbuild mode (PRD C28, added 11/28 before its first run on this data): the same campaigns and schedules are also
-settled without the training hours, the baseline cross-fitted on the campaign's own OFF hours and the bound from the
-design variance with the OFF-block noise share (measure.evaluate, newbuild=True). Its numbers sit under "nb".
+settled without the training hours, the baseline cross-fitted on the campaign's own OFF hours and the bound from
+measure.newbuild_interval (design variance, wind-linked effect shape, OFF-block noise ratio). The data has no
+reanalysis wind, so the shape uses the ship's own wind. Its numbers sit under "nb".
 
 Usage: python3 research/fuelcast_check.py <folder with the .parquet files> [--reps N]
 """
@@ -119,6 +120,10 @@ def run_ship(a, reps, seed):
         fold_h = ((np.arange(ng) * 5) // ng)[grp]
         raw = raw_all[camp]
         Yc = Y[camp]
+        u2 = (U[camp] / 8.0) ** 2  # wind features per block for the newbuild variance (C28); the data has no reanalysis
+        cell_c = grp * G + blk
+        Qn = np.stack([np.bincount(cell_c, x * tw, ng * G) / np.bincount(cell_c, tw, ng * G)
+                       for x in (u2, u2 * np.sin(np.radians(th[camp])) ** 2)], -1).reshape(ng, G, 2)
         pre = np.arange(int(t0 * 0.75), t0)
         for s in EFFECTS:
             s_h = np.minimum(s * raw / max(raw.mean(), 1e-9), 0.45)
@@ -149,7 +154,7 @@ def run_ship(a, reps, seed):
                 Ab = np.bincount(cell, F * tw, ng * G).reshape(ng, G)
                 Pb = np.bincount(cell, Pn * tw, ng * G).reshape(ng, G)
                 oc = np.argmax(off.reshape(ng, G * L), axis=1) // L
-                lbn = M.newbuild_interval(rn, Ab, Pb, oc, np.arange(ng), G)[0]
+                lbn = M.newbuild_interval(rn, Ab, Pb, oc, np.arange(ng), G, Q=Qn)[0]
                 nb_err.append((rn - truth) * 100)
                 nb_pos += int(lbn > 0)
                 nb_cover += int(lbn <= truth)
