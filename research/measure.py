@@ -278,49 +278,78 @@ def cross_fit_off(F, V, D, Uh, Hs, train, fold_h, model, K):
     return P
 
 
-def off_noise_share(A, Pc, off_cell, g_idx, G, adj=0.0):
-    """Ratio of the sail-free noise to the ON blocks' within-group spread (newbuild mode, C28).
+def lag_semivariance(x, off_cell, g_idx, G, w=None):
+    """Within-group semivariance of sail-free block values, from the OFF blocks of consecutive groups (C28).
 
-    The design variance reads the spread from the ON blocks, but the estimator's variance is mostly the OFF blocks'
-    noise. The two differ: a wind-linked effect varies inside a 15-hour group and widens the ON spread, and with the
-    sail on the engine runs at a lower load where log fuel moves differently with the same power noise. OFF blocks
-    carry no effect: the OFF blocks of consecutive groups sit l = G - j + j' blocks apart, so pairs with l = 1..G-1
-    give the within-group noise variogram (lag weights G-l as inside a group). Returns (OFF estimate / mean ON
-    within-group variance, its chi-square degrees of freedom 2 est^2 / var); (1, inf) when it cannot be formed.
-    Not capped at 1 and not an upper bound: the first newbuild grid used min(1, upper 95% bound), which is right for
-    the wind-linked spread but misses the lower-load case (constant 8% effect: bound <= truth in 96.9%)."""
-    with np.errstate(divide="ignore", invalid="ignore"):
-        lx = np.log(A / Pc) - adj
-    g = np.arange(len(A))
-    x_off = lx[g, off_cell]
-    on = np.ones_like(A, bool)
-    on[g, off_cell] = False
-    with np.errstate(invalid="ignore"):
-        s_on = np.nanmean(np.nanvar(np.where(on & np.isfinite(lx), lx, np.nan), axis=1, ddof=1))
+    Consecutive groups' OFF blocks sit l = G - j + j' blocks apart; pairs with l = 1..G-1 estimate the semivariance at
+    lag l, and lag weights G - l (as inside a group) give the mean within-group variance. w: optional pair weights
+    within a lag. Returns (estimate, chi-square degrees of freedom), (nan, nan) when a lag has fewer than 3 pairs.
+    Neighbouring pairs share an OFF block, so the variance of the estimate keeps adjacent-pair covariance (lag-1
+    HAC); a sample variance of few squared differences is itself noisy and low exactly when the estimate is low, so
+    it is never taken below the Gaussian value 2 gamma^2 / n."""
     nxt = np.flatnonzero(np.diff(g_idx) == 1)
     lag = G - off_cell[nxt] + off_cell[nxt + 1]
-    d2 = (x_off[nxt] - x_off[nxt + 1]) ** 2 / 2
-    # est = sum_t c_t d2_t over the pairs with lag 1..G-1; neighbouring pairs share an OFF block, so the variance
-    # of est keeps the covariance of adjacent pairs (lag-1 HAC), which sets the degrees of freedom
+    d2 = (x[nxt] - x[nxt + 1]) ** 2 / 2
+    wp = np.ones(len(d2)) if w is None else (w[nxt] + w[nxt + 1]) / 2
     c, e = np.zeros(len(d2)), np.zeros(len(d2))
     est, wsum, var_g = 0.0, 0.0, 0.0
     for ell in range(1, G):
         k = (lag == ell) & np.isfinite(d2)
-        if k.sum() < 3:
-            return 1.0, np.inf
-        mu = d2[k].mean()
-        c[k], e[k] = (G - ell) / k.sum(), (d2[k] - mu) * np.sqrt(k.sum() / (k.sum() - 1))  # ddof 1
+        n = int(k.sum())
+        if n < 3:
+            return np.nan, np.nan
+        ww = wp[k] / wp[k].sum()
+        mu = float((ww * d2[k]).sum())
+        c[k], e[k] = (G - ell) * ww, (d2[k] - mu) * np.sqrt(n / (n - 1))
         est += (G - ell) * mu
         wsum += G - ell
-        var_g += (G - ell) ** 2 * 2 * mu * mu / k.sum()  # half squared Gaussian difference: variance 2 gamma^2
+        var_g += (G - ell) ** 2 * 2 * mu * mu / n
     ce = c * e
     adj = (nxt[1:] == nxt[:-1] + 1) & (c[1:] > 0) & (c[:-1] > 0)
-    # the sample variance of few squared differences is itself noisy and low exactly when est is low; never below
-    # the Gaussian value
     var = max((ce * ce).sum() + 2 * (ce[1:] * ce[:-1])[adj].sum(), var_g)
-    if not (s_on > 0 and est > 0 and var > 0):
+    if not (est > 0 and var > 0):
+        return np.nan, np.nan
+    return est / wsum, 2 * est * est / var
+
+
+def off_noise_share(A, Pc, off_cell, g_idx, G, adj=0.0):
+    """Ratio of the OFF blocks' noise to the ON blocks' within-group spread, on the log scale (fallback of C28).
+
+    Returns (ratio, degrees of freedom); (1, inf) when it cannot be formed."""
+    with np.errstate(divide="ignore", invalid="ignore"):
+        lx = np.log(A / Pc) - adj
+    g = np.arange(len(A))
+    on = np.ones_like(A, bool)
+    on[g, off_cell] = False
+    with np.errstate(invalid="ignore"):
+        s_on = np.nanmean(np.nanvar(np.where(on & np.isfinite(lx), lx, np.nan), axis=1, ddof=1))
+    est, df = lag_semivariance(lx[g, off_cell], off_cell, g_idx, G)
+    if not (np.isfinite(est) and s_on > 0):
         return 1.0, np.inf
-    return float(est / wsum / s_on), float(2 * est * est / var)  # unbiased share, chi-square degrees of freedom
+    return float(est / s_on), float(df)
+
+
+def off_design_var(A, Pc, off_cell, g_idx, G):
+    """Design variance of log(1 - r_hat) read from the OFF blocks alone (newbuild mode, C28).
+
+    Moving a group's OFF block from position j changes log(1 - r_hat) by h_j = a_j (1/A0_on + 1/A_off) -
+    p_j (1/P_on + 1/P_off), a_j the block's sail-free fuel (A0_on = A_on / (1 - r_hat)), so the variance is
+    0.8 sum_g S^2_g(h) over the sail-free values. OFF blocks show them directly, one per group. Scaled by the group's
+    predicted fuel, u = h / (p_bar_g (1/P_on + 1/P_off)) is close to the log residual and has about the same spread
+    in every group; its within-group variance comes from lag_semivariance (pairs weighted by p_bar^2, so groups with
+    more fuel count as in the sum) and the variance is 0.8 (1/P_on + 1/P_off)^2 sum_g p_bar_g^2 S^2(u). ON blocks
+    are not used: their sail effect varies with the wind and their engine load is lower. Returns (variance, df)."""
+    g = np.arange(len(A))
+    on = np.ones_like(A, bool)
+    on[g, off_cell] = False
+    A_on, P_on = (A * on).sum(), (Pc * on).sum()
+    A_off, P_off = A[g, off_cell].sum(), Pc[g, off_cell].sum()
+    one_r = (A_on / P_on) / (A_off / P_off)
+    k2 = 1 / P_on + 1 / P_off
+    pbar = Pc.mean(1)
+    u = (A[g, off_cell] * (one_r / A_on + 1 / A_off) - Pc[g, off_cell] * k2) / (k2 * pbar)
+    est, df = lag_semivariance(u, off_cell, g_idx, G, pbar ** 2)
+    return 0.8 * k2 * k2 * float((pbar ** 2).sum()) * est, df
 
 
 def design_se(A, Pc, off_cell, adj=0.0):
@@ -386,14 +415,20 @@ def effect_shape(A, Pc, off_cell, Q):
 
 
 def newbuild_interval(r_hat, A, Pc, off_cell, g_idx, G, rescale=True, Q=None):
-    """95% interval of the newbuild mode (C28): design variance with ON blocks put back to sail-free fuel (campaign
-    rate x wind-linked shape when Q is given), rescaled to the OFF blocks' noise, t quantile with the degrees of
-    freedom of the product (1/df = 1/df_design + 1/df_ratio)."""
-    adj = effect_shape(A, Pc, off_cell, Q) if Q is not None else 0.0
-    se, df = design_se(A, Pc, off_cell, adj)
-    if rescale:
-        q, dfq = off_noise_share(A, Pc, off_cell, g_idx, G, adj)
-        se, df = se * np.sqrt(q), 1 / (1 / df + 1 / dfq)
+    """95% interval of the newbuild mode (C28), t quantile on log(1 - r_hat).
+
+    Variance: the design variance read from the OFF blocks (off_design_var). When a lag has too few OFF pairs (short
+    campaigns), the ON blocks' design variance is used instead, with ON blocks put back to sail-free fuel (campaign rate
+    x wind-linked shape from Q) and rescaled by the OFF/ON noise ratio; its degrees of freedom combine both parts."""
+    v, df = off_design_var(A, Pc, off_cell, g_idx, G) if rescale else (np.nan, np.nan)
+    if np.isfinite(v) and v > 0:
+        se = np.sqrt(v)
+    else:
+        adj = effect_shape(A, Pc, off_cell, Q) if Q is not None else 0.0
+        se, df = design_se(A, Pc, off_cell, adj)
+        if rescale:
+            q, dfq = off_noise_share(A, Pc, off_cell, g_idx, G, adj)
+            se, df = se * np.sqrt(q), 1 / (1 / df + 1 / dfq)
     z = student_t.ppf(0.975, max(df, 1))
     return 1 - (1 - r_hat) * np.exp(z * se), 1 - (1 - r_hat) * np.exp(-z * se)
 
